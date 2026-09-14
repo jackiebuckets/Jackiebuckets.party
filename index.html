@@ -32,7 +32,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .hotspot:focus-visible{outline:2px dashed #fff}
 
 #lamp{left:22.8%;top:43.0%;width:8.3%;height:22.5%}
-#computer{left:32.8%;top:40.8%;width:18.8%;height:28.0%;z-index:17}
+#computer{left:34.3%;top:42.0%;width:16.5%;height:24.5%}
 #music{left:59.0%;top:49.5%;width:17.8%;height:21.5%}
 #photos{left:24.0%;top:8.5%;width:21.5%;height:34.5%}
 #door{left:76.7%;top:10.0%;width:17.5%;height:60.0%}
@@ -57,76 +57,33 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 }
 .hotspot.debug{outline:2px solid rgba(255,0,0,.8);background:rgba(255,0,0,.08)}
 
-/* LIVE CRT SCREEN -------------------------------------------------- */
-#crtScreen{
-  position:absolute;
-  z-index:18;
-  left:36.25%;
-  top:46.6%;
-  width:13.9%;
-  height:16.0%;
-  background:#04141a;
-  color:#8ef9ff;
-  overflow:hidden;
-  transform:perspective(500px) rotateY(-1.1deg) rotateX(.6deg);
-  transform-origin:center center;
-  box-shadow:
-    inset 0 0 14px rgba(80,220,255,.14),
-    0 0 2px rgba(0,0,0,.7);
-  border-radius:2px;
-  pointer-events:auto;
-  image-rendering:pixelated;
+/* V7 LIVE CRT — deliberately minimal so it cannot break the room controls */
+#liveCrt{
+ position:absolute;
+ z-index:12;
+ left:36.0%;
+ top:45.2%;
+ width:14.2%;
+ height:15.0%;
+ box-sizing:border-box;
+ padding:5px 7px;
+ overflow:hidden;
+ background:#03141b;
+ color:#91f7ff;
+ border-radius:2px;
+ font-size:clamp(5px,.72vw,10px);
+ line-height:1.18;
+ letter-spacing:.01em;
+ text-shadow:0 0 3px rgba(100,245,255,.42);
+ box-shadow:inset 0 0 12px rgba(100,245,255,.10);
+ pointer-events:none;
 }
-#crtScreen::before{
-  content:"";
-  position:absolute;inset:0;pointer-events:none;z-index:5;
-  background:
-    repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0 1px,rgba(0,0,0,.06) 2px 3px),
-    radial-gradient(circle at 50% 48%,transparent 58%,rgba(0,0,0,.25) 100%);
+#liveCrt:after{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0 1px,rgba(0,0,0,.05) 2px 3px);
 }
-#crtScreen::after{
-  content:"";
-  position:absolute;inset:-8%;pointer-events:none;z-index:6;
-  background:linear-gradient(90deg,transparent,rgba(150,255,255,.03),transparent);
-  animation:crtSweep 5.5s linear infinite;
-}
-@keyframes crtSweep{
-  from{transform:translateX(-35%)}
-  to{transform:translateX(35%)}
-}
-#crtInner{
-  position:absolute;inset:0;
-  padding:6% 7%;
-  font-size:clamp(5px,.75vw,11px);
-  line-height:1.25;
-  letter-spacing:.02em;
-  text-shadow:0 0 3px rgba(115,248,255,.45);
-}
-#crtInner .prompt{opacity:.9}
-#crtInner .blink{animation:blink .8s steps(1,end) infinite}
-@keyframes blink{50%{opacity:0}}
-#crtInner button{
-  display:block;
-  width:100%;
-  padding:1px 0;
-  border:0;
-  background:transparent;
-  color:#8ef9ff;
-  font:inherit;
-  line-height:1.25;
-  text-align:left;
-  cursor:pointer;
-}
-#crtInner button:active,
-#crtInner button:focus-visible{
-  background:rgba(142,249,255,.10);
-  outline:none;
-}
-#crtInner .tiny{font-size:.88em;opacity:.78}
-
-body.computer-view #crtScreen{
-  pointer-events:auto;
-}
+#liveCrt .blink{animation:v7blink .85s steps(1,end) infinite}
+@keyframes v7blink{50%{opacity:0}}
 
 </style>
 </head>
@@ -138,11 +95,7 @@ body.computer-view #crtScreen{
    <div class="camera" id="camera">
     <img class="room night" src="room-night.png" alt="">
     <img class="room day" src="room-day.png" alt="">
-
-    <div id="crtScreen" aria-label="Computer screen">
-      <div id="crtInner"></div>
-    </div>
-
+    <div id="liveCrt" aria-hidden="true"></div>
     <button class="hotspot" id="computer" aria-label="Computer"></button>
     <button class="hotspot" id="music" aria-label="Stereo and records"></button>
     <button class="hotspot" id="photos" aria-label="Photos"></button>
@@ -164,8 +117,7 @@ body.computer-view #crtScreen{
 <script>
 const viewport=document.getElementById('viewport'), camera=document.getElementById('camera'),
 scene=document.getElementById('scene'), status=document.getElementById('status'),
-back=document.getElementById('back'), hint=document.getElementById('hint'),
-crtScreen=document.getElementById('crtScreen'), crtInner=document.getElementById('crtInner');
+back=document.getElementById('back'), hint=document.getElementById('hint');
 
 let panX=0, panY=0, dragging=false, moved=false, sx=0, sy=0, startX=0, startY=0, zoomed=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -225,7 +177,11 @@ viewport.addEventListener('pointercancel',pointerUp);
 window.addEventListener('resize',sizeCamera);
 
 const views={
- computer:{x:0,y:0,s:1,label:'THE COMPUTER.'}
+ computer:{x:10,y:5,s:1.62,label:'THE COMPUTER.'},
+ music:{x:-20,y:3,s:1.55,label:'THE STEREO.'},
+ photos:{x:22,y:-13,s:1.48,label:'PHOTOS.'},
+ door:{x:-25,y:-5,s:1.45,label:'THE DOOR.'},
+ guitar:{x:27,y:5,s:1.58,label:'THE PINK STRAT.'}
 };
 
 function goView(name){
@@ -260,105 +216,7 @@ function goView(name){
  const timer=setInterval(()=>{i++;if(i>=steps.length){clearInterval(timer);return}doStep(steps[i])},85);
  status.textContent=v.label;
 }
-document.getElementById('computer').addEventListener('click',(e)=>{
- e.stopPropagation();moved=false;
- if(!zoomed) enterComputer();
-});moved=false;goView(id)}));
-
-
-function bootScreen(){
- crtInner.innerHTML=`
- <div>JACKIEBUCKETS BIOS v1.0</div>
- <div class="tiny">640K OK &nbsp; VIDEO OK</div>
- <div class="tiny">MOUSE... FOUND</div>
- <br>
- <div class="prompt">C:\\&gt;<span class="blink">_</span></div>`;
- setTimeout(showDesktop,850);
-}
-
-function showDesktop(){
- crtInner.innerHTML=`
- <div class="tiny">JACKIEBUCKETS.PARTY</div>
- <div>----------------</div>
- <button data-crt="internet">&gt; INTERNET</button>
- <button data-crt="photos">&gt; PHOTOS</button>
- <button data-crt="music">&gt; MUSIC</button>
- <button data-crt="journal">&gt; JOURNAL</button>
- <button data-crt="unknown">&gt; ???</button>
- <br>
- <div class="tiny">C:\\ROOM\\&gt;<span class="blink">_</span></div>`;
- wireCrtButtons();
-}
-
-function wireCrtButtons(){
- crtInner.querySelectorAll('[data-crt]').forEach(btn=>{
-  btn.addEventListener('click',(e)=>{
-   e.stopPropagation();
-   if(!zoomed){
-    enterComputer();
-    return;
-   }
-   const kind=btn.dataset.crt;
-   const pages={
-    internet:'NO CONNECTION.<br><br><span class="tiny">TRY AGAIN LATER.</span>',
-    photos:'PHOTOS.EXE<br><br><span class="tiny">NOTHING LOADED YET.</span>',
-    music:'MUSIC.DRV<br><br><span class="tiny">THE TURNTABLE IS OVER THERE.</span>',
-    journal:'JOURNAL.TXT<br><br><span class="tiny">NOT EVERYTHING NEEDS TO BE POSTED.</span>',
-    unknown:'???<br><br><span class="tiny">YOU SHOULD NOT HAVE OPENED THIS.</span>'
-   };
-   crtInner.innerHTML=`<button data-backcrt>&lt; BACK</button><br>${pages[kind]}`;
-   crtInner.querySelector('[data-backcrt]').addEventListener('click',(ev)=>{
-    ev.stopPropagation();showDesktop();
-   });
-  });
- });
-}
-
-function enterComputer(){
- zoomed=true;
- document.body.classList.add('computer-view');
- scene.classList.add('zoomed');
- hint.style.opacity='0';
- status.textContent='THE COMPUTER.';
-
- const roomW=camera.offsetWidth, roomH=camera.offsetHeight;
- const baseLeft=viewport.clientWidth/2+panX;
- const baseTop=viewport.clientHeight/2+panY;
-
- // Center the CRT face instead of just scaling toward the whole desk.
- const targetLeft=viewport.clientWidth/2 + roomW*0.105;
- const targetTop=viewport.clientHeight/2 + roomH*0.135;
- const targetScale=2.32;
-
- camera.classList.add('stepped');
- const steps=[.33,.66,1];
- let i=0;
- const doStep=(t)=>{
-  const left=baseLeft+(targetLeft-baseLeft)*t;
-  const top=baseTop+(targetTop-baseTop)*t;
-  const sc=1+(targetScale-1)*t;
-  camera.style.left=left+'px';
-  camera.style.top=top+'px';
-  camera.style.transform=`translate(-50%,-50%) scale(${sc})`;
- };
- doStep(steps[0]);
- const timer=setInterval(()=>{
-  i++;
-  if(i>=steps.length){clearInterval(timer);return}
-  doStep(steps[i]);
- },82);
-}
-
-crtScreen.addEventListener('click',(e)=>{
- if(!zoomed){
-  e.stopPropagation();
-  moved=false;
-  enterComputer();
- }
-});
-
-bootScreen();
-
+Object.keys(views).forEach(id=>document.getElementById(id).addEventListener('click',(e)=>{e.stopPropagation();moved=false;goView(id)}));
 
 back.addEventListener('click',(e)=>{
  e.stopPropagation();zoomed=false;scene.classList.remove('zoomed');
@@ -379,6 +237,25 @@ function toggleLamp(){
  applyLightMode(lightMode);
  status.textContent=lightMode?'DAYLIGHT.':'NIGHT AGAIN.';
 }
+
+
+const liveCrt=document.getElementById('liveCrt');
+function crtMenu(){
+ liveCrt.innerHTML=`
+ <div>JACKIEBUCKETS.PARTY</div>
+ <div>----------------</div>
+ <div>&gt; INTERNET</div>
+ <div>&gt; PHOTOS</div>
+ <div>&gt; MUSIC</div>
+ <div>&gt; JOURNAL</div>
+ <div>&gt; ???</div>
+ <div><br>C:\\&gt;<span class="blink">_</span></div>`;
+}
+function crtBoot(){
+ liveCrt.innerHTML=`JACKIEBUCKETS BIOS<br>MEMORY... OK<br>VIDEO... OK<br><br>C:\\&gt;<span class="blink">_</span>`;
+ setTimeout(crtMenu,700);
+}
+crtBoot();
 
 function updateTime(){
  const d=new Date();
