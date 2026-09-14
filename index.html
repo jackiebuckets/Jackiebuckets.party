@@ -150,12 +150,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .bucketgram-close{position:absolute;right:0.55%;top:.55%;width:3.15%;height:3.6%;border:0;background:transparent;cursor:pointer;z-index:5}
 .magic-input{position:absolute;left:1.75%;top:89.9%;width:18.5%;height:3.55%;z-index:4;border:2px solid #222;background:#f7f3e7;padding:0 7px;font:700 clamp(9px,1vw,15px) 'Courier New',monospace;color:#111}
 .magic-shake{position:absolute;left:6.35%;top:94.35%;width:9.4%;height:3.8%;z-index:4;background:#075be4;color:#fff;border:3px outset #ddd;font:700 clamp(9px,1vw,15px) 'Courier New',monospace;cursor:pointer}
-.magic-result{position:absolute;left:7.55%;top:79.55%;width:6.35%;aspect-ratio:1/1;z-index:6;display:none;align-items:center;justify-content:center;border-radius:50%;background:#f4f0df;color:#111;border:2px solid #111;text-align:center;font:900 clamp(7px,.78vw,12px) 'Courier New',monospace;line-height:.9;letter-spacing:-.04em;box-shadow:inset 0 0 0 2px #d8d0bd}
+.magic-result{position:absolute;left:1.75%;top:89.9%;width:18.5%;height:3.55%;z-index:7;display:none;align-items:center;justify-content:center;box-sizing:border-box;background:#f7f3e7;color:#111;border:2px solid #222;text-align:center;font:900 clamp(9px,1vw,15px) 'Courier New',monospace;line-height:1;cursor:pointer}
 .magic-result.show{display:flex}
 @media(max-width:720px){
  .bucketgram-window{width:98vw;max-height:86vh}
  .bucketgram-feed{left:21.5%;top:19.2%;width:50.4%;height:79.3%}
- .bg-post{padding:7px}.bg-avatar{width:28px;height:28px;font-size:15px}.bg-photo{border-width:1px}.magic-input{font-size:8px;padding:0 3px}.magic-shake{font-size:8px;border-width:2px}.magic-result{font-size:6px}
+ .bg-post{padding:7px}.bg-avatar{width:28px;height:28px;font-size:15px}.bg-photo{border-width:1px}.magic-input{font-size:8px;padding:0 3px}.magic-shake{font-size:8px;border-width:2px}.magic-result{font-size:8px}
 }
 
 </style>
@@ -209,19 +209,19 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <div class="bucketgram-feed" id="bucketgramFeed">
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">😎</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">2d</span></div>
-       <img class="bg-photo" src="bucketgram-photos/IMG_0159.jpeg" alt="Bucketgram photo 1">
+       <img class="bg-photo" src="bucketgram-photos/photo1.jpeg" data-fallback="bucketgram-photos/IMG_0159.jpeg" alt="Bucketgram photo 1">
        <div class="bg-caption">jackiebuckets&nbsp;&nbsp; good views can’t complain</div>
        <div class="bg-actions"><span><span class="bg-heart">♥</span> 42</span><span>◯ 3</span></div>
       </article>
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">🐴</div><div class="bg-meta"><span>dirtbagdan</span><span class="bg-place">probably lost</span></div><span class="bg-age">4d</span></div>
-       <img class="bg-photo" src="bucketgram-photos/IMG_0313.png" alt="Bucketgram photo 2">
+       <img class="bg-photo" src="bucketgram-photos/photo2.jpeg" data-fallback="bucketgram-photos/IMG_0313.png" alt="Bucketgram photo 2">
        <div class="bg-caption">dirtbagdan&nbsp;&nbsp; found civilization. hated it.</div>
        <div class="bg-actions"><span><span class="bg-heart">♥</span> 19</span><span>◯ 1</span></div>
       </article>
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">your next upload</span></div><span class="bg-age">now</span></div>
-       <img class="bg-photo" src="bucketgram-photos/IMG_9922.jpeg" alt="Bucketgram photo 3">
+       <img class="bg-photo" src="bucketgram-photos/photo3.jpeg" data-fallback="bucketgram-photos/IMG_9922.jpeg" alt="Bucketgram photo 3">
        <div class="bg-caption">jackiebuckets&nbsp;&nbsp; more photos go here</div>
       </article>
     </div>
@@ -498,6 +498,18 @@ const magicInput=document.getElementById('magicInput');
 const magicShake=document.getElementById('magicShake');
 const magicResult=document.getElementById('magicResult');
 const eightBallAnswers=['YAH DAWG','NO DAWG'];
+// Stable Bucketgram photo slots: photo1.jpeg, photo2.jpeg, photo3.jpeg.
+// Until those are renamed in GitHub, fall back to the current uploaded filenames.
+document.querySelectorAll('.bg-photo[data-fallback]').forEach(img=>{
+ img.addEventListener('error',()=>{
+  const fallback=img.dataset.fallback;
+  if(fallback && img.getAttribute('src')!==fallback){
+   img.setAttribute('src',fallback);
+  } else {
+   img.style.display='none';
+  }
+ },{once:false});
+});
 bucketgramWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 bucketgramWindow.addEventListener('click',e=>e.stopPropagation());
 bucketgramClose.addEventListener('click',()=>{
@@ -517,6 +529,7 @@ magicShake.addEventListener('click',()=>{
  magicResult.classList.add('show');
 });
 magicInput.addEventListener('keydown',e=>{ if(e.key==='Enter') magicShake.click(); });
+magicResult.addEventListener('click',()=>{ magicResult.classList.remove('show'); magicInput.value=''; magicInput.focus(); });
 
 
 
