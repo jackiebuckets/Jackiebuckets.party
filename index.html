@@ -1,321 +1,407 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Jackiebuckets.party</title>
 <style>
 :root{
-  --cyan:#7ffcff; --blue:#0000aa; --panel:#c0c0c0;
-  --status:44px;
+  --blue:#0000a8;
+  --cyan:#78f7ff;
+  --hud:#050505;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:#05070b;color:white;font-family:"Courier New",monospace}
-body{overflow:hidden}
-
-#shell{height:100vh;display:flex;flex-direction:column;background:#05070b}
-#view{position:relative;flex:1;overflow:hidden;touch-action:none;background:#05070b}
-#world{
-  position:absolute;
-  inset:0;
-  overflow:hidden;
-  perspective:1200px;
-  transform-style:preserve-3d;
-}
-
-.layer{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:max(112vw,1180px);
-  height:auto;
-  transform:translate(-50%,-50%);
-  transform-origin:center center;
-  user-select:none;
-  pointer-events:none;
-  transition:filter .55s ease;
-}
-#back{
-  z-index:1;
-  filter:brightness(.95) saturate(.95);
-}
-#mid{
-  z-index:2;
-  opacity:.22;
-  filter:contrast(1.05);
-  mix-blend-mode:screen;
-}
-#front{
-  z-index:3;
-  opacity:.11;
-  filter:contrast(1.15);
-  mix-blend-mode:overlay;
-}
-
-body.dark #back{
-  filter:brightness(.72) saturate(.90) contrast(1.05) hue-rotate(170deg);
-}
-body.dark #mid{opacity:.28}
-body.dark #front{opacity:.15}
-
-#world::after{
-  content:"";
-  position:absolute; inset:0; z-index:5; pointer-events:none;
-  background:
-    repeating-linear-gradient(to bottom,rgba(255,255,255,.012) 0 1px,rgba(0,0,0,.022) 2px 3px),
-    radial-gradient(circle at 50% 44%,transparent 44%,rgba(0,0,0,.18) 100%);
-  opacity:.6;
-}
-body.dark #world::before{
-  content:"";
-  position:absolute; inset:0; z-index:4; pointer-events:none;
-  background:
-    linear-gradient(rgba(0,18,55,.12),rgba(0,14,40,.25)),
-    radial-gradient(circle at 35% 35%,rgba(30,85,135,.10),transparent 48%);
-}
-
-#topbar{
-  height:38px;
-  flex:none;
-  background:#0000aa;
-  border:2px solid #efefef;
-  box-shadow:inset -2px -2px #5a5a5a,inset 2px 2px #fff;
-  color:white;
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020407;font-family:"Courier New",monospace}
+#app{position:fixed;inset:0;background:#020407}
+#game{position:absolute;left:0;right:0;top:36px;bottom:44px;overflow:hidden}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+#titlebar{
+  position:absolute;z-index:20;left:0;right:0;top:0;height:36px;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 5px 0 8px;
-  z-index:30;
+  padding:0 5px 0 9px;color:#fff;background:var(--blue);
+  border:2px solid #efefef;box-shadow:inset -2px -2px #666,inset 2px 2px #fff;
+  font-weight:bold;font-size:18px
 }
-#title{font-weight:bold;font-size:19px}
-#winbuttons{display:flex;gap:2px}
-.winbox{
-  width:28px;height:25px;background:#c0c0c0;color:#111;
-  border:2px solid #eee;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
-  display:grid;place-items:center;font-weight:bold;
+.winbuttons{display:flex;gap:2px}
+.winbtn{
+  width:27px;height:24px;background:#c0c0c0;color:#111;display:grid;place-items:center;
+  border:2px solid #f4f4f4;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
 }
-
-#status{
-  flex:none; min-height:var(--status);
-  background:#000;border-top:1px solid #555;
-  display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px;
-  padding:8px 16px calc(8px + env(safe-area-inset-bottom));
-  z-index:40;letter-spacing:.04em
+#statusbar{
+  position:absolute;z-index:20;left:0;right:0;bottom:0;min-height:44px;
+  background:#000;color:#f3f3f3;border-top:1px solid #555;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:8px 15px calc(8px + env(safe-area-inset-bottom));
+  font-size:14px;letter-spacing:.05em
 }
-#statusRight{color:#aaa;font-size:12px;white-space:nowrap}
-
-#modeBadge{
-  position:absolute;right:14px;top:14px;z-index:20;
-  background:#d8d8d8;color:#111;padding:6px 9px;min-width:145px;
+#statusRight{color:#8f8f8f;font-size:11px;white-space:nowrap}
+#mode{
+  position:absolute;z-index:18;right:14px;top:50px;
+  min-width:138px;background:#d6d6d6;color:#111;padding:6px 8px;
   border:2px solid #efefef;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
-  font-size:13px;line-height:1.25;
+  font-size:12px;line-height:1.3
 }
-#modeBadge strong{display:block;font-size:15px}
-
-.hotspot{
-  position:absolute;z-index:15;border:0;background:transparent;padding:0;cursor:pointer;
-  border-radius:6px;touch-action:manipulation;
+#mode b{display:block;font-size:14px}
+#crosshair{
+  position:absolute;z-index:17;left:50%;top:50%;width:15px;height:15px;
+  transform:translate(-50%,-50%);pointer-events:none;opacity:.55
 }
-.hotspot:focus-visible{outline:2px dashed var(--cyan);outline-offset:2px}
-#lamp{left:21%;top:47%;width:9%;height:24%}
-#computer{left:33%;top:47%;width:17%;height:29%}
-#stereo{left:59%;top:56%;width:18%;height:21%}
-#photos{left:25%;top:10%;width:21%;height:41%}
-#tapestry{left:46%;top:7%;width:20%;height:55%}
-#skull{left:67%;top:8%;width:9%;height:34%}
-#door{left:77%;top:16%;width:18%;height:73%}
-#guitar{left:11%;top:48%;width:11%;height:38%}
-#records{left:56%;top:67%;width:20%;height:26%}
-
-.window{
-  position:fixed;z-index:100;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:min(560px,calc(100vw - 28px));
-  background:#c0c0c0;color:#000;border:2px solid #fff;
-  box-shadow:inset -2px -2px #707070,inset 2px 2px #dfdfdf,8px 8px 0 rgba(0,0,0,.35);
+#crosshair:before,#crosshair:after{content:"";position:absolute;background:var(--cyan)}
+#crosshair:before{left:7px;top:0;width:1px;height:15px}
+#crosshair:after{left:0;top:7px;width:15px;height:1px}
+#tip{
+  position:absolute;z-index:18;left:50%;bottom:60px;transform:translateX(-50%);
+  background:rgba(0,0,0,.72);color:#ddd;padding:6px 10px;border:1px solid #555;
+  font-size:11px;pointer-events:none;opacity:.9
 }
-.window[hidden]{display:none}
-.window-title{
-  background:#0000aa;color:white;font-weight:bold;padding:4px 5px 4px 7px;
-  display:flex;justify-content:space-between;align-items:center
+#dialog{
+  position:absolute;z-index:30;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(560px,calc(100vw - 28px));background:#c0c0c0;color:#000;
+  border:2px solid #fff;box-shadow:inset -2px -2px #707070,inset 2px 2px #dfdfdf,8px 8px 0 rgba(0,0,0,.45)
 }
-.window-title button{width:27px;height:24px;background:#c0c0c0;border:2px solid #fff;box-shadow:inset -2px -2px #777,inset 2px 2px #eee}
-.window-body{padding:14px}
+#dialog[hidden]{display:none}
+.dialog-title{
+  background:#0000aa;color:#fff;font-weight:bold;padding:4px 5px 4px 7px;
+  display:flex;align-items:center;justify-content:space-between
+}
+.dialog-title button{
+  width:27px;height:24px;background:#c0c0c0;border:2px solid #fff;
+  box-shadow:inset -2px -2px #777,inset 2px 2px #eee
+}
+.dialog-body{padding:14px}
 .terminal{
-  background:#061015;color:var(--cyan);border:3px inset #aaa;min-height:235px;padding:14px;line-height:1.6
+  background:#051014;color:var(--cyan);border:3px inset #aaa;padding:14px;min-height:220px;line-height:1.6
 }
-.terminal button{display:block;width:100%;text-align:left;background:transparent;border:0;color:var(--cyan);font:inherit;padding:5px 0}
-.dialog-actions{display:flex;justify-content:flex-end;margin-top:12px}
-.win-button{min-width:84px;padding:6px 12px;background:#c0c0c0;border:2px solid #fff;box-shadow:inset -2px -2px #777,inset 2px 2px #eee;font:inherit}
-
-#reticle{
-  position:absolute;z-index:12;width:16px;height:16px;border:1px solid rgba(127,252,255,.65);
-  border-radius:50%;pointer-events:none;opacity:.0;transition:opacity .15s;
+.terminal button{
+  display:block;width:100%;padding:5px 0;border:0;background:transparent;color:var(--cyan);
+  font:inherit;text-align:left
 }
-#view.pointer #reticle{opacity:.7}
-
+#scanlines{
+  position:absolute;z-index:10;inset:36px 0 44px 0;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.012) 0 1px,rgba(0,0,0,.03) 2px 3px);
+  mix-blend-mode:overlay;opacity:.42
+}
 @media(max-width:700px){
-  #title{font-size:16px}
+  #titlebar{font-size:16px}
   #statusRight{display:none}
-  #status{grid-template-columns:1fr;font-size:14px}
-  #modeBadge{right:8px;top:8px;font-size:11px;min-width:130px}
-  #modeBadge strong{font-size:13px}
-  .layer{width:1300px}
-}
-@media(prefers-reduced-motion:reduce){
-  .layer{transition:none}
+  #tip{bottom:54px;white-space:nowrap}
+  #mode{right:8px;top:45px}
 }
 </style>
 </head>
-<body class="dark">
-<div id="shell">
-  <div id="topbar">
-    <div id="title">Jackiebuckets.party</div>
-    <div id="winbuttons"><div class="winbox">_</div><div class="winbox">□</div><div class="winbox">×</div></div>
+<body>
+<div id="app">
+  <div id="titlebar">
+    <span>Jackiebuckets.party</span>
+    <div class="winbuttons"><span class="winbtn">_</span><span class="winbtn">□</span><span class="winbtn">×</span></div>
   </div>
 
-  <div id="view">
-    <div id="world">
-      <img id="back" class="layer" src="room.jpg" alt="Retro bedroom studio with CRT computer, records, pink guitar, hula lamp and closed door.">
-      <img id="mid" class="layer" src="room.jpg" alt="">
-      <img id="front" class="layer" src="room.jpg" alt="">
-      <div id="reticle"></div>
+  <div id="game"></div>
+  <div id="scanlines"></div>
+  <div id="crosshair"></div>
 
-      <div id="modeBadge"><strong id="modeLabel">DARK MODE</strong><span id="clock">--:-- --</span></div>
+  <div id="mode"><b id="modeLabel">NIGHT MODE</b><span id="clock">--:-- --</span></div>
+  <div id="tip">DRAG TO LOOK · TAP OBJECTS</div>
 
-      <button class="hotspot" id="lamp" aria-label="Hula lamp"></button>
-      <button class="hotspot" id="computer" aria-label="Computer"></button>
-      <button class="hotspot" id="stereo" aria-label="Stereo and turntable"></button>
-      <button class="hotspot" id="photos" aria-label="Wall photos"></button>
-      <button class="hotspot" id="tapestry" aria-label="Orange tapestry"></button>
-      <button class="hotspot" id="skull" aria-label="Beaded skull"></button>
-      <button class="hotspot" id="door" aria-label="Closed door"></button>
-      <button class="hotspot" id="guitar" aria-label="Pink Stratocaster"></button>
-      <button class="hotspot" id="records" aria-label="Records and books"></button>
+  <div id="statusbar">
+    <span id="status">CLICK AROUND.</span>
+    <span id="statusRight">SOME THINGS WORK. SOME THINGS DON'T.</span>
+  </div>
+
+  <section id="dialog" hidden>
+    <div class="dialog-title"><span id="dialogTitle">C:\JACKIEBUCKETS</span><button id="closeDialog">×</button></div>
+    <div class="dialog-body">
+      <div class="terminal" id="terminal">
+        JACKIEBUCKETS.PARTY<br>-------------------<br><br>
+        <button data-page="internet">&gt; INTERNET</button>
+        <button data-page="photos">&gt; PHOTOS</button>
+        <button data-page="music">&gt; MUSIC</button>
+        <button data-page="journal">&gt; JOURNAL</button>
+        <button data-page="unknown">&gt; ???</button>
+      </div>
     </div>
-  </div>
-
-  <div id="status" aria-live="polite">
-    <div id="statusText">CLICK AROUND.</div>
-    <div id="statusRight">SOME THINGS WORK. SOME THINGS DON'T.</div>
-  </div>
+  </section>
 </div>
 
-<section class="window" id="computerWindow" hidden aria-modal="true" role="dialog">
-  <div class="window-title"><span>C:\JACKIEBUCKETS</span><button type="button" data-close>×</button></div>
-  <div class="window-body">
-    <div class="terminal">
-      JACKIEBUCKETS.PARTY<br>-------------------<br><br>
-      <button type="button" data-page="internet">&gt; INTERNET</button>
-      <button type="button" data-page="photos">&gt; PHOTOS</button>
-      <button type="button" data-page="music">&gt; MUSIC</button>
-      <button type="button" data-page="journal">&gt; JOURNAL</button>
-      <button type="button" data-page="unknown">&gt; ???</button>
-    </div>
-  </div>
-</section>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-<section class="window" id="contentWindow" hidden aria-modal="true" role="dialog">
-  <div class="window-title"><span id="contentTitle">WINDOW</span><button type="button" data-close>×</button></div>
-  <div class="window-body"><div id="contentBody"></div><div class="dialog-actions"><button class="win-button" data-close>OK</button></div></div>
-</section>
+const game = document.getElementById("game");
+const statusEl = document.getElementById("status");
+const modeLabel = document.getElementById("modeLabel");
+const clockEl = document.getElementById("clock");
+const dialog = document.getElementById("dialog");
+const dialogTitle = document.getElementById("dialogTitle");
+const terminal = document.getElementById("terminal");
 
-<script>
-(()=>{
-  const view=document.getElementById('view');
-  const world=document.getElementById('world');
-  const layers=[document.getElementById('back'),document.getElementById('mid'),document.getElementById('front')];
-  const reticle=document.getElementById('reticle');
-  const status=document.getElementById('statusText');
-  const modeLabel=document.getElementById('modeLabel');
-  const clock=document.getElementById('clock');
-  const computerWindow=document.getElementById('computerWindow');
-  const contentWindow=document.getElementById('contentWindow');
-  const contentTitle=document.getElementById('contentTitle');
-  const contentBody=document.getElementById('contentBody');
+const renderer = new THREE.WebGLRenderer({antialias:false, powerPreference:"high-performance"});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.25));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+game.appendChild(renderer.domElement);
 
-  let tx=0,ty=0,cx=0,cy=0;
-  let dragging=false,startX=0,startY=0,startTX=0,startTY=0;
-  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
-  const say=t=>status.textContent=t;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x07101c);
+scene.fog = new THREE.Fog(0x07101c, 8, 18);
 
-  function updateCamera(){
-    cx+=(tx-cx)*0.08; cy+=(ty-cy)*0.08;
-    layers[0].style.transform=`translate(calc(-50% + ${cx*5}px),calc(-50% + ${cy*3}px)) scale(1.02)`;
-    layers[1].style.transform=`translate(calc(-50% + ${cx*10}px),calc(-50% + ${cy*6}px)) scale(1.025)`;
-    layers[2].style.transform=`translate(calc(-50% + ${cx*16}px),calc(-50% + ${cy*10}px)) scale(1.03)`;
-    requestAnimationFrame(updateCamera);
+const camera = new THREE.PerspectiveCamera(66, 1, 0.1, 100);
+camera.position.set(0, 1.65, 6.8);
+
+let yaw = 0;
+let pitch = -0.04;
+let targetYaw = 0;
+let targetPitch = -0.04;
+
+const room = new THREE.Group();
+scene.add(room);
+
+function mat(color, rough=0.85, metal=0.0){
+  return new THREE.MeshStandardMaterial({color, roughness:rough, metalness:metal});
+}
+function box(name, size, pos, color, rough=.85, metal=0){
+  const m = new THREE.Mesh(new THREE.BoxGeometry(...size), mat(color,rough,metal));
+  m.name = name;
+  m.position.set(...pos);
+  m.castShadow = true;
+  m.receiveShadow = true;
+  room.add(m);
+  return m;
+}
+function plane(name,w,h,pos,rot,color){
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat(color));
+  m.name=name;m.position.set(...pos);m.rotation.set(...rot);m.receiveShadow=true;room.add(m);return m;
+}
+
+const clickable = [];
+function tag(mesh,id,label){
+  mesh.userData.interactive=id;
+  mesh.userData.label=label;
+  clickable.push(mesh);
+  return mesh;
+}
+
+// room shell
+box("floor",[10,0.18,8],[0,-0.1,0],0x2a201b);
+box("backwall",[10,4.8,0.18],[0,2.3,-3.3],0x303844);
+box("leftwall",[0.18,4.8,8],[-5,2.3,0],0x2a323c);
+box("rightwall",[0.18,4.8,8],[5,2.3,0],0x27303a);
+
+// rug
+box("rug",[6.1,0.04,3.8],[-0.4,0.05,0.7],0x4c3b35);
+
+// desk + chair
+box("deskTop",[5.4,0.18,1.25],[-0.6,1.22,-1.8],0x4b2f1e);
+box("deskL",[0.18,1.25,1.0],[-3.1,0.58,-1.8],0x352217);
+box("deskR",[0.18,1.25,1.0],[1.9,0.58,-1.8],0x352217);
+box("chairSeat",[1.2,0.18,1.0],[-1.25,0.72,-0.2],0x15171b);
+box("chairBack",[1.35,1.8,0.18],[-1.25,1.55,0.22],0x15171b);
+box("chairBase",[0.15,0.8,0.15],[-1.25,0.35,-0.2],0x22262d,0.4,0.5);
+
+// CRT
+const crt=tag(box("crt",[1.7,1.35,0.95],[-0.65,1.95,-1.85],0xd0ccc1),"computer","THE COMPUTER.");
+box("crtScreen",[1.37,0.92,0.02],[-0.65,1.99,-1.35],0x061318);
+box("keyboard",[1.6,0.10,0.55],[-0.65,1.37,-1.2],0xbdb8ac);
+
+// stereo shelf
+box("stereoShelf",[2.75,0.18,1.1],[2.55,0.95,-1.9],0x4a2f20);
+box("stereoLegL",[0.15,1.0,1.0],[1.35,0.45,-1.9],0x342116);
+box("stereoLegR",[0.15,1.0,1.0],[3.75,0.45,-1.9],0x342116);
+const stereo=tag(box("stereo",[2.0,0.42,0.72],[2.5,1.36,-1.75],0x17191d,0.45,0.25),"stereo","IT STILL WORKS.");
+const platter=tag(new THREE.Mesh(new THREE.CylinderGeometry(.48,.48,.06,32),mat(0x141414,.35,.3)),"stereo","THE TURNTABLE.");
+platter.rotation.x=Math.PI/2;platter.position.set(2.5,1.62,-1.65);room.add(platter);clickable.push(platter);
+
+// records
+for(let i=0;i<17;i++){
+  const rec=box("record",[0.05,0.72,0.72],[1.55+i*0.11,0.55,-1.75], i%3===0?0x4a2030:0x1b2430);
+  rec.rotation.z=(i%4-1.5)*0.015;
+}
+tag(box("books",[0.62,0.6,0.7],[3.25,0.55,-1.72],0x725b32),"records","RECORDS. BOOKS. HUMAN DESTINY.");
+
+// door
+tag(box("door",[1.6,3.65,0.15],[4.0,1.82,-3.17],0x3f4145),"door","A CLOSED DOOR.");
+
+// window + blinds
+box("windowFrame",[2.25,2.25,0.10],[-3.75,2.55,-3.16],0x111a22);
+box("windowGlow",[1.9,1.9,0.03],[-3.75,2.55,-3.08],0x0a3858);
+for(let y=1.73;y<3.38;y+=0.16){
+  box("blind",[1.85,0.045,0.03],[-3.75,y,-3.0],0x557086);
+}
+
+// plants: chunky low-poly
+function plant(x,z,scale=1){
+  const pot=new THREE.Mesh(new THREE.CylinderGeometry(.22*scale,.28*scale,.35*scale,8),mat(0x5a3b2a));
+  pot.position.set(x,.22,z);room.add(pot);
+  for(let i=0;i<7;i++){
+    const leaf=new THREE.Mesh(new THREE.ConeGeometry(.10*scale,.65*scale,5),mat(0x1f4c34));
+    leaf.position.set(x+(i-3)*.08*scale,.65*scale,z);
+    leaf.rotation.z=(i-3)*.25;
+    leaf.rotation.x=(i%2?0.3:-0.2);
+    room.add(leaf);
   }
-  requestAnimationFrame(updateCamera);
+}
+plant(-4.55,-1.0,1.3); plant(-2.8,-2.7,.85);
 
-  function aim(clientX,clientY){
-    const r=view.getBoundingClientRect();
-    const nx=((clientX-r.left)/r.width)*2-1;
-    const ny=((clientY-r.top)/r.height)*2-1;
-    tx=clamp(nx,-1,1); ty=clamp(ny,-1,1);
-    reticle.style.left=(clientX-r.left-8)+'px';
-    reticle.style.top=(clientY-r.top-8)+'px';
+// lamp - static visually, clickable for world lighting
+const lampGroup=new THREE.Group(); lampGroup.position.set(-2.7,1.35,-1.0);room.add(lampGroup);
+const lampBase=new THREE.Mesh(new THREE.CylinderGeometry(.18,.24,.22,10),mat(0x9a4d2e));lampGroup.add(lampBase);
+const lampStem=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.68,8),mat(0x75391f));lampStem.position.y=.45;lampGroup.add(lampStem);
+const shade=new THREE.Mesh(new THREE.CylinderGeometry(.25,.52,.46,12,1,true),mat(0xb27b4d));shade.position.y=.95;lampGroup.add(shade);
+const hulaBody=new THREE.Mesh(new THREE.CylinderGeometry(.10,.12,.52,8),mat(0x9f5532));hulaBody.position.y=.36;lampGroup.add(hulaBody);
+tag(shade,"lamp","THE HULA LAMP.");
+
+// pink strat as simple low-poly silhouette
+const guitar=new THREE.Group();guitar.position.set(-4.25,.2,-2.55);guitar.rotation.z=-.08;room.add(guitar);
+const body1=new THREE.Mesh(new THREE.SphereGeometry(.27,10,8),mat(0xe35d8c));body1.scale.set(1.0,1.25,.35);body1.position.y=.58;guitar.add(body1);
+const body2=new THREE.Mesh(new THREE.SphereGeometry(.23,10,8),mat(0xe35d8c));body2.scale.set(1.0,1.2,.35);body2.position.set(.18,.76,0);guitar.add(body2);
+const neck=box("guitarNeck",[0.10,1.35,0.06],[-4.20,1.42,-2.55],0x7f573b);
+const head=box("guitarHead",[0.18,0.30,0.08],[-4.18,2.22,-2.55],0xb58d62);
+tag(body1,"guitar","THE PINK STRAT."); clickable.push(body2); body2.userData={interactive:"guitar",label:"THE PINK STRAT."};
+
+// wall art textures
+const loader=new THREE.TextureLoader();
+function artTex(name,path,w,h,x,y,z=-3.19){
+  const tex=loader.load(path); tex.colorSpace=THREE.SRGBColorSpace;
+  tex.minFilter=THREE.NearestFilter; tex.magFilter=THREE.NearestFilter;
+  const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:tex,roughness:.9}));
+  p.name=name;p.position.set(x,y,z);room.add(p);return p;
+}
+tag(artTex("eye","assets/eye_chart.jpg",1.05,2.1,-3.15,2.62),"photos","THE EYE CHART.");
+tag(artTex("gorilla","assets/gorilla.jpg",1.45,1.55,-1.75,2.78),"photos","THE GORILLA.");
+tag(artTex("orange","assets/orange_tapestry.jpg",2.25,3.0,.65,2.25),"tapestry","THE ORANGE TAPESTRY.");
+tag(artTex("skull","assets/skull_beads.jpg",.8,1.15,2.35,3.0),"skull","LITTLE BEADED GUY.");
+
+// shelf under wall art
+box("wallShelf",[2.45,0.12,0.44],[-1.8,2.02,-2.98],0x4a2f20);
+
+// lights
+const hemi=new THREE.HemisphereLight(0x7aa8c6,0x1c1512,1.35);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffd2a3,1.7);sun.position.set(-5,5,4);sun.castShadow=true;scene.add(sun);
+const blue=new THREE.PointLight(0x4b8cff,2.1,9,2);blue.position.set(-2.5,2.4,2.5);scene.add(blue);
+const crtGlow=new THREE.PointLight(0x69e7ff,1.25,4,2);crtGlow.position.set(-.7,2.0,-.8);scene.add(crtGlow);
+const warmBounce=new THREE.PointLight(0xff9d54,.55,5,2);warmBounce.position.set(-2.7,1.6,-.8);scene.add(warmBounce);
+
+let mode="night";
+function setMode(next){
+  mode=next;
+  const day=mode==="day";
+  scene.background.set(day?0x7b92a2:0x07101c);
+  scene.fog.color.set(day?0x7b92a2:0x07101c);
+  hemi.intensity=day?2.2:1.35;
+  hemi.color.set(day?0xdbe9ef:0x7aa8c6);
+  sun.intensity=day?2.5:0.45;
+  blue.intensity=day?.25:2.1;
+  crtGlow.intensity=day?.45:1.25;
+  warmBounce.intensity=day?.18:.55;
+  modeLabel.textContent=day?"DAY MODE":"NIGHT MODE";
+  say(day?"DAYLIGHT.":"NIGHT AGAIN.");
+}
+function toggleMode(){setMode(mode==="night"?"day":"night")}
+setMode("night");
+
+const raycaster=new THREE.Raycaster();
+const pointer=new THREE.Vector2(0,0);
+let hovered=null;
+function say(t){statusEl.textContent=t}
+
+function onInteract(){
+  raycaster.setFromCamera(pointer,camera);
+  const hits=raycaster.intersectObjects(clickable,true);
+  if(!hits.length){say("CLICK AROUND.");return}
+  const obj=hits[0].object;
+  const id=obj.userData.interactive || obj.parent?.userData?.interactive;
+  if(id==="lamp"){toggleMode();return}
+  if(id==="computer"){dialog.hidden=false;say("BOOTING...");return}
+  if(id==="stereo"){say("IT STILL WORKS.");return}
+  if(id==="door"){say("NOT YET.");return}
+  if(id==="guitar"){say("DON'T DROP IT.");return}
+  if(id==="records"){say("YOU COULD STAY HERE A WHILE.");return}
+  if(id==="tapestry"){say("YOU'VE LOOKED AT THIS A LOT.");return}
+  if(id==="skull"){say("HE KNOWS SOMETHING.");return}
+  if(id==="photos"){say("YOU REMEMBER THIS DIFFERENTLY.");return}
+}
+
+let dragging=false, sx=0, sy=0, syaw=0, spitch=0, moved=0;
+renderer.domElement.addEventListener("pointerdown",e=>{
+  dragging=true;sx=e.clientX;sy=e.clientY;syaw=targetYaw;spitch=targetPitch;moved=0;
+  renderer.domElement.setPointerCapture(e.pointerId);
+});
+renderer.domElement.addEventListener("pointermove",e=>{
+  const r=renderer.domElement.getBoundingClientRect();
+  pointer.x=((e.clientX-r.left)/r.width)*2-1;
+  pointer.y=-((e.clientY-r.top)/r.height)*2+1;
+  if(dragging){
+    const dx=e.clientX-sx,dy=e.clientY-sy;moved=Math.max(moved,Math.hypot(dx,dy));
+    targetYaw=THREE.MathUtils.clamp(syaw-dx*0.0045,-0.72,0.72);
+    targetPitch=THREE.MathUtils.clamp(spitch-dy*0.0035,-0.28,0.22);
   }
-  view.addEventListener('pointermove',e=>{
-    if(e.pointerType==='mouse'){view.classList.add('pointer');aim(e.clientX,e.clientY)}
-    if(dragging && e.pointerType!=='mouse'){
-      tx=clamp(startTX+(e.clientX-startX)/180,-1,1);
-      ty=clamp(startTY+(e.clientY-startY)/180,-1,1);
-    }
-  });
-  view.addEventListener('pointerdown',e=>{
-    if(e.pointerType!=='mouse'){
-      dragging=true;startX=e.clientX;startY=e.clientY;startTX=tx;startTY=ty;
-      view.setPointerCapture(e.pointerId);
-    }
-  });
-  view.addEventListener('pointerup',e=>{dragging=false;try{view.releasePointerCapture(e.pointerId)}catch(_){}});
+});
+renderer.domElement.addEventListener("pointerup",e=>{
+  dragging=false;
+  try{renderer.domElement.releasePointerCapture(e.pointerId)}catch{}
+  if(moved<8) onInteract();
+});
+renderer.domElement.addEventListener("wheel",e=>{
+  camera.position.z=THREE.MathUtils.clamp(camera.position.z+e.deltaY*0.002,5.5,8.0);
+},{passive:true});
 
-  function setMode(mode){
-    document.body.classList.toggle('dark',mode==='dark');
-    modeLabel.textContent=mode==='dark'?'DARK MODE':'LIGHT MODE';
-    say(mode==='dark'?'NIGHT AGAIN.':'DAYLIGHT.');
-  }
-  function toggleMode(){setMode(document.body.classList.contains('dark')?'light':'dark')}
-
-  function openWindow(el){el.hidden=false;const c=el.querySelector('[data-close]');if(c)c.focus()}
-  function closeWindows(){computerWindow.hidden=true;contentWindow.hidden=true;say('CLICK AROUND.')}
-  function showPage(kind){
-    const p={
-      internet:['INTERNET','LINKS WILL LIVE HERE.<br><br>THE INTERNET USED TO BE WEIRDER.'],
-      photos:['PHOTOS','PHOTO ALBUM COMING SOON.<br><br>YOU REMEMBER THIS DIFFERENTLY.'],
-      music:['MUSIC','NOW PLAYING: NOTHING YET.<br><br>THE TURNTABLE STILL WORKS.'],
-      journal:['JOURNAL','WORDS GO HERE.<br><br>NOT EVERYTHING NEEDS TO BE POSTED.'],
-      unknown:['???',"YOU FOUND SOMETHING THAT DOESN'T EXIST YET."]
-    }[kind];
-    contentTitle.textContent=p[0];contentBody.innerHTML=p[1];computerWindow.hidden=true;openWindow(contentWindow);
-  }
-
-  const hotspots={
-    lamp:['THE HULA LAMP.',()=>toggleMode()],
-    computer:['THE COMPUTER.',()=>{say('BOOTING...');openWindow(computerWindow)}],
-    stereo:['IT STILL WORKS.',()=>showPage('music')],
-    photos:['YOU REMEMBER THIS DIFFERENTLY.',()=>showPage('photos')],
-    tapestry:["YOU'VE LOOKED AT THIS A LOT.",()=>say("IT DOESN'T DO ANYTHING. PROBABLY.")],
-    skull:['LITTLE BEADED GUY.',()=>say('HE KNOWS SOMETHING.')],
-    door:['A CLOSED DOOR.',()=>say('NOT YET.')],
-    guitar:['THE PINK STRAT.',()=>say("DON'T DROP IT.")],
-    records:['RECORDS. BOOKS. HUMAN DESTINY.',()=>say('YOU COULD STAY HERE A WHILE.')]
+document.getElementById("closeDialog").onclick=()=>{dialog.hidden=true;say("CLICK AROUND.")};
+document.querySelectorAll("[data-page]").forEach(btn=>{
+  btn.onclick=()=>{
+    const k=btn.dataset.page;
+    const pages={
+      internet:["INTERNET","LINKS WILL LIVE HERE.<br><br>THE INTERNET USED TO BE WEIRDER."],
+      photos:["PHOTOS","PHOTO ALBUM COMING SOON.<br><br>YOU REMEMBER THIS DIFFERENTLY."],
+      music:["MUSIC","THE TURNTABLE STILL WORKS."],
+      journal:["JOURNAL","NOT EVERYTHING NEEDS TO BE POSTED."],
+      unknown:["???","YOU FOUND SOMETHING THAT DOESN'T EXIST YET."]
+    }[k];
+    terminal.innerHTML=pages[1];
+    dialogTitle.textContent=pages[0];
   };
-  Object.entries(hotspots).forEach(([id,[hover,click]])=>{
-    const el=document.getElementById(id);
-    el.addEventListener('mouseenter',()=>say(hover));
-    el.addEventListener('focus',()=>say(hover));
-    el.addEventListener('mouseleave',()=>say('CLICK AROUND.'));
-    el.addEventListener('click',click);
-  });
+});
 
-  document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeWindows));
-  document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWindows()});
+function resize(){
+  const w=game.clientWidth,h=game.clientHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  camera.fov = w/h < .8 ? 72 : 64;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener("resize",resize);resize();
 
-  function updateClock(){
-    clock.textContent=new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+function updateClock(){
+  clockEl.textContent=new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+}
+updateClock();setInterval(updateClock,30000);
+
+function animate(){
+  yaw += (targetYaw-yaw)*.08;
+  pitch += (targetPitch-pitch)*.08;
+  camera.rotation.order="YXZ";
+  camera.rotation.y=yaw;
+  camera.rotation.x=pitch;
+
+  // tiny physically-plausible head drift, not fake layered parallax
+  camera.position.x=Math.sin(yaw)*0.18;
+  camera.position.y=1.65 + Math.sin(pitch)*0.07;
+
+  // hover raycast
+  raycaster.setFromCamera(pointer,camera);
+  const hit=raycaster.intersectObjects(clickable,true)[0];
+  const next=hit?.object?.userData?.interactive || hit?.object?.parent?.userData?.interactive || null;
+  if(next!==hovered){
+    hovered=next;
+    if(hit){
+      const label=hit.object.userData.label || hit.object.parent?.userData?.label;
+      if(label) say(label);
+    } else if(!dragging) say("CLICK AROUND.");
   }
-  updateClock();setInterval(updateClock,30000);
-})();
+
+  renderer.render(scene,camera);
+  requestAnimationFrame(animate);
+}
+animate();
 </script>
 </body>
 </html>
