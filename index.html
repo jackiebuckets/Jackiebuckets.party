@@ -266,65 +266,81 @@ viewport.addEventListener('pointercancel',pointerUp,{passive:false});
 window.addEventListener('resize',sizeCamera);
 
 const views={
- computer:{x:10,y:5,s:1.62,label:'THE COMPUTER.'},
- music:{x:-20,y:3,s:1.55,label:'THE STEREO.'},
- photos:{x:22,y:-13,s:1.48,label:'PHOTOS.'},
- door:{x:-25,y:-5,s:1.45,label:'THE DOOR.'},
- guitar:{x:27,y:5,s:1.58,label:'THE PINK STRAT.'}
+ computer:{x:10,y:5,s:1.70,label:'THE COMPUTER.'}
 };
 
-function goView(name){
- const v=views[name]; if(!v)return;
- zoomed=true;scene.classList.add('zoomed');hint.style.opacity='0';
- camera.classList.add('stepped');
+const computerZoom={fx:.127,fy:-.072,s:1.70};
+const zoomDuration=340;
+let zoomAnim=0;
+let zoomBase=null;
 
- const roomW=camera.offsetWidth, roomH=camera.offsetHeight;
- const baseLeft=viewport.clientWidth/2+panX;
- const baseTop=viewport.clientHeight/2+panY;
- const nodeMap={
-  computer:{fx:.127,fy:-.072,s:1.70},
-  music:{fx:-.24,fy:.06,s:1.62},
-  photos:{fx:.24,fy:.02,s:1.52},
-  door:{fx:-.34,fy:.02,s:1.50},
-  guitar:{fx:.31,fy:.06,s:1.60}
- };
- const n=nodeMap[name];
- const targetLeft=viewport.clientWidth/2+n.fx*roomW;
- const targetTop=viewport.clientHeight/2+n.fy*roomH;
- const steps=[.34,.68,1];
- let i=0;
- const doStep=(t)=>{
-  const left=baseLeft+(targetLeft-baseLeft)*t;
-  const top=baseTop+(targetTop-baseTop)*t;
-  const sc=1+(n.s-1)*t;
-  camera.style.left=left+'px';
-  camera.style.top=top+'px';
-  camera.style.transform=`translate(-50%,-50%) scale(${sc})`;
- };
- doStep(steps[0]);
- const timer=setInterval(()=>{i++;if(i>=steps.length){clearInterval(timer);return}doStep(steps[i])},85);
- status.textContent=v.label;
+function easeZoom(t){
+ return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
 }
 
-Object.keys(views).forEach(id=>document.getElementById(id).addEventListener('click',(e)=>{
- e.stopPropagation(); moved=false;
- if(id==='computer'){
-   goView(id);
-   requestAnimationFrame(()=>{
-     document.getElementById('useComputer').classList.add('open');
-     status.textContent='THE COMPUTER.';
-   });
-   return;
- }
- goView(id);
-}));
+function computerFrame(t){
+ const roomW=camera.offsetWidth, roomH=camera.offsetHeight;
+ const baseLeft=zoomBase.left;
+ const baseTop=zoomBase.top;
+ const targetLeft=viewport.clientWidth/2+computerZoom.fx*roomW;
+ const targetTop=viewport.clientHeight/2+computerZoom.fy*roomH;
+ camera.style.left=(baseLeft+(targetLeft-baseLeft)*t)+'px';
+ camera.style.top=(baseTop+(targetTop-baseTop)*t)+'px';
+ camera.style.transform=`translate(-50%,-50%) scale(${1+(computerZoom.s-1)*t})`;
+}
 
+function animateComputerZoom(from,to,done){
+ cancelAnimationFrame(zoomAnim);
+ const started=performance.now();
+ camera.classList.add('stepped');
+ const tick=(now)=>{
+   const raw=Math.min(1,(now-started)/zoomDuration);
+   const e=easeZoom(raw);
+   computerFrame(from+(to-from)*e);
+   if(raw<1) zoomAnim=requestAnimationFrame(tick);
+   else if(done) done();
+ };
+ zoomAnim=requestAnimationFrame(tick);
+}
 
-back.addEventListener('click',(e)=>{
- e.stopPropagation();document.getElementById('crtWindow').classList.remove('open');zoomed=false;scene.classList.remove('zoomed');
- panY=0;camera.classList.add('stepped');sizeCamera();
- status.textContent='CLICK AROUND.';hint.style.opacity='1';
+function goView(name){
+ if(name!=='computer')return;
+ zoomed=true;
+ scene.classList.add('zoomed');
+ hint.style.opacity='0';
+ zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};
+ animateComputerZoom(0,1);
+ status.textContent='THE COMPUTER.';
+}
+
+function exitComputer(){
+ document.getElementById('useComputer')?.classList.remove('open');
+ document.getElementById('crtWindow')?.classList.remove('open');
+ if(!zoomBase) zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};
+ animateComputerZoom(1,0,()=>{
+   zoomed=false;
+   scene.classList.remove('zoomed');
+   hint.style.opacity='1';
+   camera.style.left=(viewport.clientWidth/2+panX)+'px';
+   camera.style.top=(viewport.clientHeight/2+panY)+'px';
+   camera.style.transform='translate(-50%,-50%) scale(1.005)';
+   status.textContent='CLICK AROUND.';
+   zoomBase=null;
+ });
+}
+
+document.getElementById('computer').addEventListener('click',(e)=>{
+ e.stopPropagation();
+ moved=false;
+ goView('computer');
+ requestAnimationFrame(()=>{
+   document.getElementById('useComputer').classList.add('open');
+   status.textContent='THE COMPUTER.';
+ });
 });
+
+
+
 
 let lightMode=null; // null = choose initial state from actual time
 
@@ -369,9 +385,7 @@ document.getElementById('records').addEventListener('click',(e)=>{
 });
 
 const crtWindow=document.getElementById('crtWindow');
-document.getElementById('crtClose').addEventListener('click',(e)=>{
- e.stopPropagation(); crtWindow.classList.remove('open'); status.textContent='THE COMPUTER.';
-});
+document.getElementById('crtClose').addEventListener('click',(e)=>{ e.stopPropagation(); exitComputer(); });
 crtWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 crtWindow.addEventListener('click',e=>e.stopPropagation());
 crtWindow.querySelectorAll('[data-crt]').forEach(btn=>btn.addEventListener('click',()=>{
@@ -399,139 +413,17 @@ document.getElementById('computerYes').addEventListener('click',(e)=>{
  status.textContent='THE COMPUTER IS AWAKE.';
 });
 
-document.getElementById('computerNo').addEventListener('click',(e)=>{
- e.stopPropagation();
- useComputer.classList.remove('open');
- crtWindow.classList.remove('open');
- zoomed=false;
- scene.classList.remove('zoomed');
- back.classList.remove('show');
- camera.classList.add('stepped');
- applyPan();
- status.textContent='CLICK AROUND.';
-});
+document.getElementById('computerNo').addEventListener('click',(e)=>{ e.stopPropagation(); exitComputer(); });
 
 /* Back also dismisses the small prompt. */
-back.addEventListener('click',()=>useComputer.classList.remove('open'));
+
 
 </script>
 
-<script>
-(function(){
-  const sceneEl=document.getElementById('scene');
-  const crt=document.getElementById('crtWindow');
-  const prompt=document.getElementById('useComputer');
-
-  function sceneTransitionMs(){
-    if(!sceneEl) return 650;
-    const cs=getComputedStyle(sceneEl);
-    const ds=cs.transitionDuration.split(',').map(s=>{
-      s=s.trim(); return s.endsWith('ms')?parseFloat(s):parseFloat(s)*1000;
-    });
-    return Math.max(...ds.filter(Number.isFinite),650);
-  }
-
-  function returnToRoom(){
-    if(prompt) prompt.classList.remove('open');
-    if(crt) crt.classList.remove('open');
-    if(typeof zoomed!=='undefined') zoomed=false;
-    if(sceneEl) sceneEl.classList.remove('zoomed');
-    const backEl=document.getElementById('back');
-    if(backEl) backEl.classList.remove('show');
-    if(typeof camera!=='undefined') camera.classList.add('stepped');
-
-    /* Make zoom-out use the same transition timing as zoom-in. */
-    const ms=sceneTransitionMs();
-    if(sceneEl){
-      sceneEl.style.transitionDuration=ms+'ms';
-    }
-    if(typeof applyPan==='function') requestAnimationFrame(()=>applyPan());
-    if(typeof status!=='undefined') status.textContent='CLICK AROUND.';
-  }
-
-  /* NO returns directly to room. */
-  const no=document.getElementById('computerNo');
-  if(no) no.addEventListener('click', function(e){
-    e.stopPropagation();
-    returnToRoom();
-  }, true);
-
-  /* Any X/close control inside the CRT closes the computer AND backs out. */
-  if(crt){
-    crt.addEventListener('click', function(e){
-      const t=e.target.closest('button,[role="button"],.close,.crt-close,.window-close');
-      if(!t) return;
-      const txt=(t.textContent||'').trim().toLowerCase();
-      const aria=(t.getAttribute('aria-label')||'').toLowerCase();
-      const title=(t.getAttribute('title')||'').toLowerCase();
-      if(txt==='x' || txt==='×' || aria.includes('close') || title.includes('close') ||
-         t.classList.contains('close') || t.classList.contains('crt-close') || t.classList.contains('window-close')){
-        setTimeout(returnToRoom,0);
-      }
-    }, true);
-  }
-
-  /* Also catch common known CRT close ids if present. */
-  ['crtClose','closeCrt','computerClose'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.addEventListener('click',()=>setTimeout(returnToRoom,0),true);
-  });
-})();
-</script>
 
 
-<script>
-(function(){
- const no=document.getElementById('computerNo');
- const crt=document.getElementById('crtWindow');
 
- function reverseZoom(){
-   document.getElementById('useComputer')?.classList.remove('open');
-   crt?.classList.remove('open');
 
-   const roomW=camera.offsetWidth, roomH=camera.offsetHeight;
-   const baseLeft=viewport.clientWidth/2+panX;
-   const baseTop=viewport.clientHeight/2+panY;
-   const targetLeft=viewport.clientWidth/2+.127*roomW;
-   const targetTop=viewport.clientHeight/2-.072*roomH;
-   const steps=[.68,.34,0];
-   let i=0;
-   camera.classList.add('stepped');
-
-   const draw=t=>{
-     camera.style.left=(baseLeft+(targetLeft-baseLeft)*t)+'px';
-     camera.style.top=(baseTop+(targetTop-baseTop)*t)+'px';
-     camera.style.transform=`translate(-50%,-50%) scale(${1+.70*t})`;
-   };
-   draw(steps[0]);
-   const timer=setInterval(()=>{
-     i++;
-     if(i>=steps.length){
-       clearInterval(timer);
-       zoomed=false;
-       scene.classList.remove('zoomed');
-       hint.style.opacity='1';
-       applyPan();
-       status.textContent='CLICK AROUND.';
-       return;
-     }
-     draw(steps[i]);
-   },85);
- }
-
- if(no) no.addEventListener('click',e=>{
-   e.stopImmediatePropagation(); reverseZoom();
- },true);
-
- if(crt) crt.addEventListener('click',e=>{
-   const t=e.target.closest('#crtClose,.close,.crt-close,.window-close');
-   if(t){
-     e.stopImmediatePropagation();
-     reverseZoom();
-   }
- },true);
-})();
-</script>
 
 </body>
 </html>
