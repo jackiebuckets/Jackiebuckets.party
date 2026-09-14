@@ -146,6 +146,7 @@ const terminal = document.getElementById("terminal");
 const renderer = new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:"high-performance"});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.35));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.setClearColor(0x06101a, 1);
 game.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
@@ -240,6 +241,18 @@ const roomMat = new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide})
 const roomMesh = new THREE.Mesh(geometry,roomMat);
 scene.add(roomMesh);
 
+// Overscan safety layer: a slightly enlarged, flat copy of the locked artwork
+// sits behind the depth mesh. When the camera pans to the extreme left/right,
+// this fills any exposed edge instead of showing blank/white canvas.
+const backdropGeometry = new THREE.PlaneGeometry(WORLD_W * 1.18, WORLD_H * 1.18);
+const backdropMaterial = new THREE.MeshBasicMaterial({
+  map: texture,
+  side: THREE.DoubleSide
+});
+const backdrop = new THREE.Mesh(backdropGeometry, backdropMaterial);
+backdrop.position.set(0, 0, -(BASE_DISTANCE + 0.42));
+scene.add(backdrop);
+
 // Invisible click targets exist in the same perspective space.
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2(0,0);
@@ -286,7 +299,7 @@ function getPanLimits(){
   const visibleW = visibleH * aspect;
   const maxX = Math.max(0, (WORLD_W - visibleW) / 2);
   // Keep a small margin so we never reveal beyond the artwork.
-  return { x: maxX * 0.96, y: aspect < .85 ? 0.10 : 0.08 };
+  return { x: maxX * 0.88, y: aspect < .85 ? 0.10 : 0.08 };
 }
 
 function updatePointerFromEvent(e){
@@ -336,12 +349,14 @@ function setMode(next){
   mode=next;
   if(mode==="night"){
     renderer.domElement.style.filter="brightness(1) saturate(1)";
+    renderer.setClearColor(0x06101a, 1);
     scene.background.set(0x06101a);
     modeLabel.textContent="NIGHT MODE";
     say("NIGHT AGAIN.");
   }else{
-    renderer.domElement.style.filter="brightness(1.32) saturate(.88) sepia(.10)";
-    scene.background.set(0xaab7bb);
+    renderer.domElement.style.filter="brightness(1.25) saturate(.92) sepia(.06)";
+    renderer.setClearColor(0x1a2430, 1);
+    scene.background.set(0x1a2430);
     modeLabel.textContent="DAY MODE";
     say("DAYLIGHT.");
   }
