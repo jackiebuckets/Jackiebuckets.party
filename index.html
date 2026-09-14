@@ -189,20 +189,30 @@ function getPanLimit(){
 }
 function sizeCamera(){
  const vw=viewport.clientWidth, vh=viewport.clientHeight;
- let h=vh*1.05, w=h*ROOM_ASPECT;
- if(w<vw){ w=vw*1.03; h=w/ROOM_ASPECT; }
+
+ // V26: treat the 768x455 artwork as a finite room and use the smallest
+ // possible COVER scale. The image always reaches every viewport edge,
+ // but we never over-zoom it just to manufacture extra panning space.
+ // Result: maximum amount of the original room is visible on every screen,
+ // with panning only on the axis where the real artwork extends off-screen.
+ const coverScale=Math.max(vw/768, vh/455);
+ const w=Math.ceil(768*coverScale);
+ const h=Math.ceil(455*coverScale);
  camera.style.width=w+'px';
  camera.style.height=h+'px';
+
  if(!zoomed){
    const lim=getPanLimit();
+   const vlim=getVerticalLimit();
    panX=clamp(panX,-lim,lim);
+   panY=clamp(panY,-vlim,vlim);
    camera.style.left=`calc(50% + ${panX}px)`;
    camera.style.top=`calc(50% + ${panY}px)`;
    camera.style.transform='translate(-50%,-50%) scale(1.005)';
  }
 }
 function getVerticalLimit(){
- return Math.max(0,(camera.offsetHeight-viewport.clientHeight)/2)*0.92;
+ return Math.max(0,(camera.offsetHeight-viewport.clientHeight)/2);
 }
 function applyPan(){
  if(zoomed)return;
