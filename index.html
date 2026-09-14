@@ -56,6 +56,51 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  .status{height:58px;flex-basis:58px;font-size:15px;padding:17px 22px}
 }
 .hotspot.debug{outline:2px solid rgba(255,0,0,.8);background:rgba(255,0,0,.08)}
+
+.crt-flash{
+ position:absolute;inset:0;z-index:40;pointer-events:none;opacity:0;
+ background:
+  linear-gradient(to bottom,transparent 0 46%,rgba(210,245,255,.95) 48% 52%,transparent 54%),
+  rgba(90,170,255,.08);
+ mix-blend-mode:screen
+}
+.crt-flash.run{animation:crtflash .28s steps(3,end)}
+@keyframes crtflash{
+ 0%{opacity:0}
+ 30%{opacity:.95}
+ 62%{opacity:.22}
+ 100%{opacity:0}
+}
+.dialog{
+ position:absolute;z-index:90;left:50%;top:50%;
+ transform:translate(-50%,-50%);
+ width:min(560px,calc(100vw - 28px));
+ background:#c0c0c0;color:#000;border:4px ridge #eee;
+ box-shadow:10px 10px 0 rgba(0,0,0,.45)
+}
+.dialog[hidden]{display:none}
+.dialog-title{
+ background:#0700b8;color:#fff;font-weight:bold;
+ display:flex;align-items:center;justify-content:space-between;
+ padding:5px 6px 5px 8px
+}
+.dialog-title button{
+ width:30px;height:27px;background:#d8d8d8;color:#111;
+ border:4px outset #eee;font-weight:bold
+}
+.dialog-body{padding:10px}
+.terminal{
+ background:#031018;color:#91fbff;border:4px inset #999;
+ padding:14px;min-height:250px;line-height:1.6;
+ font-size:16px
+}
+.terminal button{
+ display:block;width:100%;padding:6px 0;
+ background:transparent;border:0;color:#91fbff;
+ font:inherit;text-align:left;cursor:pointer
+}
+.terminal button:active{background:rgba(145,251,255,.08)}
+
 </style>
 </head>
 <body>
@@ -79,15 +124,27 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    <button class="back" id="back">← BACK</button>
    <div class="mode"><b id="modeText">NIGHT MODE</b><span id="clock"></span></div>
    <div class="hint" id="hint">DRAG TO LOOK · TAP THINGS</div>
-   <div class="vignette"></div><div class="scan"></div>
+   <div class="vignette"></div><div class="scan"></div><div class="crt-flash" id="crtFlash"></div>
   </div>
  </main>
+
+ <section class="dialog" id="dialog" hidden role="dialog" aria-modal="true">
+  <div class="dialog-title">
+   <span id="dialogTitle">C:\JACKIEBUCKETS</span>
+   <button id="closeDialog" type="button">×</button>
+  </div>
+  <div class="dialog-body">
+   <div class="terminal" id="terminal"></div>
+  </div>
+ </section>
  <footer class="status" id="status">CLICK AROUND.</footer>
 </div>
 <script>
 const viewport=document.getElementById('viewport'), camera=document.getElementById('camera'),
 scene=document.getElementById('scene'), status=document.getElementById('status'),
-back=document.getElementById('back'), hint=document.getElementById('hint');
+back=document.getElementById('back'), hint=document.getElementById('hint'),
+dialog=document.getElementById('dialog'), dialogTitle=document.getElementById('dialogTitle'),
+terminal=document.getElementById('terminal'), crtFlash=document.getElementById('crtFlash');
 
 let panX=0, panY=0, dragging=false, moved=false, sx=0, sy=0, startX=0, startY=0, zoomed=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -163,7 +220,7 @@ function goView(name){
  const baseLeft=viewport.clientWidth/2+panX;
  const baseTop=viewport.clientHeight/2+panY;
  const nodeMap={
-  computer:{fx:-.03,fy:.05,s:1.70},
+  computer:{fx:.075,fy:.11,s:2.15},
   music:{fx:-.24,fy:.06,s:1.62},
   photos:{fx:.24,fy:.02,s:1.52},
   door:{fx:-.34,fy:.02,s:1.50},
@@ -186,7 +243,62 @@ function goView(name){
  const timer=setInterval(()=>{i++;if(i>=steps.length){clearInterval(timer);return}doStep(steps[i])},85);
  status.textContent=v.label;
 }
-Object.keys(views).forEach(id=>document.getElementById(id).addEventListener('click',(e)=>{e.stopPropagation();moved=false;goView(id)}));
+['music','photos','door','guitar'].forEach(id=>{
+ document.getElementById(id).addEventListener('click',(e)=>{
+  e.stopPropagation();moved=false;goView(id);
+ });
+});
+
+function openComputer(){
+ dialogTitle.textContent='C:\\JACKIEBUCKETS';
+ terminal.innerHTML=`
+ JACKIEBUCKETS.PARTY<br>
+ -------------------<br><br>
+ <button data-page="internet">&gt; INTERNET</button>
+ <button data-page="photos">&gt; PHOTOS</button>
+ <button data-page="music">&gt; MUSIC</button>
+ <button data-page="journal">&gt; JOURNAL</button>
+ <button data-page="unknown">&gt; ???</button>`;
+ terminal.querySelectorAll('[data-page]').forEach(btn=>{
+  btn.addEventListener('click',()=>showPage(btn.dataset.page));
+ });
+ dialog.hidden=false;
+ status.textContent='ONLINE.';
+}
+
+function showPage(kind){
+ const pages={
+  internet:['INTERNET','LINKS WILL LIVE HERE.<br><br>THE INTERNET USED TO BE WEIRDER.'],
+  photos:['PHOTOS','PHOTO ALBUM COMING SOON.<br><br>YOU REMEMBER THIS DIFFERENTLY.'],
+  music:['MUSIC','THE TURNTABLE STILL WORKS.'],
+  journal:['JOURNAL','NOT EVERYTHING NEEDS TO BE POSTED.'],
+  unknown:['???',"YOU FOUND SOMETHING THAT DOESN'T EXIST YET."]
+ };
+ const page=pages[kind]||['ERROR','NOT FOUND.'];
+ dialogTitle.textContent=page[0];
+ terminal.innerHTML=page[1];
+}
+
+document.getElementById('computer').addEventListener('click',(e)=>{
+ e.stopPropagation();moved=false;
+ if(zoomed){
+  openComputer();
+  return;
+ }
+ goView('computer');
+ status.textContent='BOOTING...';
+
+ crtFlash.classList.remove('run');
+ void crtFlash.offsetWidth;
+ crtFlash.classList.add('run');
+
+ setTimeout(()=>openComputer(),340);
+});
+
+document.getElementById('closeDialog').addEventListener('click',()=>{
+ dialog.hidden=true;
+ status.textContent='THE COMPUTER.';
+});
 
 back.addEventListener('click',(e)=>{
  e.stopPropagation();zoomed=false;scene.classList.remove('zoomed');
