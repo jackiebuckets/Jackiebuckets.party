@@ -224,6 +224,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
        <img class="bg-photo" src="bucketgram-photos/photo3.jpeg" data-fallback="bucketgram-photos/IMG_9922.jpeg" alt="Bucketgram photo 3">
        <div class="bg-caption">jackiebuckets&nbsp;&nbsp; more photos go here</div>
       </article>
+      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo4.jpeg" alt="Bucketgram photo 4"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
+      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo5.jpeg" alt="Bucketgram photo 5"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
+      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo6.jpeg" alt="Bucketgram photo 6"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
+      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo7.jpeg" alt="Bucketgram photo 7"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
+      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo8.jpeg" alt="Bucketgram photo 8"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
+      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo9.jpeg" alt="Bucketgram photo 9"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
+      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo10.jpeg" alt="Bucketgram photo 10"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
     </div>
     <div class="magic-result" id="magicResult"></div>
     <input class="magic-input" id="magicInput" maxlength="80" placeholder="Will I send it?" aria-label="Ask the Magic 8 Ball">
@@ -498,17 +505,23 @@ const magicInput=document.getElementById('magicInput');
 const magicShake=document.getElementById('magicShake');
 const magicResult=document.getElementById('magicResult');
 const eightBallAnswers=['YAH DAWG','NO DAWG'];
-// Stable Bucketgram photo slots: photo1.jpeg, photo2.jpeg, photo3.jpeg.
-// Until those are renamed in GitHub, fall back to the current uploaded filenames.
-document.querySelectorAll('.bg-photo[data-fallback]').forEach(img=>{
+// Stable Bucketgram photo slots: photo1.jpeg through photo10.jpeg.
+// The first three still fall back to the older GitHub filenames during the transition.
+// Any missing slot hides its entire post, so there are never broken-image boxes.
+document.querySelectorAll('.bg-photo').forEach(img=>{
  img.addEventListener('error',()=>{
   const fallback=img.dataset.fallback;
   if(fallback && img.getAttribute('src')!==fallback){
    img.setAttribute('src',fallback);
-  } else {
-   img.style.display='none';
+   return;
   }
+  const post=img.closest('.bg-post');
+  if(post) post.style.display='none';
  },{once:false});
+ img.addEventListener('load',()=>{
+  const post=img.closest('.bg-post');
+  if(post) post.style.display='';
+ });
 });
 bucketgramWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 bucketgramWindow.addEventListener('click',e=>e.stopPropagation());
