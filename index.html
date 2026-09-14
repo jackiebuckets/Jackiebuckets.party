@@ -243,9 +243,12 @@ function goView(name){
 
 Object.keys(views).forEach(id=>document.getElementById(id).addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false;
- if(id==='computer' && zoomed){
-   document.getElementById('crtWindow').classList.add('open');
-   status.textContent='THE COMPUTER IS AWAKE.';
+ if(id==='computer'){
+   goView(id);
+   requestAnimationFrame(()=>{
+     document.getElementById('crtWindow').classList.add('open');
+     status.textContent='THE COMPUTER IS AWAKE.';
+   });
    return;
  }
  goView(id);
@@ -317,6 +320,26 @@ crtWindow.querySelectorAll('[data-crt]').forEach(btn=>btn.addEventListener('clic
  };
  status.textContent=messages[item];
 }));
+
+
+/* V11 constant-sensitivity pan override */
+let v11x=0,v11y=0,v11drag=false;
+stage.addEventListener('pointerdown',e=>{
+ if(zoomed)return;
+ v11drag=true; v11x=e.clientX; v11y=e.clientY;
+},{capture:true});
+stage.addEventListener('pointermove',e=>{
+ if(!v11drag||zoomed)return;
+ const dx=e.clientX-v11x,dy=e.clientY-v11y;
+ v11x=e.clientX;v11y=e.clientY;
+ if(Math.abs(dx)+Math.abs(dy)>1)moved=true;
+ const r=stage.getBoundingClientRect();
+ targetX=Math.max(-1,Math.min(1,targetX-(dx/Math.max(1,r.width))*1.18));
+ targetY=Math.max(-1,Math.min(1,targetY-(dy/Math.max(1,r.height))*1.18));
+ render();
+ e.stopImmediatePropagation();
+},{capture:true});
+window.addEventListener('pointerup',()=>v11drag=false,{capture:true});
 
 </script>
 </body>
