@@ -202,7 +202,10 @@ function sizeCamera(){
  }
 }
 function getVerticalLimit(){
- return Math.max(0,(camera.offsetHeight-viewport.clientHeight)/2)*0.92;
+ // Keep a small amount of intentional up/down room movement on every screen.
+ // The cap prevents the vertical pan from becoming exaggerated on tall displays.
+ const natural=Math.max(0,(camera.offsetHeight-viewport.clientHeight)/2);
+ return Math.min(56,Math.max(24,natural*0.55));
 }
 function applyPan(){
  if(zoomed)return;
@@ -228,7 +231,7 @@ function pointerMove(e){
  sx=e.clientX; sy=e.clientY;
  if(Math.hypot(e.clientX-startX,e.clientY-startY)>8)moved=true;
  panX += dx*1.08;
- panY += dy*.82;
+ panY += dy*.58;
  applyPan();
  e.preventDefault();
 }
