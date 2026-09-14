@@ -150,12 +150,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .bucketgram-close{position:absolute;right:0.55%;top:.55%;width:3.15%;height:3.6%;border:0;background:transparent;cursor:pointer;z-index:5}
 .magic-input{position:absolute;left:1.75%;top:89.9%;width:18.5%;height:3.55%;z-index:4;border:2px solid #222;background:#f7f3e7;padding:0 7px;font:700 clamp(9px,1vw,15px) 'Courier New',monospace;color:#111}
 .magic-shake{position:absolute;left:6.35%;top:94.35%;width:9.4%;height:3.8%;z-index:4;background:#075be4;color:#fff;border:3px outset #ddd;font:700 clamp(9px,1vw,15px) 'Courier New',monospace;cursor:pointer}
-.magic-result{position:absolute;left:1.9%;top:78.1%;width:18%;min-height:4.2%;z-index:4;display:none;background:#050505;color:#6dff9f;border:2px solid #555;padding:7px;text-align:center;font:700 clamp(8px,.9vw,13px) 'Courier New',monospace;text-shadow:0 0 4px #2cff78}
-.magic-result.show{display:block}
+.magic-result{position:absolute;left:7.55%;top:79.55%;width:6.35%;aspect-ratio:1/1;z-index:6;display:none;align-items:center;justify-content:center;border-radius:50%;background:#f4f0df;color:#111;border:2px solid #111;text-align:center;font:900 clamp(7px,.78vw,12px) 'Courier New',monospace;line-height:.9;letter-spacing:-.04em;box-shadow:inset 0 0 0 2px #d8d0bd}
+.magic-result.show{display:flex}
 @media(max-width:720px){
  .bucketgram-window{width:98vw;max-height:86vh}
  .bucketgram-feed{left:21.5%;top:19.2%;width:50.4%;height:79.3%}
- .bg-post{padding:7px}.bg-avatar{width:28px;height:28px;font-size:15px}.bg-photo{border-width:1px}.magic-input{font-size:8px;padding:0 3px}.magic-shake{font-size:8px;border-width:2px}.magic-result{font-size:7px;padding:3px}
+ .bg-post{padding:7px}.bg-avatar{width:28px;height:28px;font-size:15px}.bg-photo{border-width:1px}.magic-input{font-size:8px;padding:0 3px}.magic-shake{font-size:8px;border-width:2px}.magic-result{font-size:6px}
 }
 
 </style>
@@ -209,19 +209,19 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <div class="bucketgram-feed" id="bucketgramFeed">
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">😎</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">2d</span></div>
-       <img class="bg-photo" src="bucketgram-photos/photo-01.png" alt="Bucketgram photo 1">
+       <img class="bg-photo" src="bucketgram-photos/IMG_0159.jpeg" alt="Bucketgram photo 1">
        <div class="bg-caption">jackiebuckets&nbsp;&nbsp; good views can’t complain</div>
        <div class="bg-actions"><span><span class="bg-heart">♥</span> 42</span><span>◯ 3</span></div>
       </article>
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">🐴</div><div class="bg-meta"><span>dirtbagdan</span><span class="bg-place">probably lost</span></div><span class="bg-age">4d</span></div>
-       <img class="bg-photo" src="bucketgram-photos/photo-02.png" alt="Bucketgram photo 2">
+       <img class="bg-photo" src="bucketgram-photos/IMG_0313.png" alt="Bucketgram photo 2">
        <div class="bg-caption">dirtbagdan&nbsp;&nbsp; found civilization. hated it.</div>
        <div class="bg-actions"><span><span class="bg-heart">♥</span> 19</span><span>◯ 1</span></div>
       </article>
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">your next upload</span></div><span class="bg-age">now</span></div>
-       <div class="bg-empty">REPLACE /bucketgram-photos/photo-03.jpg<br>AND ADD IT TO THE POST LIST WHEN YOU’RE READY.</div>
+       <img class="bg-photo" src="bucketgram-photos/IMG_9922.jpeg" alt="Bucketgram photo 3">
        <div class="bg-caption">jackiebuckets&nbsp;&nbsp; more photos go here</div>
       </article>
     </div>
@@ -497,11 +497,7 @@ const bucketgramClose=document.getElementById('bucketgramClose');
 const magicInput=document.getElementById('magicInput');
 const magicShake=document.getElementById('magicShake');
 const magicResult=document.getElementById('magicResult');
-const eightBallAnswers=[
- 'IT IS CERTAIN.','SIGNS POINT TO YES.','WITHOUT A DOUBT.','YES, DEFINITELY.','MOST LIKELY.',
- 'ASK AGAIN LATER.','BETTER NOT TELL YOU NOW.','CANNOT PREDICT NOW.','CONCENTRATE AND ASK AGAIN.',
- 'DON’T COUNT ON IT.','MY SOURCES SAY NO.','OUTLOOK NOT SO GOOD.','VERY DOUBTFUL.'
-];
+const eightBallAnswers=['YAH DAWG','NO DAWG'];
 bucketgramWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 bucketgramWindow.addEventListener('click',e=>e.stopPropagation());
 bucketgramClose.addEventListener('click',()=>{
@@ -512,7 +508,12 @@ bucketgramClose.addEventListener('click',()=>{
 });
 magicShake.addEventListener('click',()=>{
  const q=magicInput.value.trim();
- magicResult.textContent=q ? eightBallAnswers[Math.floor(Math.random()*eightBallAnswers.length)] : 'ASK ME SOMETHING FIRST.';
+ if(!q){
+  magicResult.classList.remove('show');
+  magicInput.focus();
+  return;
+ }
+ magicResult.textContent=eightBallAnswers[Math.floor(Math.random()*eightBallAnswers.length)];
  magicResult.classList.add('show');
 });
 magicInput.addEventListener('keydown',e=>{ if(e.key==='Enter') magicShake.click(); });
