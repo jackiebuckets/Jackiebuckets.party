@@ -124,6 +124,40 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
   -webkit-user-select:none !important;
 }
 .hotspot{pointer-events:none !important;}
+
+
+/* Bucketgram — fixed chrome, scrollable middle feed only */
+.bucketgram-window{
+ position:absolute;z-index:60;display:none;left:50%;top:50%;transform:translate(-50%,-50%);
+ width:min(1180px,96vw);aspect-ratio:1344/1120;max-height:88vh;
+ background:#eee url('bucketgram-ui.png') center/100% 100% no-repeat;
+ border:4px outset #eee;box-shadow:10px 14px 0 rgba(0,0,0,.5);overflow:hidden;
+}
+.bucketgram-window.open{display:block}
+.bucketgram-feed{
+ position:absolute;left:23.25%;top:19.15%;width:48.55%;height:79.2%;
+ overflow-y:auto;overflow-x:hidden;background:#f5f0df;border-left:2px solid #222;border-right:2px solid #222;
+ scrollbar-width:thin;scrollbar-color:#0700b8 #d8d0bd;
+}
+.bucketgram-feed::-webkit-scrollbar{width:12px}.bucketgram-feed::-webkit-scrollbar-track{background:#d8d0bd}.bucketgram-feed::-webkit-scrollbar-thumb{background:#0700b8;border:2px solid #d8d0bd}
+.bg-post{border-bottom:2px solid #222;background:#f5f0df;padding:11px 12px 14px;color:#111;font-family:'Courier New',monospace}
+.bg-post-head{display:flex;align-items:center;gap:10px;font-weight:700;font-size:clamp(12px,1.45vw,18px);margin-bottom:8px}
+.bg-avatar{width:42px;height:42px;border:2px solid #111;border-radius:50%;background:#d7b477;display:grid;place-items:center;overflow:hidden;flex:none;font-size:22px}
+.bg-meta{display:flex;flex-direction:column;line-height:1.05}.bg-place{font-weight:400;font-size:.72em;margin-top:4px}.bg-age{margin-left:auto;font-weight:700}
+.bg-photo{width:100%;display:block;border:2px solid #111;image-rendering:auto;background:#222;max-height:520px;object-fit:cover}
+.bg-caption{font-size:clamp(11px,1.25vw,16px);margin:8px 0 4px;font-weight:700}.bg-actions{display:flex;gap:20px;font-size:clamp(14px,1.6vw,20px);align-items:center}.bg-heart{color:#d3162a;font-size:1.3em}
+.bg-empty{height:260px;border:2px dashed #333;display:grid;place-items:center;text-align:center;padding:20px;background:#e9e2ce;font-weight:700}
+.bucketgram-close{position:absolute;right:0.55%;top:.55%;width:3.15%;height:3.6%;border:0;background:transparent;cursor:pointer;z-index:5}
+.magic-input{position:absolute;left:1.75%;top:89.9%;width:18.5%;height:3.55%;z-index:4;border:2px solid #222;background:#f7f3e7;padding:0 7px;font:700 clamp(9px,1vw,15px) 'Courier New',monospace;color:#111}
+.magic-shake{position:absolute;left:6.35%;top:94.35%;width:9.4%;height:3.8%;z-index:4;background:#075be4;color:#fff;border:3px outset #ddd;font:700 clamp(9px,1vw,15px) 'Courier New',monospace;cursor:pointer}
+.magic-result{position:absolute;left:1.9%;top:78.1%;width:18%;min-height:4.2%;z-index:4;display:none;background:#050505;color:#6dff9f;border:2px solid #555;padding:7px;text-align:center;font:700 clamp(8px,.9vw,13px) 'Courier New',monospace;text-shadow:0 0 4px #2cff78}
+.magic-result.show{display:block}
+@media(max-width:720px){
+ .bucketgram-window{width:98vw;max-height:86vh}
+ .bucketgram-feed{left:21.5%;top:19.2%;width:50.4%;height:79.3%}
+ .bg-post{padding:7px}.bg-avatar{width:28px;height:28px;font-size:15px}.bg-photo{border-width:1px}.magic-input{font-size:8px;padding:0 3px}.magic-shake{font-size:8px;border-width:2px}.magic-result{font-size:7px;padding:3px}
+}
+
 </style>
 </head>
 <body>
@@ -169,6 +203,33 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
       <div class="crt-help">C:\&gt; CLICK SOMETHING_</div>
     </div>
    </section>
+
+   <section class="bucketgram-window" id="bucketgramWindow" aria-label="Bucketgram photos">
+    <button class="bucketgram-close" id="bucketgramClose" aria-label="Close Bucketgram"></button>
+    <div class="bucketgram-feed" id="bucketgramFeed">
+      <article class="bg-post">
+       <div class="bg-post-head"><div class="bg-avatar">😎</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">2d</span></div>
+       <img class="bg-photo" src="bucketgram-photos/photo-01.png" alt="Bucketgram photo 1">
+       <div class="bg-caption">jackiebuckets&nbsp;&nbsp; good views can’t complain</div>
+       <div class="bg-actions"><span><span class="bg-heart">♥</span> 42</span><span>◯ 3</span></div>
+      </article>
+      <article class="bg-post">
+       <div class="bg-post-head"><div class="bg-avatar">🐴</div><div class="bg-meta"><span>dirtbagdan</span><span class="bg-place">probably lost</span></div><span class="bg-age">4d</span></div>
+       <img class="bg-photo" src="bucketgram-photos/photo-02.png" alt="Bucketgram photo 2">
+       <div class="bg-caption">dirtbagdan&nbsp;&nbsp; found civilization. hated it.</div>
+       <div class="bg-actions"><span><span class="bg-heart">♥</span> 19</span><span>◯ 1</span></div>
+      </article>
+      <article class="bg-post">
+       <div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">your next upload</span></div><span class="bg-age">now</span></div>
+       <div class="bg-empty">REPLACE /bucketgram-photos/photo-03.jpg<br>AND ADD IT TO THE POST LIST WHEN YOU’RE READY.</div>
+       <div class="bg-caption">jackiebuckets&nbsp;&nbsp; more photos go here</div>
+      </article>
+    </div>
+    <div class="magic-result" id="magicResult"></div>
+    <input class="magic-input" id="magicInput" maxlength="80" placeholder="Will I send it?" aria-label="Ask the Magic 8 Ball">
+    <button class="magic-shake" id="magicShake">SHAKE</button>
+   </section>
+
 
    <div class="vignette"></div><div class="scan"></div>
   </div>
@@ -330,6 +391,7 @@ function goView(name){
 function exitComputer(){
  document.getElementById('useComputer')?.classList.remove('open');
  document.getElementById('crtWindow')?.classList.remove('open');
+ document.getElementById('bucketgramWindow')?.classList.remove('open');
  if(!zoomBase) zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};
  animateComputerZoom(1,0,()=>{
    zoomed=false;
@@ -402,17 +464,58 @@ const crtWindow=document.getElementById('crtWindow');
 document.getElementById('crtClose').addEventListener('click',(e)=>{ e.stopPropagation(); exitComputer(); });
 crtWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 crtWindow.addEventListener('click',e=>e.stopPropagation());
-crtWindow.querySelectorAll('[data-crt]').forEach(btn=>btn.addEventListener('click',()=>{
- const item=btn.dataset.crt;
- const messages={
-  internet:'THE INTERNET. A TERRIBLE IDEA.',
-  photos:'PHOTOS. COMING SOON.',
-  music:'MUSIC. COMING SOON.',
-  journal:'JOURNAL. COMING SOON.',
-  unknown:'ACCESS DENIED.'
- };
- status.textContent=messages[item];
-}));
+const crtScreen=crtWindow.querySelector('.crt-screen');
+const crtHomeHTML=crtScreen.innerHTML;
+function showCrtHome(){ crtScreen.innerHTML=crtHomeHTML; bindCrtButtons(); }
+function showCrtMessage(title,lines){
+ crtScreen.innerHTML=`<b>${title}</b><br><br>${lines.join('<br>')}<br><br><button id="crtBackMenu">&lt; BACK</button>`;
+ document.getElementById('crtBackMenu').addEventListener('click',showCrtHome);
+}
+function bindCrtButtons(){
+ crtScreen.querySelectorAll('[data-crt]').forEach(btn=>btn.addEventListener('click',()=>{
+  const item=btn.dataset.crt;
+  if(item==='photos'){
+   crtWindow.classList.remove('open');
+   document.getElementById('bucketgramWindow').classList.add('open');
+   status.textContent='BUCKETGRAM.EXE';
+   return;
+  }
+  if(item==='music'){
+   showCrtMessage('MUSIC?',['WHY ARE YOU LOOKING HERE?','', 'RECORD PLAYER —>']);
+   status.textContent='GO USE THE RECORD PLAYER.';
+   return;
+  }
+  const messages={internet:'THE INTERNET. A TERRIBLE IDEA.',journal:'JOURNAL. COMING SOON.',unknown:'ACCESS DENIED.'};
+  status.textContent=messages[item]||'NOPE.';
+ }));
+}
+bindCrtButtons();
+
+
+const bucketgramWindow=document.getElementById('bucketgramWindow');
+const bucketgramClose=document.getElementById('bucketgramClose');
+const magicInput=document.getElementById('magicInput');
+const magicShake=document.getElementById('magicShake');
+const magicResult=document.getElementById('magicResult');
+const eightBallAnswers=[
+ 'IT IS CERTAIN.','SIGNS POINT TO YES.','WITHOUT A DOUBT.','YES, DEFINITELY.','MOST LIKELY.',
+ 'ASK AGAIN LATER.','BETTER NOT TELL YOU NOW.','CANNOT PREDICT NOW.','CONCENTRATE AND ASK AGAIN.',
+ 'DON’T COUNT ON IT.','MY SOURCES SAY NO.','OUTLOOK NOT SO GOOD.','VERY DOUBTFUL.'
+];
+bucketgramWindow.addEventListener('pointerdown',e=>e.stopPropagation());
+bucketgramWindow.addEventListener('click',e=>e.stopPropagation());
+bucketgramClose.addEventListener('click',()=>{
+ bucketgramWindow.classList.remove('open');
+ crtWindow.classList.add('open');
+ showCrtHome();
+ status.textContent='THE COMPUTER IS AWAKE.';
+});
+magicShake.addEventListener('click',()=>{
+ const q=magicInput.value.trim();
+ magicResult.textContent=q ? eightBallAnswers[Math.floor(Math.random()*eightBallAnswers.length)] : 'ASK ME SOMETHING FIRST.';
+ magicResult.classList.add('show');
+});
+magicInput.addEventListener('keydown',e=>{ if(e.key==='Enter') magicShake.click(); });
 
 
 
