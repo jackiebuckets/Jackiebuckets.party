@@ -59,38 +59,42 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
 
 
-/* V9 CRT POPUP */
-#crtPopup{
-  position:absolute;
-  z-index:30;
-  display:none;
-  width:min(430px,78vw);
-  aspect-ratio:4/3;
-  background:#061c20;
-  border:7px ridge #bdb9aa;
-  box-shadow:0 12px 28px #000b;
-  color:#8fffe0;
-  font:16px/1.55 "Courier New",monospace;
-  padding:18px 20px;
-  box-sizing:border-box;
-  overflow:hidden;
-  text-shadow:0 0 5px #63ffd8aa;
+/* V10 — actual CRT interaction window */
+.crt-window{
+  position:absolute; z-index:40; display:none;
+  left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(430px,88vw);
+  background:#c0c0c0; color:#000;
+  border:4px outset #eee;
+  box-shadow:8px 10px 0 rgba(0,0,0,.45);
+  font-family:"Courier New",monospace;
 }
-#crtPopup.open{display:block}
-#crtPopup::after{
-  content:"";
-  position:absolute; inset:0;
-  pointer-events:none;
-  background:repeating-linear-gradient(to bottom,transparent 0 3px,#0004 4px);
-  opacity:.45;
+.crt-window.open{display:block}
+.crt-titlebar{
+  height:34px; display:flex; align-items:center;
+  padding:3px 5px 3px 8px;
+  background:#0700b8; color:#fff; font-weight:bold;
 }
-#crtPopup .crt-title{font-weight:bold;margin-bottom:10px}
-#crtPopup button{
-  display:block; position:relative; z-index:2;
-  width:100%; border:0; background:transparent; color:inherit;
-  font:inherit; text-align:left; padding:3px 0;
+.crt-close{
+  margin-left:auto; width:28px; height:25px;
+  border:3px outset #eee; background:#c0c0c0; color:#111;
+  font:bold 17px Arial; line-height:17px;
 }
-#crtPopup button:active{background:#8fffe0;color:#061c20}
+.crt-screen{
+  margin:8px; padding:16px 18px; min-height:245px;
+  background:#041a20; color:#a5ffe9;
+  border:4px inset #ddd;
+  text-shadow:0 0 4px #65e8d0;
+  line-height:1.65;
+  box-shadow:inset 0 0 35px #000;
+}
+.crt-screen button{
+  display:block; width:100%; padding:3px 0;
+  border:0; background:transparent; color:inherit;
+  text-align:left; font:inherit;
+}
+.crt-screen button:active{background:#a5ffe9;color:#041a20}
+.crt-help{opacity:.72;margin-top:12px;font-size:12px}
 
 </style>
 </head>
@@ -99,7 +103,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  <div class="titlebar">▣ Jackiebuckets.party <span class="buttons"><i>_</i><i>□</i><i>×</i></span></div>
  <main class="viewport" id="viewport">
   <div class="scene" id="scene">
-   <div class="camera" id="camera">
+   <div class="camera stepped" id="camera">
     <img class="room night" src="room-night.png" alt="">
     <img class="room day" src="room-day.png" alt="">
     <button class="hotspot" id="computer" aria-label="Computer"></button>
@@ -111,20 +115,24 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <button class="hotspot" id="tapestry" aria-label="Orange tapestry"></button>
     <button class="hotspot" id="skull" aria-label="Beaded skull"></button>
     <button class="hotspot" id="records" aria-label="Records and books"></button>
-   
-    <div id="crtPopup" aria-label="computer menu">
-      <div class="crt-title">JACKIEBUCKETS.PARTY</div>
-      <button>&gt; INTERNET</button>
-      <button>&gt; PHOTOS</button>
-      <button>&gt; MUSIC</button>
-      <button>&gt; JOURNAL</button>
-      <button>&gt; ???</button>
-      <div style="margin-top:8px">C:\&gt;<span class="blink">_</span></div>
-    </div>
-</div>
+   </div>
    <button class="back" id="back">← BACK</button>
    <div class="mode"><b id="modeText">NIGHT MODE</b><span id="clock"></span></div>
    <div class="hint" id="hint">DRAG TO LOOK · TAP THINGS</div>
+
+   <section class="crt-window" id="crtWindow" aria-label="Computer">
+    <div class="crt-titlebar">JACKIEBUCKETS.EXE <button class="crt-close" id="crtClose" aria-label="Close">×</button></div>
+    <div class="crt-screen">
+      JACKIEBUCKETS.PARTY<br><br>
+      <button data-crt="internet">&gt; INTERNET</button>
+      <button data-crt="photos">&gt; PHOTOS</button>
+      <button data-crt="music">&gt; MUSIC</button>
+      <button data-crt="journal">&gt; JOURNAL</button>
+      <button data-crt="unknown">&gt; ???</button>
+      <div class="crt-help">C:\&gt; CLICK SOMETHING_</div>
+    </div>
+   </section>
+
    <div class="vignette"></div><div class="scan"></div>
   </div>
  </main>
@@ -209,7 +217,7 @@ function goView(name){
  const baseLeft=viewport.clientWidth/2+panX;
  const baseTop=viewport.clientHeight/2+panY;
  const nodeMap={
-  computer:{fx:-.03,fy:.05,s:1.70},
+  computer:{fx:.127,fy:-.072,s:1.70},
   music:{fx:-.24,fy:.06,s:1.62},
   photos:{fx:.24,fy:.02,s:1.52},
   door:{fx:-.34,fy:.02,s:1.50},
@@ -232,10 +240,20 @@ function goView(name){
  const timer=setInterval(()=>{i++;if(i>=steps.length){clearInterval(timer);return}doStep(steps[i])},85);
  status.textContent=v.label;
 }
-Object.keys(views).forEach(id=>document.getElementById(id).addEventListener('click',(e)=>{e.stopPropagation();moved=false;goView(id)}));
+
+Object.keys(views).forEach(id=>document.getElementById(id).addEventListener('click',(e)=>{
+ e.stopPropagation(); moved=false;
+ if(id==='computer' && zoomed){
+   document.getElementById('crtWindow').classList.add('open');
+   status.textContent='THE COMPUTER IS AWAKE.';
+   return;
+ }
+ goView(id);
+}));
+
 
 back.addEventListener('click',(e)=>{
- e.stopPropagation();zoomed=false;scene.classList.remove('zoomed');
+ e.stopPropagation();document.getElementById('crtWindow').classList.remove('open');zoomed=false;scene.classList.remove('zoomed');
  panY=0;camera.classList.add('stepped');sizeCamera();
  status.textContent='CLICK AROUND.';hint.style.opacity='1';
 });
@@ -282,65 +300,23 @@ document.getElementById('records').addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false; status.textContent='YOU COULD STAY HERE A WHILE.';
 });
 
-/* V9 interaction repair */
-const crtPopupV9 = document.getElementById('crtPopup');
-
-function positionCrtPopupV9(){
-  if(!crtPopupV9) return;
-  /* Scene coordinates tuned to the visible CRT in the source room artwork. */
-  const sw = scene.offsetWidth || 1536;
-  const sh = scene.offsetHeight || 1024;
-  crtPopupV9.style.left = (sw * .365) + 'px';
-  crtPopupV9.style.top  = (sh * .445) + 'px';
-}
-
-function closeCrtV9(){ if(crtPopupV9) crtPopupV9.classList.remove('open'); }
-
-function openCrtV9(e){
-  if(e){ e.preventDefault(); e.stopPropagation(); }
-  positionCrtPopupV9();
-  crtPopupV9.classList.add('open');
-}
-
-/* Clicking the CRT menu itself should not kick the camera around. */
-if(crtPopupV9){
-  crtPopupV9.addEventListener('pointerdown', e=>e.stopPropagation());
-  crtPopupV9.addEventListener('click', e=>e.stopPropagation());
-}
-
-/* Reproduce the browser/state reset caused by zoom->Back, invisibly at startup. */
-window.addEventListener('load', ()=>{
-  requestAnimationFrame(()=>{
-    const oldTransition = scene.style.transition;
-    scene.style.transition='none';
-    const oldTransform = scene.style.transform;
-    scene.style.transform = oldTransform + ' translateZ(0)';
-    void scene.getBoundingClientRect();
-    scene.style.transform = oldTransform;
-    void scene.getBoundingClientRect();
-    scene.style.transition = oldTransition;
-    render();
-  });
-},{once:true});
-
-
-/* Keep computer focus centered on the physical CRT. Normal free-look is untouched. */
-document.addEventListener('click', (e)=>{
-  const back=document.querySelector('[data-back],#back,.back');
-  if(back && getComputedStyle(back).display!=='none'){
-    requestAnimationFrame(()=>{
-      /* A small rightward correction in screen space centers the monitor on phones. */
-      const m=scene.style.transform.match(/translate3d?\(([-\d.]+)px,\s*([-\d.]+)px/);
-      if(m){
-        const x=parseFloat(m[1]), y=parseFloat(m[2]);
-        scene.style.transform=scene.style.transform.replace(
-          /translate3d?\(([-\d.]+)px,\s*([-\d.]+)px(?:,\s*[-\d.]+px)?\)/,
-          `translate3d(${x+72}px,${y}px,0)`
-        );
-      }
-    });
-  }
-},true);
+const crtWindow=document.getElementById('crtWindow');
+document.getElementById('crtClose').addEventListener('click',(e)=>{
+ e.stopPropagation(); crtWindow.classList.remove('open'); status.textContent='THE COMPUTER.';
+});
+crtWindow.addEventListener('pointerdown',e=>e.stopPropagation());
+crtWindow.addEventListener('click',e=>e.stopPropagation());
+crtWindow.querySelectorAll('[data-crt]').forEach(btn=>btn.addEventListener('click',()=>{
+ const item=btn.dataset.crt;
+ const messages={
+  internet:'THE INTERNET. A TERRIBLE IDEA.',
+  photos:'PHOTOS. COMING SOON.',
+  music:'MUSIC. COMING SOON.',
+  journal:'JOURNAL. COMING SOON.',
+  unknown:'ACCESS DENIED.'
+ };
+ status.textContent=messages[item];
+}));
 
 </script>
 </body>
