@@ -183,6 +183,7 @@ back=document.getElementById('back'), hint=document.getElementById('hint');
 let panX=0, panY=0, dragging=false, moved=false, sx=0, sy=0, startX=0, startY=0, zoomed=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const ROOM_ASPECT=768/455;
+let verticalPanTarget=18; // V27: intentionally small up/down look range
 
 function getPanLimit(){
  return Math.max(0,(camera.offsetWidth-viewport.clientWidth)/2);
@@ -190,12 +191,10 @@ function getPanLimit(){
 function sizeCamera(){
  const vw=viewport.clientWidth, vh=viewport.clientHeight;
 
- // V26: treat the 768x455 artwork as a finite room and use the smallest
- // possible COVER scale. The image always reaches every viewport edge,
- // but we never over-zoom it just to manufacture extra panning space.
- // Result: maximum amount of the original room is visible on every screen,
- // with panning only on the axis where the real artwork extends off-screen.
- const coverScale=Math.max(vw/768, vh/455);
+ // V27: keep the finite-room behavior, but reserve a tiny vertical overscan
+ // so the room can still be nudged up/down. This is deliberately small.
+ verticalPanTarget=clamp(vh*0.025,12,22);
+ const coverScale=Math.max(vw/768, (vh+verticalPanTarget*2)/455);
  const w=Math.ceil(768*coverScale);
  const h=Math.ceil(455*coverScale);
  camera.style.width=w+'px';
@@ -212,7 +211,8 @@ function sizeCamera(){
  }
 }
 function getVerticalLimit(){
- return Math.max(0,(camera.offsetHeight-viewport.clientHeight)/2);
+ const natural=Math.max(0,(camera.offsetHeight-viewport.clientHeight)/2);
+ return Math.min(verticalPanTarget,natural);
 }
 function applyPan(){
  if(zoomed)return;
