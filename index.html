@@ -13,10 +13,21 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .viewport{position:relative;flex:1;overflow:hidden;background:#060b13;cursor:grab}
 .viewport.dragging{cursor:grabbing}
 .scene{position:absolute;inset:0;overflow:hidden}
-.room{position:absolute;height:100%;width:100%;object-fit:cover;object-position:50% 50%;user-select:none;-webkit-user-drag:none;transform:scale(1.025);transition:opacity .35s ease}
-.room.day{opacity:0}.daytime .room.day{opacity:1}.daytime .room.night{opacity:0}
-.camera{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform;transition:transform .55s cubic-bezier(.2,.75,.2,1)}
+.camera{
+ position:absolute;left:50%;top:50%;
+ width:1000px;height:593px;
+ transform:translate(-50%,-50%);
+ transform-origin:50% 50%;
+ will-change:left,top,transform;
+ transition:left .18s steps(3,end),top .18s steps(3,end),transform .34s steps(6,end)
+}
 .camera.stepped{transition:none}
+.room{
+ position:absolute;inset:0;width:100%;height:100%;
+ object-fit:fill;user-select:none;-webkit-user-drag:none;
+ image-rendering:pixelated;transition:opacity .35s ease
+}
+.room.day{opacity:0}.daytime .room.day{opacity:1}.daytime .room.night{opacity:0}
 .hotspot{position:absolute;background:transparent;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .hotspot:focus-visible{outline:2px dashed #fff}
 #computer{left:31%;top:42%;width:26%;height:27%}
@@ -38,7 +49,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  .mode{top:14px;right:12px;min-width:135px;font-size:13px;padding:7px 10px}
  .mode b{font-size:18px}
  .status{height:58px;flex-basis:58px;font-size:15px;padding:17px 22px}
- .room{object-fit:cover}
 }
 </style>
 </head>
@@ -71,30 +81,55 @@ back=document.getElementById('back'), hint=document.getElementById('hint');
 
 let panX=0, panY=0, dragging=false, moved=false, sx=0, sy=0, startX=0, startY=0, zoomed=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const ROOM_ASPECT=768/455;
 
+function getPanLimit(){
+ return Math.max(0,(camera.offsetWidth-viewport.clientWidth)/2);
+}
+function sizeCamera(){
+ const vw=viewport.clientWidth, vh=viewport.clientHeight;
+ let h=vh, w=h*ROOM_ASPECT;
+ if(w<vw){ w=vw; h=w/ROOM_ASPECT; }
+ camera.style.width=w+'px';
+ camera.style.height=h+'px';
+ if(!zoomed){
+   const lim=getPanLimit();
+   panX=clamp(panX,-lim,lim);
+   camera.style.left=`calc(50% + ${panX}px)`;
+   camera.style.top=`calc(50% + ${panY}px)`;
+   camera.style.transform='translate(-50%,-50%) scale(1.005)';
+ }
+}
 function applyPan(){
  if(zoomed)return;
- camera.style.transform=`translate3d(${panX}px,${panY}px,0) scale(1.025)`;
+ const lim=getPanLimit();
+ panX=clamp(panX,-lim,lim);
+ camera.style.left=`calc(50% + ${panX}px)`;
+ camera.style.top=`calc(50% + ${panY}px)`;
+ camera.style.transform='translate(-50%,-50%) scale(1.005)';
 }
 function pointerDown(e){
- if(zoomed)return;
+ if(zoomed||e.target.closest("button"))return;
  dragging=true;moved=false;sx=e.clientX;sy=e.clientY;startX=panX;startY=panY;
- viewport.classList.add('dragging'); viewport.setPointerCapture?.(e.pointerId);
+ viewport.classList.add('dragging');viewport.setPointerCapture?.(e.pointerId);
 }
 function pointerMove(e){
  if(!dragging||zoomed)return;
  const dx=e.clientX-sx,dy=e.clientY-sy;
  if(Math.abs(dx)+Math.abs(dy)>7)moved=true;
- // restrained "look around": no white edges and no rubbery distortion
- panX=clamp(startX+dx*.42,-38,38);
- panY=clamp(startY+dy*.22,-18,18);
+ panX=startX+dx*1.08;
+ panY=clamp(startY+dy*.12,-8,8);
  applyPan();
 }
-function pointerUp(){dragging=false;viewport.classList.remove('dragging')}
+function pointerUp(e){
+ dragging=false;viewport.classList.remove('dragging');
+ try{viewport.releasePointerCapture?.(e.pointerId)}catch{}
+}
 viewport.addEventListener('pointerdown',pointerDown);
 viewport.addEventListener('pointermove',pointerMove);
 viewport.addEventListener('pointerup',pointerUp);
 viewport.addEventListener('pointercancel',pointerUp);
+window.addEventListener('resize',sizeCamera);
 
 const views={
  computer:{x:10,y:5,s:1.62,label:'THE COMPUTER.'},
@@ -108,22 +143,40 @@ function goView(name){
  if(moved)return;
  const v=views[name]; if(!v)return;
  zoomed=true;scene.classList.add('zoomed');hint.style.opacity='0';
- // intentionally stepped zoom: 3 quick camera states, old CD-ROM style
  camera.classList.add('stepped');
- const steps=[
-  `translate3d(${v.x*.32}px,${v.y*.32}px,0) scale(${1+(v.s-1)*.32})`,
-  `translate3d(${v.x*.68}px,${v.y*.68}px,0) scale(${1+(v.s-1)*.68})`,
-  `translate3d(${v.x}px,${v.y}px,0) scale(${v.s})`
- ];
- let i=0; camera.style.transform=steps[0];
- const timer=setInterval(()=>{i++; if(i>=steps.length){clearInterval(timer);return} camera.style.transform=steps[i]},85);
+
+ const roomW=camera.offsetWidth, roomH=camera.offsetHeight;
+ const baseLeft=viewport.clientWidth/2+panX;
+ const baseTop=viewport.clientHeight/2+panY;
+ const nodeMap={
+  computer:{fx:-.03,fy:.05,s:1.70},
+  music:{fx:-.24,fy:.06,s:1.62},
+  photos:{fx:.24,fy:.02,s:1.52},
+  door:{fx:-.34,fy:.02,s:1.50},
+  guitar:{fx:.31,fy:.06,s:1.60}
+ };
+ const n=nodeMap[name];
+ const targetLeft=viewport.clientWidth/2+n.fx*roomW;
+ const targetTop=viewport.clientHeight/2+n.fy*roomH;
+ const steps=[.34,.68,1];
+ let i=0;
+ const doStep=(t)=>{
+  const left=baseLeft+(targetLeft-baseLeft)*t;
+  const top=baseTop+(targetTop-baseTop)*t;
+  const sc=1+(n.s-1)*t;
+  camera.style.left=left+'px';
+  camera.style.top=top+'px';
+  camera.style.transform=`translate(-50%,-50%) scale(${sc})`;
+ };
+ doStep(steps[0]);
+ const timer=setInterval(()=>{i++;if(i>=steps.length){clearInterval(timer);return}doStep(steps[i])},85);
  status.textContent=v.label;
 }
 Object.keys(views).forEach(id=>document.getElementById(id).addEventListener('click',()=>goView(id)));
 
 back.addEventListener('click',(e)=>{
- e.stopPropagation(); zoomed=false;scene.classList.remove('zoomed');
- panX=0;panY=0;camera.classList.add('stepped');camera.style.transform='translate3d(0,0,0) scale(1.025)';
+ e.stopPropagation();zoomed=false;scene.classList.remove('zoomed');
+ panY=0;camera.classList.add('stepped');sizeCamera();
  status.textContent='CLICK AROUND.';hint.style.opacity='1';
 });
 
