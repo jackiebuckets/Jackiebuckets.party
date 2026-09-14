@@ -7,10 +7,10 @@
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;color:#eee;font-family:"Courier New",monospace;touch-action:none}
-.window{position:relative;width:100%;height:100dvh;overflow:hidden;background:#05070b}
-.titlebar{position:absolute;z-index:100;left:0;right:0;top:0;height:48px;background:#0700b8;border:4px ridge #ddd;display:flex;align-items:center;padding:0 10px;font-weight:bold;font-size:clamp(18px,4vw,27px);letter-spacing:.5px;pointer-events:none}
+.window{position:relative;height:100dvh;overflow:hidden;background:#05070b}
+.titlebar{position:absolute;left:0;right:0;top:0;height:44px;background:#0700b8;border:4px ridge #ddd;display:flex;align-items:center;padding:0 10px;font-weight:bold;font-size:clamp(18px,4vw,27px);letter-spacing:.5px;z-index:20}
 .buttons{margin-left:auto;display:flex;gap:3px}.buttons i{width:34px;height:30px;background:#d8d8d8;border:4px outset #eee;color:#111;display:grid;place-items:center;font-style:normal;font-family:Arial;font-size:18px}
-.viewport{position:absolute!important;z-index:1;left:0!important;right:0!important;top:0!important;bottom:0!important;width:100%!important;height:100%!important;overflow:hidden;background:#060b13;touch-action:none;overscroll-behavior:none;cursor:grab}
+.viewport{touch-action:none;overscroll-behavior:none;position:absolute;inset:0;overflow:hidden;background:#060b13;cursor:grab}
 .viewport.dragging{cursor:grabbing}
 .scene{position:absolute;inset:0;overflow:hidden}
 .camera{
@@ -40,18 +40,18 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 #tapestry{left:46.0%;top:6.0%;width:21.0%;height:48.0%}
 #skull{left:67.0%;top:7.5%;width:8.5%;height:27.0%}
 #records{left:57.0%;top:64.0%;width:20.0%;height:24.0%}
-.mode{position:absolute;right:16px;top:62px;background:#d6d6d6;color:#171717;border:5px ridge #eee;padding:8px 14px;z-index:12;min-width:150px;box-shadow:2px 2px #111;font-size:15px;pointer-events:none}
+.mode{position:absolute;right:16px;top:60px;background:#d6d6d6;color:#171717;border:5px ridge #eee;padding:8px 14px;z-index:12;min-width:150px;box-shadow:2px 2px #111;font-size:15px;pointer-events:none}
 .mode b{display:block;font-size:20px}.mode span{display:block;margin-top:4px}
-.hint{position:absolute;left:50%;bottom:74px;transform:translateX(-50%);z-index:12;background:rgba(5,5,5,.75);border:2px solid #777;padding:8px 13px;white-space:nowrap;font-size:13px;pointer-events:none;transition:opacity .3s}
-.status{position:absolute;z-index:100;left:0;right:0;bottom:0;height:58px;background:#020202;border-top:2px solid #555;padding:17px 22px;font-size:15px;letter-spacing:2px;pointer-events:none}
+.hint{position:absolute;left:50%;bottom:72px;transform:translateX(-50%);z-index:12;background:rgba(5,5,5,.75);border:2px solid #777;padding:8px 13px;white-space:nowrap;font-size:13px;pointer-events:none;transition:opacity .3s}
+.status{position:absolute;left:0;right:0;bottom:0;height:54px;background:#020202;pointer-events:none;border-top:2px solid #555;padding:15px 22px;font-size:16px;letter-spacing:2px;z-index:20}
 .back{position:absolute;left:14px;top:14px;z-index:14;background:#d6d6d6;color:#111;border:4px outset #eee;padding:7px 11px;font:700 14px "Courier New";display:none}
 .zoomed .back{display:block}
 .scan{position:absolute;inset:0;pointer-events:none;z-index:10;background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 3px,rgba(0,0,0,.11) 4px);mix-blend-mode:multiply}
 .vignette{position:absolute;inset:0;pointer-events:none;z-index:9;box-shadow:inset 0 0 90px rgba(0,0,0,.28)}
 @media (max-width:600px){
- .titlebar{height:48px}
+ .titlebar{height:48px;flex-basis:48px}
  .buttons i{width:31px;height:29px}
- .mode{top:14px;right:12px;min-width:135px;font-size:13px;padding:7px 10px}
+ .mode{top:62px;right:12px;min-width:135px;font-size:13px;padding:7px 10px}
  .mode b{font-size:18px}
  .status{height:58px;font-size:15px;padding:17px 22px}
 }
@@ -183,36 +183,26 @@ back=document.getElementById('back'), hint=document.getElementById('hint');
 let panX=0, panY=0, dragging=false, moved=false, sx=0, sy=0, startX=0, startY=0, zoomed=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const ROOM_ASPECT=768/455;
-let verticalPanTarget=9; // V28: half-size vertical look range
 
 function getPanLimit(){
  return Math.max(0,(camera.offsetWidth-viewport.clientWidth)/2);
 }
 function sizeCamera(){
  const vw=viewport.clientWidth, vh=viewport.clientHeight;
-
- // V28: same finite-room behavior with half the V27 vertical overscan
- // so the room can still be nudged up/down. This is deliberately small.
- verticalPanTarget=clamp(vh*0.0125,6,11);
- const coverScale=Math.max(vw/768, (vh+verticalPanTarget*2)/455);
- const w=Math.ceil(768*coverScale);
- const h=Math.ceil(455*coverScale);
+ let h=vh*1.38, w=h*ROOM_ASPECT;
+ if(w<vw){ w=vw*1.03; h=w/ROOM_ASPECT; }
  camera.style.width=w+'px';
  camera.style.height=h+'px';
-
  if(!zoomed){
    const lim=getPanLimit();
-   const vlim=getVerticalLimit();
    panX=clamp(panX,-lim,lim);
-   panY=clamp(panY,-vlim,vlim);
    camera.style.left=`calc(50% + ${panX}px)`;
    camera.style.top=`calc(50% + ${panY}px)`;
    camera.style.transform='translate(-50%,-50%) scale(1.005)';
  }
 }
 function getVerticalLimit(){
- const natural=Math.max(0,(camera.offsetHeight-viewport.clientHeight)/2);
- return Math.min(verticalPanTarget,natural);
+ return Math.max(0,(camera.offsetHeight-viewport.clientHeight)/2)*0.92;
 }
 function applyPan(){
  if(zoomed)return;
@@ -225,11 +215,11 @@ function applyPan(){
  camera.style.transform='translate(-50%,-50%) scale(1.005)';
 }
 function pointerDown(e){
- if(zoomed || e.target.closest(".crt-window,.use-computer")) return;
+ if(zoomed || e.target.closest(".crt-window,.use-computer,button")) return;
  dragging=true; moved=false;
  sx=e.clientX; sy=e.clientY;
  startX=e.clientX; startY=e.clientY;
- roomWindow.setPointerCapture?.(e.pointerId);
+ viewport.setPointerCapture?.(e.pointerId);
  e.preventDefault();
 }
 function pointerMove(e){
@@ -238,7 +228,7 @@ function pointerMove(e){
  sx=e.clientX; sy=e.clientY;
  if(Math.hypot(e.clientX-startX,e.clientY-startY)>8)moved=true;
  panX += dx*1.08;
- panY += dy*.72;
+ panY += dy*.82;
  applyPan();
  e.preventDefault();
 }
@@ -262,18 +252,17 @@ function roomObjectAt(clientX,clientY){
 function pointerUp(e){
  if(!dragging)return;
  dragging=false;
- try{roomWindow.releasePointerCapture?.(e.pointerId)}catch{}
+ try{viewport.releasePointerCapture?.(e.pointerId)}catch{}
  if(!moved && !zoomed){
    const id=roomObjectAt(e.clientX,e.clientY);
    if(id) document.getElementById(id)?.click();
  }
  e.preventDefault();
 }
-const roomWindow=document.querySelector('.window');
-roomWindow.addEventListener('pointerdown',pointerDown,{passive:false});
-roomWindow.addEventListener('pointermove',pointerMove,{passive:false});
-roomWindow.addEventListener('pointerup',pointerUp,{passive:false});
-roomWindow.addEventListener('pointercancel',pointerUp,{passive:false});
+viewport.addEventListener('pointerdown',pointerDown,{passive:false});
+viewport.addEventListener('pointermove',pointerMove,{passive:false});
+viewport.addEventListener('pointerup',pointerUp,{passive:false});
+viewport.addEventListener('pointercancel',pointerUp,{passive:false});
 window.addEventListener('resize',sizeCamera);
 
 const views={
@@ -447,83 +436,9 @@ document.getElementById('computerNo').addEventListener('click',(e)=>{ e.stopProp
 
 
 
-
-<script>
-(function(){
-  function initializeRoomCamera(){
-    sizeCamera();
-    applyPan();
-  }
-
-  /* Initial sizing — this was missing in V21. */
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', initializeRoomCamera, {once:true});
-  } else {
-    initializeRoomCamera();
-  }
-
-  /* Run again after the browser settles its mobile viewport height. */
-  requestAnimationFrame(()=>requestAnimationFrame(initializeRoomCamera));
-  window.addEventListener('load', initializeRoomCamera);
-
-  /* Mobile browser chrome can change the visual viewport without a normal resize. */
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', initializeRoomCamera);
-  }
-})();
-</script>
-
 </body>
 </html>
 <style>
 /* V14: no separate room BACK button */
 #back, .back, .back-button { display:none !important; }
-</style>
-
-<style>
-.titlebar .buttons, .titlebar .buttons i { pointer-events:none !important; }
-.status { pointer-events:none !important; }
-</style>
-
-<style>
-.titlebar{transform:translateY(-1px);height:50px}
-.status{transform:translateY(1px);height:60px}
-</style>
-
-<style>
-/* V22 final foreground layout overrides */
-.window{
-  position:relative !important;
-  width:100% !important;
-  height:100dvh !important;
-  overflow:hidden !important;
-}
-.viewport{
-  position:absolute !important;
-  inset:0 !important;
-  width:100% !important;
-  height:100% !important;
-  z-index:1 !important;
-}
-.titlebar{
-  position:absolute !important;
-  z-index:100 !important;
-  left:0 !important; right:0 !important; top:0 !important;
-  transform:none !important;
-  height:48px !important;
-}
-.status{
-  position:absolute !important;
-  z-index:100 !important;
-  left:0 !important; right:0 !important; bottom:0 !important;
-  transform:none !important;
-  height:58px !important;
-}
-.mode{
-  top:62px !important;
-  right:12px !important;
-}
-.hint{
-  bottom:74px !important;
-}
 </style>
