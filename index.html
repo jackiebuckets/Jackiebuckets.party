@@ -292,13 +292,24 @@ function computerFrame(t){
 function animateComputerZoom(from,to,done){
  cancelAnimationFrame(zoomAnim);
  const started=performance.now();
+ const visualFrames=12; // subtle PilotRedSun-ish loaded-frame cadence
  camera.classList.add('stepped');
+
  const tick=(now)=>{
    const raw=Math.min(1,(now-started)/zoomDuration);
-   const e=easeZoom(raw);
-   computerFrame(from+(to-from)*e);
+   const eased=easeZoom(raw);
+
+   // Quantize the animation slightly. This keeps the movement intentional and
+   // "rendered in little chunks" without looking like actual performance lag.
+   const stepped=Math.round(eased*visualFrames)/visualFrames;
+
+   computerFrame(from+(to-from)*stepped);
+
    if(raw<1) zoomAnim=requestAnimationFrame(tick);
-   else if(done) done();
+   else{
+     computerFrame(to);
+     if(done) done();
+   }
  };
  zoomAnim=requestAnimationFrame(tick);
 }
