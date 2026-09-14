@@ -189,7 +189,7 @@ function getPanLimit(){
 }
 function sizeCamera(){
  const vw=viewport.clientWidth, vh=viewport.clientHeight;
- let h=vh*1.42, w=h*ROOM_ASPECT;
+ let h=vh*1.30, w=h*ROOM_ASPECT;
  if(w<vw){ w=vw*1.03; h=w/ROOM_ASPECT; }
  camera.style.width=w+'px';
  camera.style.height=h+'px';
