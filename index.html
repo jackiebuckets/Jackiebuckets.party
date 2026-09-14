@@ -10,7 +10,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .window{height:100dvh;display:flex;flex-direction:column;background:#05070b}
 .titlebar{height:44px;flex:0 0 44px;background:#0700b8;border:4px ridge #ddd;display:flex;align-items:center;padding:0 10px;font-weight:bold;font-size:clamp(18px,4vw,27px);letter-spacing:.5px;z-index:20}
 .buttons{margin-left:auto;display:flex;gap:3px}.buttons i{width:34px;height:30px;background:#d8d8d8;border:4px outset #eee;color:#111;display:grid;place-items:center;font-style:normal;font-family:Arial;font-size:18px}
-.viewport{position:relative;flex:1;overflow:hidden;background:#060b13;cursor:grab}
+.viewport{touch-action:none;overscroll-behavior:none;position:relative;flex:1;overflow:hidden;background:#060b13;cursor:grab}
 .viewport.dragging{cursor:grabbing}
 .scene{position:absolute;inset:0;overflow:hidden}
 .camera{
@@ -96,6 +96,25 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .crt-screen button:active{background:#a5ffe9;color:#041a20}
 .crt-help{opacity:.72;margin-top:12px;font-size:12px}
 
+
+/* V13 small computer confirmation */
+.use-computer{
+ position:absolute; z-index:45; display:none;
+ left:50%; top:50%; transform:translate(-50%,-50%);
+ width:210px; background:#c0c0c0; color:#111;
+ border:4px outset #eee; padding:14px 14px 12px;
+ font:700 17px "Courier New",monospace;
+ box-shadow:6px 7px 0 #0008;
+ text-align:center;
+}
+.use-computer.open{display:block}
+.use-computer .choices{display:flex;gap:10px;justify-content:center;margin-top:14px}
+.use-computer button{
+ min-width:70px;padding:5px 10px;background:#c0c0c0;color:#111;
+ border:3px outset #eee;font:700 15px "Courier New",monospace;
+}
+.use-computer button:active{border-style:inset}
+
 </style>
 </head>
 <body>
@@ -119,6 +138,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    <button class="back" id="back">← BACK</button>
    <div class="mode"><b id="modeText">NIGHT MODE</b><span id="clock"></span></div>
    <div class="hint" id="hint">DRAG TO LOOK · TAP THINGS</div>
+
+   
+   <div class="use-computer" id="useComputer">
+     <div>USE COMPUTER?</div>
+     <div class="choices">
+       <button id="computerYes">YES</button>
+       <button id="computerNo">NO</button>
+     </div>
+   </div>
 
    <section class="crt-window" id="crtWindow" aria-label="Computer">
     <div class="crt-titlebar">JACKIEBUCKETS.EXE <button class="crt-close" id="crtClose" aria-label="Close">×</button></div>
@@ -178,24 +206,32 @@ function applyPan(){
  camera.style.transform='translate(-50%,-50%) scale(1.005)';
 }
 function pointerDown(e){
- if(zoomed||e.target.closest("button"))return;
- dragging=true;moved=false;sx=e.clientX;sy=e.clientY;startX=panX;startY=panY;
- viewport.classList.add('dragging');viewport.setPointerCapture?.(e.pointerId);
+ if(zoomed||e.target.closest("button")||e.target.closest(".crt-window"))return;
+ dragging=true;moved=false;
+ sx=e.clientX; sy=e.clientY;
+ viewport.classList.add('dragging');
+ viewport.setPointerCapture?.(e.pointerId);
 }
 function pointerMove(e){
  if(!dragging||zoomed)return;
- const dx=e.clientX-sx,dy=e.clientY-sy;
- if(Math.abs(dx)+Math.abs(dy)>7)moved=true;
- panX=startX+dx*1.08;
- panY=startY+dy*.42;
+
+ /* Incremental deltas: every physical finger pixel has the same effect,
+    regardless of where the camera is or where the drag began. */
+ const dx=e.clientX-sx, dy=e.clientY-sy;
+ sx=e.clientX; sy=e.clientY;
+
+ if(Math.abs(dx)+Math.abs(dy)>1)moved=true;
+ panX += dx*1.08;
+ panY += dy*.42;
  applyPan();
 }
 function pointerUp(e){
- dragging=false;viewport.classList.remove('dragging');
+ dragging=false;
+ viewport.classList.remove('dragging');
  try{viewport.releasePointerCapture?.(e.pointerId)}catch{}
 }
-viewport.addEventListener('pointerdown',pointerDown);
-viewport.addEventListener('pointermove',pointerMove);
+viewport.addEventListener('pointerdown',pointerDown,{passive:false});
+viewport.addEventListener('pointermove',pointerMove,{passive:false});
 viewport.addEventListener('pointerup',pointerUp);
 viewport.addEventListener('pointercancel',pointerUp);
 window.addEventListener('resize',sizeCamera);
@@ -246,8 +282,8 @@ Object.keys(views).forEach(id=>document.getElementById(id).addEventListener('cli
  if(id==='computer'){
    goView(id);
    requestAnimationFrame(()=>{
-     document.getElementById('crtWindow').classList.add('open');
-     status.textContent='THE COMPUTER IS AWAKE.';
+     document.getElementById('useComputer').classList.add('open');
+     status.textContent='THE COMPUTER.';
    });
    return;
  }
@@ -322,24 +358,32 @@ crtWindow.querySelectorAll('[data-crt]').forEach(btn=>btn.addEventListener('clic
 }));
 
 
-/* V11 constant-sensitivity pan override */
-let v11x=0,v11y=0,v11drag=false;
-stage.addEventListener('pointerdown',e=>{
- if(zoomed)return;
- v11drag=true; v11x=e.clientX; v11y=e.clientY;
-},{capture:true});
-stage.addEventListener('pointermove',e=>{
- if(!v11drag||zoomed)return;
- const dx=e.clientX-v11x,dy=e.clientY-v11y;
- v11x=e.clientX;v11y=e.clientY;
- if(Math.abs(dx)+Math.abs(dy)>1)moved=true;
- const r=stage.getBoundingClientRect();
- targetX=Math.max(-1,Math.min(1,targetX-(dx/Math.max(1,r.width))*1.18));
- targetY=Math.max(-1,Math.min(1,targetY-(dy/Math.max(1,r.height))*1.18));
- render();
- e.stopImmediatePropagation();
-},{capture:true});
-window.addEventListener('pointerup',()=>v11drag=false,{capture:true});
+
+const useComputer=document.getElementById('useComputer');
+useComputer.addEventListener('pointerdown',e=>e.stopPropagation());
+useComputer.addEventListener('click',e=>e.stopPropagation());
+
+document.getElementById('computerYes').addEventListener('click',(e)=>{
+ e.stopPropagation();
+ useComputer.classList.remove('open');
+ crtWindow.classList.add('open');
+ status.textContent='THE COMPUTER IS AWAKE.';
+});
+
+document.getElementById('computerNo').addEventListener('click',(e)=>{
+ e.stopPropagation();
+ useComputer.classList.remove('open');
+ crtWindow.classList.remove('open');
+ zoomed=false;
+ scene.classList.remove('zoomed');
+ back.classList.remove('show');
+ camera.classList.add('stepped');
+ applyPan();
+ status.textContent='CLICK AROUND.';
+});
+
+/* Back also dismisses the small prompt. */
+back.addEventListener('click',()=>useComputer.classList.remove('open'));
 
 </script>
 </body>
