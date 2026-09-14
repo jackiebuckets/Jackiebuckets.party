@@ -7,60 +7,129 @@
 <style>
 :root{
   --blue:#0000aa;
-  --cyan:#75f6ff;
+  --cyan:#8cfaff;
   --panel:#c0c0c0;
 }
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020407}
-body{font-family:"Courier New",monospace;color:#fff}
-#app{position:fixed;inset:0;background:#020407}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a}
+body{font-family:"Courier New",monospace;color:white}
+
+#app{position:fixed;inset:0;background:#05070a;overflow:hidden}
 #titlebar{
-  position:absolute;z-index:50;left:0;right:0;top:0;height:42px;
+  position:absolute;z-index:100;left:0;right:0;top:0;height:40px;
   background:var(--blue);color:#fff;border:2px solid #eee;
   box-shadow:inset -2px -2px #666,inset 2px 2px #fff;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 5px 0 10px;font-size:19px;font-weight:bold
+  padding:0 5px 0 9px;font-size:18px;font-weight:bold
 }
-#buttons{display:flex;gap:2px}
+.winbuttons{display:flex;gap:2px}
 .winbtn{
-  width:29px;height:27px;background:#c0c0c0;color:#111;
+  width:28px;height:25px;background:#c0c0c0;color:#111;
   border:2px solid #eee;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
   display:grid;place-items:center;font-weight:bold
 }
-#game{
-  position:absolute;z-index:1;left:0;right:0;top:42px;bottom:52px;
-  overflow:hidden;background:#07101a;touch-action:none
+
+#viewport{
+  position:absolute;left:0;right:0;top:40px;bottom:50px;
+  overflow:hidden;background:#06101a;
+  touch-action:none;
 }
-canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+#stageWrap{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:960px;height:569px;
+}
+#stage{
+  position:absolute;inset:0;
+  overflow:hidden;
+  transform-origin:center center;
+  image-rendering:pixelated;
+  background:#06101a;
+}
+.layer{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  image-rendering:pixelated;
+  user-select:none;pointer-events:none;
+  transform:translate3d(0,0,0) scale(1.02);
+  will-change:transform;
+}
+#base{z-index:1}
+#wall{z-index:2;clip-path:polygon(0 0,100% 0,100% 70%,0 69%)}
+#desk{z-index:3;clip-path:polygon(19% 43%,78% 43%,78% 79%,19% 80%)}
+#chair{z-index:4;clip-path:polygon(20% 53%,42% 50%,47% 92%,17% 92%)}
+#leftfg{z-index:5;clip-path:polygon(0 58%,30% 59%,34% 100%,0 100%)}
+#rightfg{z-index:6;clip-path:polygon(82% 56%,100% 53%,100% 100%,76% 100%)}
+#tablefg{z-index:7;clip-path:polygon(57% 82%,82% 82%,82% 100%,54% 100%)}
 #scan{
-  position:absolute;z-index:10;inset:42px 0 52px;pointer-events:none;
+  position:absolute;z-index:30;inset:0;pointer-events:none;
   background:
-    repeating-linear-gradient(to bottom,rgba(255,255,255,.012) 0 1px,rgba(0,0,0,.028) 2px 3px),
-    radial-gradient(circle at 50% 48%,transparent 52%,rgba(0,0,0,.16) 100%);
-  mix-blend-mode:overlay;opacity:.62
+    repeating-linear-gradient(to bottom,rgba(255,255,255,.02) 0 1px,rgba(0,0,0,.035) 2px 3px),
+    radial-gradient(circle at 50% 46%,transparent 56%,rgba(0,0,0,.18) 100%);
+  mix-blend-mode:overlay;
+  opacity:.5
 }
-#statusbar{
-  position:absolute;z-index:50;left:0;right:0;bottom:0;min-height:52px;
-  background:#000;border-top:1px solid #555;
-  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
-  padding:8px 18px calc(8px + env(safe-area-inset-bottom));
-  gap:12px;font-size:14px;letter-spacing:.045em
+#noise{
+  position:absolute;z-index:31;inset:-10%;pointer-events:none;opacity:.035;
+  background-image:
+    radial-gradient(circle at 20% 30%,white 0 1px,transparent 1px),
+    radial-gradient(circle at 70% 65%,white 0 1px,transparent 1px),
+    radial-gradient(circle at 35% 80%,white 0 1px,transparent 1px);
+  background-size:7px 9px,11px 13px,17px 19px;
+  animation:noise .18s steps(2,end) infinite;
 }
-#status{white-space:nowrap}
-#hint{text-align:center;color:#aaa;font-size:12px;white-space:nowrap}
-#right{text-align:right;color:#8e8e8e;font-size:11px;white-space:nowrap}
+@keyframes noise{
+  0%{transform:translate(0,0)}
+  50%{transform:translate(3px,-2px)}
+  100%{transform:translate(-2px,3px)}
+}
+
+.hotspot{
+  position:absolute;z-index:40;
+  border:0;background:transparent;padding:0;
+  cursor:pointer;touch-action:manipulation;
+}
+.hotspot:focus-visible{outline:2px dashed var(--cyan);outline-offset:2px}
+#lamp{left:21%;top:44%;width:9%;height:25%}
+#computer{left:35%;top:42%;width:16%;height:26%}
+#stereo{left:59%;top:53%;width:18%;height:20%}
+#photos{left:24%;top:10%;width:22%;height:37%}
+#tapestry{left:46%;top:7%;width:21%;height:48%}
+#skull{left:67%;top:8%;width:9%;height:29%}
+#door{left:77%;top:14%;width:18%;height:67%}
+#guitar{left:12%;top:43%;width:9%;height:34%}
+#records{left:57%;top:67%;width:20%;height:23%}
+
 #mode{
-  position:absolute;z-index:30;right:14px;top:56px;
-  min-width:145px;background:#d9d9d9;color:#111;padding:7px 9px;
-  border:2px solid #eee;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
+  position:absolute;z-index:80;right:14px;top:53px;
+  min-width:144px;background:#d9d9d9;color:#111;
+  padding:7px 9px;border:2px solid #eee;
+  box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
   font-size:12px;line-height:1.3
 }
 #mode strong{display:block;font-size:15px}
-#reticle::before{left:7px;top:0;width:1px;height:15px}
-#reticle::after{left:0;top:7px;width:15px;height:1px}
+#statusbar{
+  position:absolute;z-index:100;left:0;right:0;bottom:0;min-height:50px;
+  background:#000;border-top:1px solid #555;
+  display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;
+  padding:8px 16px calc(8px + env(safe-area-inset-bottom));
+  letter-spacing:.045em;font-size:14px
+}
+#hint{text-align:center;color:#a5a5a5;font-size:11px;white-space:nowrap}
+#right{text-align:right;color:#898989;font-size:11px;white-space:nowrap}
+
+#nodeLabel{
+  position:absolute;z-index:70;left:14px;top:54px;
+  color:#b9fcff;background:rgba(0,0,0,.48);
+  border:1px solid rgba(140,250,255,.35);
+  padding:5px 8px;font-size:11px;opacity:0;
+  transition:opacity .1s steps(1,end)
+}
+#nodeLabel.show{opacity:1}
 
 #dialog{
-  position:absolute;z-index:80;left:50%;top:50%;transform:translate(-50%,-50%);
+  position:absolute;z-index:120;left:50%;top:50%;transform:translate(-50%,-50%);
   width:min(560px,calc(100vw - 28px));
   background:#c0c0c0;color:#000;border:2px solid #fff;
   box-shadow:inset -2px -2px #707070,inset 2px 2px #dfdfdf,8px 8px 0 rgba(0,0,0,.45)
@@ -77,39 +146,85 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
 .dialog-body{padding:14px}
 .terminal{
   background:#061015;color:var(--cyan);border:3px inset #aaa;
-  padding:14px;min-height:235px;line-height:1.55
+  padding:14px;min-height:230px;line-height:1.55
 }
 .terminal button{
   display:block;width:100%;padding:5px 0;background:transparent;border:0;
-  color:var(--cyan);font:inherit;text-align:left;cursor:pointer
+  color:var(--cyan);font:inherit;text-align:left
 }
-.terminal button:focus-visible{outline:1px dashed var(--cyan)}
+
+#backButton{
+  position:absolute;z-index:75;left:14px;bottom:14px;
+  display:none;background:#c0c0c0;color:#111;font:inherit;
+  border:2px solid #fff;box-shadow:inset -2px -2px #777,inset 2px 2px #eee;
+  padding:7px 12px;
+}
+body.node #backButton{display:block}
+
+/* Stepped 90s-style camera transitions rather than silky modern easing. */
+.stage-transition{
+  transition:
+    transform .34s steps(7,end),
+    left .34s steps(7,end),
+    top .34s steps(7,end);
+}
+.layer-transition{
+  transition:transform .34s steps(7,end);
+}
 
 @media(max-width:700px){
-  #titlebar{height:40px;font-size:16px}
-  #game{top:40px;bottom:58px}
-  #scan{inset:40px 0 58px}
-  #statusbar{min-height:58px;grid-template-columns:1fr;padding:9px 14px calc(9px + env(safe-area-inset-bottom));font-size:13px}
+  #titlebar{font-size:16px}
+  #viewport{bottom:56px}
+  #statusbar{min-height:56px;grid-template-columns:1fr;padding:9px 14px calc(9px + env(safe-area-inset-bottom));font-size:13px}
   #hint,#right{display:none}
-  #mode{right:8px;top:51px;min-width:130px}
+  #mode{right:8px;top:49px;min-width:130px}
+  #stageWrap{width:960px;height:569px}
+}
+@media(prefers-reduced-motion:reduce){
+  #noise{animation:none}
+  .stage-transition,.layer-transition{transition:none}
 }
 </style>
 </head>
-<body class="night">
+<body>
 <div id="app">
   <div id="titlebar">
     <span>Jackiebuckets.party</span>
-    <div id="buttons"><span class="winbtn">_</span><span class="winbtn">□</span><span class="winbtn">×</span></div>
+    <div class="winbuttons"><span class="winbtn">_</span><span class="winbtn">□</span><span class="winbtn">×</span></div>
   </div>
 
-  <div id="game"></div>
-  <div id="scan"></div>
+  <div id="viewport">
+    <div id="stageWrap" class="stage-transition">
+      <div id="stage">
+        <img class="layer layer-transition" id="base" src="room-night.png" alt="Jackiebuckets room">
+        <img class="layer layer-transition" id="wall" src="room-night.png" alt="">
+        <img class="layer layer-transition" id="desk" src="room-night.png" alt="">
+        <img class="layer layer-transition" id="chair" src="room-night.png" alt="">
+        <img class="layer layer-transition" id="leftfg" src="room-night.png" alt="">
+        <img class="layer layer-transition" id="rightfg" src="room-night.png" alt="">
+        <img class="layer layer-transition" id="tablefg" src="room-night.png" alt="">
+        <div id="scan"></div><div id="noise"></div>
+
+        <button class="hotspot" id="lamp" aria-label="Hula lamp"></button>
+        <button class="hotspot" id="computer" aria-label="Computer"></button>
+        <button class="hotspot" id="stereo" aria-label="Stereo"></button>
+        <button class="hotspot" id="photos" aria-label="Wall photos"></button>
+        <button class="hotspot" id="tapestry" aria-label="Orange tapestry"></button>
+        <button class="hotspot" id="skull" aria-label="Beaded skull"></button>
+        <button class="hotspot" id="door" aria-label="Closed door"></button>
+        <button class="hotspot" id="guitar" aria-label="Pink Stratocaster"></button>
+        <button class="hotspot" id="records" aria-label="Records and books"></button>
+      </div>
+    </div>
+    <div id="nodeLabel">ROOM</div>
+    <button id="backButton" type="button">&lt; BACK</button>
+  </div>
 
   <div id="mode"><strong id="modeLabel">NIGHT MODE</strong><span id="clock">--:-- --</span></div>
 
   <div id="statusbar" aria-live="polite">
-    <span id="status">TAP SOMETHING.</span>
-    <span id="hint">DRAG TO LOOK · TAP ANY OBJECT</span>
+    <span id="status">CLICK AROUND.</span>
+    <span id="hint">DRAG A LITTLE · TAP OBJECTS</span>
     <span id="right">SOME THINGS WORK. SOME THINGS DON'T.</span>
   </div>
 
@@ -119,265 +234,144 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
       <button id="closeDialog" type="button">×</button>
     </div>
     <div class="dialog-body">
-      <div id="terminal" class="terminal">
-        JACKIEBUCKETS.PARTY<br>
-        -------------------<br><br>
-        <button type="button" data-page="internet">&gt; INTERNET</button>
-        <button type="button" data-page="photos">&gt; PHOTOS</button>
-        <button type="button" data-page="music">&gt; MUSIC</button>
-        <button type="button" data-page="journal">&gt; JOURNAL</button>
-        <button type="button" data-page="unknown">&gt; ???</button>
-      </div>
+      <div id="terminal" class="terminal"></div>
     </div>
   </section>
 </div>
 
-<script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-
-const game = document.getElementById("game");
-const statusEl = document.getElementById("status");
-const modeLabel = document.getElementById("modeLabel");
-const clockEl = document.getElementById("clock");
-const dialog = document.getElementById("dialog");
-const dialogTitle = document.getElementById("dialogTitle");
-const terminal = document.getElementById("terminal");
-
-const renderer = new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:"high-performance"});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.35));
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.setClearColor(0x06101a, 1);
-game.appendChild(renderer.domElement);
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x06101a);
-
-const camera = new THREE.PerspectiveCamera(50,1,0.1,30);
-camera.position.set(0,0,0);
-
-const ROOM_W = 1536;
-const ROOM_H = 910;
-const ASPECT = ROOM_W / ROOM_H;
-const BASE_DISTANCE = 5.0;
-const WORLD_H = 5.0;
-const WORLD_W = WORLD_H * ASPECT;
-
-// ---------------------------------------------------------
-// Depth-painted mesh.
-// At the default viewpoint every vertex projects back onto
-// the exact same pixel it came from, so the locked artwork
-// remains visually unchanged. Moving the camera reveals depth.
-// ---------------------------------------------------------
-const COLS = 128;
-const ROWS = 76;
-const geometry = new THREE.PlaneGeometry(WORLD_W,WORLD_H,COLS,ROWS);
-const pos = geometry.attributes.position;
-
-function smoothstep(a,b,x){
-  const t=Math.max(0,Math.min(1,(x-a)/(b-a)));
-  return t*t*(3-2*t);
-}
-function ellipse(u,v,cx,cy,rx,ry){
-  const q=Math.sqrt(((u-cx)/rx)**2 + ((v-cy)/ry)**2);
-  return 1-smoothstep(.55,1.0,q);
-}
-function rectSoft(u,v,x1,y1,x2,y2,feather=.06){
-  const ix=smoothstep(x1-feather,x1+feather,u)*(1-smoothstep(x2-feather,x2+feather,u));
-  const iy=smoothstep(y1-feather,y1+feather,v)*(1-smoothstep(y2-feather,y2+feather,v));
-  return ix*iy;
-}
-function depthAt(u,v){
-  let d=0;
-
-  // Floor comes progressively toward the viewer.
-  const floor = smoothstep(.61,1.0,v);
-  d = Math.max(d, floor*0.60);
-
-  // Bed / plant mass in the near-left foreground.
-  d = Math.max(d, ellipse(u,v,.11,.80,.23,.30)*1.20);
-
-  // Office chair.
-  d = Math.max(d, ellipse(u,v,.29,.72,.16,.27)*1.00);
-
-  // Coffee table / books foreground.
-  d = Math.max(d, ellipse(u,v,.68,.91,.20,.16)*1.12);
-
-  // Right foreground chair.
-  d = Math.max(d, ellipse(u,v,.95,.82,.18,.29)*1.15);
-
-  // Desk/CRT/stereo live in the middle distance.
-  d = Math.max(d, rectSoft(u,v,.21,.44,.76,.79,.055)*0.36);
-
-  // Lamp / guitar are slightly in front of the desk/wall.
-  d = Math.max(d, ellipse(u,v,.255,.53,.065,.17)*0.54);
-  d = Math.max(d, ellipse(u,v,.145,.57,.055,.18)*0.42);
-
-  // Shelf foliage gives a little depth against the wall.
-  d = Math.max(d, ellipse(u,v,.35,.37,.12,.18)*0.26);
-
-  return d;
-}
-
-// Compensate x/y for each displaced depth so the default
-// camera still reproduces the original 2D image exactly.
-for(let i=0;i<pos.count;i++){
-  const x0=pos.getX(i);
-  const y0=pos.getY(i);
-  const u=x0/WORLD_W + .5;
-  const v=.5 - y0/WORLD_H;
-  const offset=depthAt(u,v);
-  const dist=BASE_DISTANCE-offset;
-  const scale=dist/BASE_DISTANCE;
-  pos.setXYZ(i,x0*scale,y0*scale,-dist);
-}
-geometry.computeVertexNormals();
-
-const texture = new THREE.TextureLoader().load("room.png");
-texture.colorSpace = THREE.SRGBColorSpace;
-texture.minFilter = THREE.NearestFilter;
-texture.magFilter = THREE.NearestFilter;
-
-const roomMat = new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide});
-const roomMesh = new THREE.Mesh(geometry,roomMat);
-scene.add(roomMesh);
-
-// Overscan safety layer: a slightly enlarged, flat copy of the locked artwork
-// sits behind the depth mesh. When the camera pans to the extreme left/right,
-// this fills any exposed edge instead of showing blank/white canvas.
-const backdropGeometry = new THREE.PlaneGeometry(WORLD_W * 1.18, WORLD_H * 1.18);
-const backdropMaterial = new THREE.MeshBasicMaterial({
-  map: texture,
-  side: THREE.DoubleSide
-});
-const backdrop = new THREE.Mesh(backdropGeometry, backdropMaterial);
-backdrop.position.set(0, 0, -(BASE_DISTANCE + 0.42));
-scene.add(backdrop);
-
-// Invisible click targets exist in the same perspective space.
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2(0,0);
-const targets=[];
-
-function worldFromUV(u,v,depth=0.25){
-  const x0=(u-.5)*WORLD_W;
-  const y0=(.5-v)*WORLD_H;
-  const dist=BASE_DISTANCE-depth;
-  const s=dist/BASE_DISTANCE;
-  return new THREE.Vector3(x0*s,y0*s,-dist);
-}
-function hotspot(id,label,u,v,w,h,depth=.28){
-  const center=worldFromUV(u,v,depth);
-  const dist=BASE_DISTANCE-depth;
-  const s=dist/BASE_DISTANCE;
-  const mesh=new THREE.Mesh(
-    new THREE.PlaneGeometry(WORLD_W*w*s,WORLD_H*h*s),
-    new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false})
-  );
-  mesh.position.copy(center);
-  mesh.userData={id,label};
-  scene.add(mesh);targets.push(mesh);
-}
-hotspot("lamp","THE HULA LAMP.",.255,.52,.085,.21,.50);
-hotspot("computer","THE COMPUTER.",.405,.53,.15,.20,.36);
-hotspot("stereo","IT STILL WORKS.",.655,.58,.18,.18,.35);
-hotspot("photos","YOU REMEMBER THIS DIFFERENTLY.",.34,.23,.20,.35,.08);
-hotspot("tapestry","YOU'VE LOOKED AT THIS A LOT.",.565,.27,.22,.48,.05);
-hotspot("skull","LITTLE BEADED GUY.",.71,.20,.09,.25,.05);
-hotspot("door","A CLOSED DOOR.",.82,.48,.16,.62,.03);
-hotspot("guitar","THE PINK STRAT.",.155,.57,.07,.27,.40);
-hotspot("records","RECORDS. BOOKS. HUMAN DESTINY.",.655,.74,.20,.20,.30);
-
-// Camera / look controls.
-let currentX=0,currentY=0,targetX=0,targetY=0;
-let dragging=false,startX=0,startY=0,startTX=0,startTY=0,moved=0;
-
-function getPanLimits(){
-  const aspect = game.clientWidth / game.clientHeight;
-  // Because the camera is fitted to the room height in portrait,
-  // this gives the actual world width currently visible at the room plane.
-  const visibleH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov/2)) * BASE_DISTANCE;
-  const visibleW = visibleH * aspect;
-  const maxX = Math.max(0, (WORLD_W - visibleW) / 2);
-  // Keep a small margin so we never reveal beyond the artwork.
-  return { x: maxX * 0.88, y: aspect < .85 ? 0.10 : 0.08 };
-}
-
-function updatePointerFromEvent(e){
-  const r=renderer.domElement.getBoundingClientRect();
-  pointer.x=((e.clientX-r.left)/r.width)*2-1;
-  pointer.y=-((e.clientY-r.top)/r.height)*2+1;
-}
-
-renderer.domElement.addEventListener("pointerdown",e=>{
-  updatePointerFromEvent(e);
-  dragging=true;
-  startX=e.clientX; startY=e.clientY;
-  startTX=targetX; startTY=targetY;
-  moved=0;
-  renderer.domElement.setPointerCapture(e.pointerId);
-});
-
-renderer.domElement.addEventListener("pointermove",e=>{
-  updatePointerFromEvent(e);
-
-  if(dragging){
-    const dx=e.clientX-startX,dy=e.clientY-startY;
-    moved=Math.max(moved,Math.hypot(dx,dy));
-    const lim=getPanLimits();
-
-    // Faster direct-feeling pan: roughly one room-width of movement
-    // over a comfortable thumb swipe.
-    const sensitivityX = Math.max(120, game.clientWidth * 0.42);
-    const sensitivityY = Math.max(260, game.clientHeight * 1.8);
-
-    targetX=THREE.MathUtils.clamp(startTX-dx/sensitivityX*lim.x,-lim.x,lim.x);
-    targetY=THREE.MathUtils.clamp(startTY+dy/sensitivityY,-lim.y,lim.y);
-  }
-});
-
-renderer.domElement.addEventListener("pointerup",e=>{
-  updatePointerFromEvent(e);
-  dragging=false;
-  try{renderer.domElement.releasePointerCapture(e.pointerId)}catch{}
-  // Tap exactly where the finger/mouse was released.
-  if(moved<9) interactAtPointer();
-});
-function say(t){statusEl.textContent=t}
+<script>
+(()=>{
+const viewport=document.getElementById("viewport");
+const stageWrap=document.getElementById("stageWrap");
+const layers={
+  base:document.getElementById("base"),
+  wall:document.getElementById("wall"),
+  desk:document.getElementById("desk"),
+  chair:document.getElementById("chair"),
+  leftfg:document.getElementById("leftfg"),
+  rightfg:document.getElementById("rightfg"),
+  tablefg:document.getElementById("tablefg")
+};
+const statusEl=document.getElementById("status");
+const modeLabel=document.getElementById("modeLabel");
+const clockEl=document.getElementById("clock");
+const nodeLabel=document.getElementById("nodeLabel");
+const backButton=document.getElementById("backButton");
+const dialog=document.getElementById("dialog");
+const dialogTitle=document.getElementById("dialogTitle");
+const terminal=document.getElementById("terminal");
 
 let mode="night";
+let node="room";
+let drag=false,sx=0,sy=0,startX=0,startY=0,lookX=0,lookY=0,moved=0;
+
+function say(t){statusEl.textContent=t}
+
+function roomImage(){
+  return mode==="night" ? "room-night.png" : "room-day.png";
+}
+function refreshImages(){
+  const src=roomImage();
+  Object.values(layers).forEach(i=>i.src=src);
+}
+
 function setMode(next){
   mode=next;
-  if(mode==="night"){
-    renderer.domElement.style.filter="brightness(1) saturate(1)";
-    renderer.setClearColor(0x06101a, 1);
-    scene.background.set(0x06101a);
-    modeLabel.textContent="NIGHT MODE";
-    say("NIGHT AGAIN.");
-  }else{
-    renderer.domElement.style.filter="brightness(1.25) saturate(.92) sepia(.06)";
-    renderer.setClearColor(0x1a2430, 1);
-    scene.background.set(0x1a2430);
-    modeLabel.textContent="DAY MODE";
-    say("DAYLIGHT.");
-  }
+  refreshImages();
+  modeLabel.textContent=mode==="night"?"NIGHT MODE":"DAY MODE";
+  say(mode==="night"?"NIGHT AGAIN.":"DAYLIGHT.");
 }
-function toggleMode(){setMode(mode==="night"?"day":"night")}
-setMode("night");
+
+function fitStage(){
+  const vw=viewport.clientWidth, vh=viewport.clientHeight;
+  const stageAspect=960/569;
+  const viewAspect=vw/vh;
+  let scale;
+  if(viewAspect > stageAspect){
+    scale=vw/960;
+  }else{
+    scale=vh/569;
+  }
+  stageWrap.style.transform=`translate(-50%,-50%) scale(${scale})`;
+  applyLook(false);
+}
+window.addEventListener("resize",fitStage);
+
+function applyLook(animated=true){
+  // Tiny, controlled "lean" instead of free camera roaming.
+  const x=lookX, y=lookY;
+  const mult = node==="room" ? 1 : .45;
+
+  layers.wall.style.transform=`translate3d(${x*2*mult}px,${y*1*mult}px,0) scale(1.025)`;
+  layers.desk.style.transform=`translate3d(${x*5*mult}px,${y*2*mult}px,0) scale(1.025)`;
+  layers.chair.style.transform=`translate3d(${x*9*mult}px,${y*4*mult}px,0) scale(1.03)`;
+  layers.leftfg.style.transform=`translate3d(${x*13*mult}px,${y*5*mult}px,0) scale(1.035)`;
+  layers.rightfg.style.transform=`translate3d(${x*13*mult}px,${y*5*mult}px,0) scale(1.035)`;
+  layers.tablefg.style.transform=`translate3d(${x*15*mult}px,${y*6*mult}px,0) scale(1.04)`;
+}
+
+viewport.addEventListener("pointerdown",e=>{
+  if(e.target.closest("button")) return;
+  drag=true;sx=e.clientX;sy=e.clientY;startX=lookX;startY=lookY;moved=0;
+  viewport.setPointerCapture(e.pointerId);
+});
+viewport.addEventListener("pointermove",e=>{
+  if(!drag) return;
+  const dx=e.clientX-sx, dy=e.clientY-sy;
+  moved=Math.max(moved,Math.hypot(dx,dy));
+  // Limited lean: intentionally restrained like a pre-rendered adventure node.
+  lookX=Math.max(-7,Math.min(7,startX+dx/24));
+  lookY=Math.max(-3,Math.min(3,startY+dy/36));
+  applyLook();
+});
+viewport.addEventListener("pointerup",e=>{
+  drag=false;
+  try{viewport.releasePointerCapture(e.pointerId)}catch{}
+});
+
+const nodes={
+  room:{x:0,y:0,scale:1,label:"ROOM"},
+  computer:{x:148,y:65,scale:1.92,label:"COMPUTER"},
+  stereo:{x:-180,y:52,scale:1.82,label:"STEREO"},
+  photos:{x:130,y:-78,scale:1.55,label:"PHOTOS"},
+  door:{x:-275,y:15,scale:1.55,label:"DOOR"}
+};
+
+function goNode(name){
+  const n=nodes[name]||nodes.room;
+  node=name;
+  document.body.classList.toggle("node",name!=="room");
+  nodeLabel.textContent=n.label;
+  nodeLabel.classList.add("show");
+  setTimeout(()=>nodeLabel.classList.remove("show"),650);
+
+  lookX=0;lookY=0;applyLook();
+  stageWrap.style.left=`calc(50% + ${n.x}px)`;
+  stageWrap.style.top=`calc(50% + ${n.y}px)`;
+
+  // Preserve responsive base scaling, then multiply by node zoom.
+  const vw=viewport.clientWidth, vh=viewport.clientHeight;
+  const stageAspect=960/569, viewAspect=vw/vh;
+  let base=viewAspect>stageAspect ? vw/960 : vh/569;
+  stageWrap.style.transform=`translate(-50%,-50%) scale(${base*n.scale})`;
+}
+
+backButton.addEventListener("click",()=>{goNode("room");say("CLICK AROUND.")});
 
 function openComputer(){
   dialogTitle.textContent="C:\\JACKIEBUCKETS";
   terminal.innerHTML=`
     JACKIEBUCKETS.PARTY<br>
     -------------------<br><br>
-    <button type="button" data-page="internet">&gt; INTERNET</button>
-    <button type="button" data-page="photos">&gt; PHOTOS</button>
-    <button type="button" data-page="music">&gt; MUSIC</button>
-    <button type="button" data-page="journal">&gt; JOURNAL</button>
-    <button type="button" data-page="unknown">&gt; ???</button>`;
-  wireTerminal();
+    <button data-page="internet">&gt; INTERNET</button>
+    <button data-page="photos">&gt; PHOTOS</button>
+    <button data-page="music">&gt; MUSIC</button>
+    <button data-page="journal">&gt; JOURNAL</button>
+    <button data-page="unknown">&gt; ???</button>`;
+  terminal.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
   dialog.hidden=false;
 }
-function showPage(kind){
+function showPage(k){
   const pages={
     internet:["INTERNET","LINKS WILL LIVE HERE.<br><br>THE INTERNET USED TO BE WEIRDER."],
     photos:["PHOTOS","PHOTO ALBUM COMING SOON.<br><br>YOU REMEMBER THIS DIFFERENTLY."],
@@ -385,75 +379,40 @@ function showPage(kind){
     journal:["JOURNAL","NOT EVERYTHING NEEDS TO BE POSTED."],
     unknown:["???","YOU FOUND SOMETHING THAT DOESN'T EXIST YET."]
   };
-  const [title,body]=pages[kind];
-  dialogTitle.textContent=title;
-  terminal.innerHTML=body;
+  const [t,b]=pages[k]; dialogTitle.textContent=t; terminal.innerHTML=b;
 }
-function wireTerminal(){
-  terminal.querySelectorAll("[data-page]").forEach(b=>{
-    b.addEventListener("click",()=>showPage(b.dataset.page));
-  });
-}
-function interactAtPointer(){
-  raycaster.setFromCamera(pointer,camera);
-  const hit=raycaster.intersectObjects(targets,false)[0];
-  if(!hit){say("CLICK AROUND.");return}
-  const id=hit.object.userData.id;
-  if(id==="lamp"){toggleMode();return}
-  if(id==="computer"){say("BOOTING...");openComputer();return}
-  if(id==="stereo"){say("IT STILL WORKS.");return}
-  if(id==="photos"){say("YOU REMEMBER THIS DIFFERENTLY.");return}
-  if(id==="tapestry"){say("IT DOESN'T DO ANYTHING. PROBABLY.");return}
-  if(id==="skull"){say("HE KNOWS SOMETHING.");return}
-  if(id==="door"){say("NOT YET.");return}
-  if(id==="guitar"){say("DON'T DROP IT.");return}
-  if(id==="records"){say("YOU COULD STAY HERE A WHILE.");return}
-}
-document.getElementById("closeDialog").addEventListener("click",()=>{
-  dialog.hidden=true;say("CLICK AROUND.");
-});
-wireTerminal();
+document.getElementById("closeDialog").onclick=()=>{dialog.hidden=true;say("CLICK AROUND.")};
 
-function resize(){
-  const w=game.clientWidth,h=game.clientHeight;
-  renderer.setSize(w,h,false);
-  camera.aspect=w/h;
-
-  // Fit the locked artwork naturally:
-  // portrait fills height and crops sides; landscape nearly shows it all.
-  if(camera.aspect >= ASPECT){
-    const visibleH = WORLD_W / camera.aspect;
-    camera.fov = THREE.MathUtils.radToDeg(2*Math.atan((visibleH/2)/BASE_DISTANCE))*1.035;
-  }else{
-    camera.fov = THREE.MathUtils.radToDeg(2*Math.atan((WORLD_H/2)/BASE_DISTANCE))*1.025;
-  }
-  camera.updateProjectionMatrix();
-}
-window.addEventListener("resize",resize);
-resize();
+document.getElementById("lamp").onclick=()=>setMode(mode==="night"?"day":"night");
+document.getElementById("computer").onclick=()=>{
+  if(node!=="computer"){goNode("computer");say("BOOTING...");}
+  else openComputer();
+};
+document.getElementById("stereo").onclick=()=>{
+  if(node!=="stereo"){goNode("stereo");say("IT STILL WORKS.");}
+  else say("SIDE A.");
+};
+document.getElementById("photos").onclick=()=>{
+  if(node!=="photos"){goNode("photos");say("YOU REMEMBER THIS DIFFERENTLY.");}
+  else say("DON'T STARE TOO LONG.");
+};
+document.getElementById("door").onclick=()=>{
+  if(node!=="door"){goNode("door");say("A CLOSED DOOR.");}
+  else say("NOT YET.");
+};
+document.getElementById("tapestry").onclick=()=>say("IT DOESN'T DO ANYTHING. PROBABLY.");
+document.getElementById("skull").onclick=()=>say("HE KNOWS SOMETHING.");
+document.getElementById("guitar").onclick=()=>say("DON'T DROP IT.");
+document.getElementById("records").onclick=()=>say("YOU COULD STAY HERE A WHILE.");
 
 function updateClock(){
   clockEl.textContent=new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
-updateClock();
-setInterval(updateClock,30000);
+updateClock();setInterval(updateClock,30000);
 
-function animate(){
-  currentX += (targetX-currentX)*.22;
-  currentY += (targetY-currentY)*.22;
-
-  camera.position.x=currentX;
-  camera.position.y=currentY;
-  camera.position.z=0;
-
-  // Keep the view parallel to the art plane. The different vertex depths
-  // create the parallax instead of rotating a flat photo.
-  camera.rotation.set(0,0,0);
-
-  renderer.render(scene,camera);
-  requestAnimationFrame(animate);
-}
-animate();
+refreshImages();
+fitStage();
+})();
 </script>
 </body>
 </html>
