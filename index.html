@@ -5,268 +5,185 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Jackiebuckets.party</title>
 <style>
-  :root {
-    --status-h: 42px;
-    --cyan: #7ffcff;
-    --blue: #0000aa;
-    --panel: #c0c0c0;
-  }
+:root{
+  --cyan:#7ffcff; --blue:#0000aa; --panel:#c0c0c0;
+  --status:44px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#05070b;color:white;font-family:"Courier New",monospace}
+body{overflow:hidden}
 
-  * { box-sizing: border-box; }
-  html, body { margin: 0; min-height: 100%; background: #05070b; font-family: "Courier New", monospace; }
-  body { overflow-x: hidden; }
+#shell{height:100vh;display:flex;flex-direction:column;background:#05070b}
+#view{position:relative;flex:1;overflow:hidden;touch-action:none;background:#05070b}
+#world{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  perspective:1200px;
+  transform-style:preserve-3d;
+}
 
-  .site {
-    min-height: 100vh;
-    background: #05070b;
-    color: white;
-  }
+.layer{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:max(112vw,1180px);
+  height:auto;
+  transform:translate(-50%,-50%);
+  transform-origin:center center;
+  user-select:none;
+  pointer-events:none;
+  transition:filter .55s ease;
+}
+#back{
+  z-index:1;
+  filter:brightness(.95) saturate(.95);
+}
+#mid{
+  z-index:2;
+  opacity:.22;
+  filter:contrast(1.05);
+  mix-blend-mode:screen;
+}
+#front{
+  z-index:3;
+  opacity:.11;
+  filter:contrast(1.15);
+  mix-blend-mode:overlay;
+}
 
-  .viewport {
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    background: #05070b;
-    scrollbar-width: none;
-  }
-  .viewport::-webkit-scrollbar { display: none; }
+body.dark #back{
+  filter:brightness(.72) saturate(.90) contrast(1.05) hue-rotate(170deg);
+}
+body.dark #mid{opacity:.28}
+body.dark #front{opacity:.15}
 
-  .scene {
-    position: relative;
-    width: max(100vw, 1100px);
-    aspect-ratio: 1536 / 738;
-    overflow: hidden;
-    background: #111;
-  }
+#world::after{
+  content:"";
+  position:absolute; inset:0; z-index:5; pointer-events:none;
+  background:
+    repeating-linear-gradient(to bottom,rgba(255,255,255,.012) 0 1px,rgba(0,0,0,.022) 2px 3px),
+    radial-gradient(circle at 50% 44%,transparent 44%,rgba(0,0,0,.18) 100%);
+  opacity:.6;
+}
+body.dark #world::before{
+  content:"";
+  position:absolute; inset:0; z-index:4; pointer-events:none;
+  background:
+    linear-gradient(rgba(0,18,55,.12),rgba(0,14,40,.25)),
+    radial-gradient(circle at 35% 35%,rgba(30,85,135,.10),transparent 48%);
+}
 
-  .scene-image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    user-select: none;
-    pointer-events: none;
-    transition: filter 700ms ease, transform 700ms ease;
-  }
+#topbar{
+  height:38px;
+  flex:none;
+  background:#0000aa;
+  border:2px solid #efefef;
+  box-shadow:inset -2px -2px #5a5a5a,inset 2px 2px #fff;
+  color:white;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5px 0 8px;
+  z-index:30;
+}
+#title{font-weight:bold;font-size:19px}
+#winbuttons{display:flex;gap:2px}
+.winbox{
+  width:28px;height:25px;background:#c0c0c0;color:#111;
+  border:2px solid #eee;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
+  display:grid;place-items:center;font-weight:bold;
+}
 
-  .scene::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,.015) 0px,
-        rgba(255,255,255,.015) 1px,
-        rgba(0,0,0,.02) 2px,
-        rgba(0,0,0,.02) 3px
-      ),
-      radial-gradient(circle at 50% 45%, transparent 40%, rgba(0,0,0,.16) 100%);
-    mix-blend-mode: screen;
-    opacity: .38;
-  }
+#status{
+  flex:none; min-height:var(--status);
+  background:#000;border-top:1px solid #555;
+  display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px;
+  padding:8px 16px calc(8px + env(safe-area-inset-bottom));
+  z-index:40;letter-spacing:.04em
+}
+#statusRight{color:#aaa;font-size:12px;white-space:nowrap}
 
-  body.dark .scene-image {
-    filter: brightness(.42) saturate(.82) contrast(1.14) hue-rotate(165deg);
-  }
+#modeBadge{
+  position:absolute;right:14px;top:14px;z-index:20;
+  background:#d8d8d8;color:#111;padding:6px 9px;min-width:145px;
+  border:2px solid #efefef;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
+  font-size:13px;line-height:1.25;
+}
+#modeBadge strong{display:block;font-size:15px}
 
-  body.dark .scene::before {
-    content:"";
-    position:absolute;
-    inset:0;
-    z-index:1;
-    pointer-events:none;
-    background:
-      linear-gradient(rgba(0,18,52,.28), rgba(0,8,28,.48)),
-      radial-gradient(circle at 30% 35%, rgba(20,70,120,.12), transparent 45%);
-  }
+.hotspot{
+  position:absolute;z-index:15;border:0;background:transparent;padding:0;cursor:pointer;
+  border-radius:6px;touch-action:manipulation;
+}
+.hotspot:focus-visible{outline:2px dashed var(--cyan);outline-offset:2px}
+#lamp{left:21%;top:47%;width:9%;height:24%}
+#computer{left:33%;top:47%;width:17%;height:29%}
+#stereo{left:59%;top:56%;width:18%;height:21%}
+#photos{left:25%;top:10%;width:21%;height:41%}
+#tapestry{left:46%;top:7%;width:20%;height:55%}
+#skull{left:67%;top:8%;width:9%;height:34%}
+#door{left:77%;top:16%;width:18%;height:73%}
+#guitar{left:11%;top:48%;width:11%;height:38%}
+#records{left:56%;top:67%;width:20%;height:26%}
 
-  .mode-box {
-    position: absolute;
-    top: 46px;
-    right: 14px;
-    z-index: 5;
-    background: #d8d8d8;
-    color: #111;
-    border: 2px solid #efefef;
-    box-shadow: inset -2px -2px #777, inset 2px 2px #fff;
-    min-width: 168px;
-    padding: 7px 10px 8px;
-    text-align: left;
-    line-height: 1.2;
-    font-size: 16px;
-  }
-  .mode-box strong { display:block; font-size: 18px; }
+.window{
+  position:fixed;z-index:100;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(560px,calc(100vw - 28px));
+  background:#c0c0c0;color:#000;border:2px solid #fff;
+  box-shadow:inset -2px -2px #707070,inset 2px 2px #dfdfdf,8px 8px 0 rgba(0,0,0,.35);
+}
+.window[hidden]{display:none}
+.window-title{
+  background:#0000aa;color:white;font-weight:bold;padding:4px 5px 4px 7px;
+  display:flex;justify-content:space-between;align-items:center
+}
+.window-title button{width:27px;height:24px;background:#c0c0c0;border:2px solid #fff;box-shadow:inset -2px -2px #777,inset 2px 2px #eee}
+.window-body{padding:14px}
+.terminal{
+  background:#061015;color:var(--cyan);border:3px inset #aaa;min-height:235px;padding:14px;line-height:1.6
+}
+.terminal button{display:block;width:100%;text-align:left;background:transparent;border:0;color:var(--cyan);font:inherit;padding:5px 0}
+.dialog-actions{display:flex;justify-content:flex-end;margin-top:12px}
+.win-button{min-width:84px;padding:6px 12px;background:#c0c0c0;border:2px solid #fff;box-shadow:inset -2px -2px #777,inset 2px 2px #eee;font:inherit}
 
-  .hotspot {
-    position: absolute;
-    z-index: 4;
-    border: 0;
-    padding: 0;
-    background: transparent;
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-  .hotspot:focus-visible {
-    outline: 2px dashed var(--cyan);
-    outline-offset: 2px;
-  }
+#reticle{
+  position:absolute;z-index:12;width:16px;height:16px;border:1px solid rgba(127,252,255,.65);
+  border-radius:50%;pointer-events:none;opacity:.0;transition:opacity .15s;
+}
+#view.pointer #reticle{opacity:.7}
 
-  /* Useful during editing:
-     body.debug .hotspot { outline: 2px solid red; background: rgba(255,0,0,.08); }
-  */
-
-  #lamp     { left: 20.5%; top: 47%; width: 9%;  height: 24%; }
-  #computer { left: 33%;   top: 48%; width: 16%; height: 27%; }
-  #stereo   { left: 59%;   top: 57%; width: 17%; height: 20%; }
-  #photos   { left: 25%;   top: 12%; width: 21%; height: 40%; }
-  #tapestry { left: 46%;   top: 7%;  width: 20%; height: 55%; }
-  #skull    { left: 67%;   top: 8%;  width: 9%;  height: 34%; }
-  #door     { left: 77%;   top: 16%; width: 18%; height: 73%; }
-  #guitar   { left: 11%;   top: 48%; width: 11%; height: 38%; }
-  #records  { left: 56%;   top: 67%; width: 20%; height: 26%; }
-
-  .status {
-    position: sticky;
-    bottom: 0;
-    z-index: 20;
-    min-height: var(--status-h);
-    background: #000;
-    border-top: 1px solid #555;
-    color: #f5f5f5;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 12px;
-    align-items: center;
-    padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
-    font-size: 15px;
-    letter-spacing: .04em;
-  }
-
-  #statusText { min-width: 0; }
-  .status-right { color: #aaa; white-space: nowrap; font-size: 12px; }
-
-  .window {
-    position: fixed;
-    z-index: 50;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: min(560px, calc(100vw - 28px));
-    background: var(--panel);
-    color: #000;
-    border: 2px solid #fff;
-    box-shadow:
-      inset -2px -2px #707070,
-      inset 2px 2px #dfdfdf,
-      8px 8px 0 rgba(0,0,0,.35);
-  }
-  .window[hidden] { display: none; }
-
-  .window-title {
-    background: var(--blue);
-    color: white;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 5px 4px 7px;
-  }
-  .window-title button {
-    width: 26px;
-    height: 24px;
-    border: 2px solid #fff;
-    box-shadow: inset -2px -2px #777, inset 2px 2px #eee;
-    background: #c0c0c0;
-    color: #000;
-    font-weight: bold;
-    line-height: 16px;
-  }
-
-  .window-body {
-    padding: 14px;
-    font-family: "Courier New", monospace;
-  }
-
-  .terminal {
-    background: #061015;
-    color: var(--cyan);
-    border: 3px inset #a0a0a0;
-    min-height: 230px;
-    padding: 14px;
-    line-height: 1.6;
-  }
-  .terminal button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: transparent;
-    border: 0;
-    color: var(--cyan);
-    font: inherit;
-    padding: 5px 0;
-    cursor: pointer;
-  }
-  .terminal button:hover,
-  .terminal button:focus-visible {
-    background: rgba(127,252,255,.1);
-    outline: none;
-  }
-
-  .dialog-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 12px;
-  }
-  .win-button {
-    min-width: 84px;
-    padding: 6px 12px;
-    background: #c0c0c0;
-    color: #000;
-    border: 2px solid #fff;
-    box-shadow: inset -2px -2px #777, inset 2px 2px #eee;
-    font: inherit;
-  }
-
-  @media (max-width: 700px) {
-    .scene {
-      width: 1080px;
-    }
-    .mode-box {
-      top: 40px;
-      right: 10px;
-      font-size: 14px;
-      min-width: 145px;
-    }
-    .mode-box strong { font-size: 16px; }
-    .status-right { display: none; }
-    .status { grid-template-columns: 1fr; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .scene-image { transition: none; }
-  }
+@media(max-width:700px){
+  #title{font-size:16px}
+  #statusRight{display:none}
+  #status{grid-template-columns:1fr;font-size:14px}
+  #modeBadge{right:8px;top:8px;font-size:11px;min-width:130px}
+  #modeBadge strong{font-size:13px}
+  .layer{width:1300px}
+}
+@media(prefers-reduced-motion:reduce){
+  .layer{transition:none}
+}
 </style>
 </head>
 <body class="dark">
-<div class="site">
+<div id="shell">
+  <div id="topbar">
+    <div id="title">Jackiebuckets.party</div>
+    <div id="winbuttons"><div class="winbox">_</div><div class="winbox">□</div><div class="winbox">×</div></div>
+  </div>
 
-  <div class="viewport" id="viewport" aria-label="Jackiebuckets room. Drag sideways on a phone to look around.">
-    <div class="scene" id="scene">
-      <img src="room.jpg" class="scene-image" alt="A retro bedroom studio with a CRT computer, records, wall art, pink guitar, hula lamp, and closed door.">
+  <div id="view">
+    <div id="world">
+      <img id="back" class="layer" src="room.jpg" alt="Retro bedroom studio with CRT computer, records, pink guitar, hula lamp and closed door.">
+      <img id="mid" class="layer" src="room.jpg" alt="">
+      <img id="front" class="layer" src="room.jpg" alt="">
+      <div id="reticle"></div>
 
-      <div class="mode-box" aria-live="polite">
-        <strong id="modeLabel">DARK MODE</strong>
-        <span id="clockLabel">--:-- --</span>
-      </div>
+      <div id="modeBadge"><strong id="modeLabel">DARK MODE</strong><span id="clock">--:-- --</span></div>
 
       <button class="hotspot" id="lamp" aria-label="Hula lamp"></button>
       <button class="hotspot" id="computer" aria-label="Computer"></button>
       <button class="hotspot" id="stereo" aria-label="Stereo and turntable"></button>
-      <button class="hotspot" id="photos" aria-label="Wall pictures"></button>
+      <button class="hotspot" id="photos" aria-label="Wall photos"></button>
       <button class="hotspot" id="tapestry" aria-label="Orange tapestry"></button>
       <button class="hotspot" id="skull" aria-label="Beaded skull"></button>
       <button class="hotspot" id="door" aria-label="Closed door"></button>
@@ -275,166 +192,129 @@
     </div>
   </div>
 
-  <div class="status" aria-live="polite">
+  <div id="status" aria-live="polite">
     <div id="statusText">CLICK AROUND.</div>
-    <div class="status-right">SOME THINGS WORK. SOME THINGS DON'T.</div>
+    <div id="statusRight">SOME THINGS WORK. SOME THINGS DON'T.</div>
   </div>
-
-  <section class="window" id="computerWindow" hidden aria-modal="true" role="dialog" aria-labelledby="computerTitle">
-    <div class="window-title">
-      <span id="computerTitle">C:\JACKIEBUCKETS</span>
-      <button type="button" data-close aria-label="Close">×</button>
-    </div>
-    <div class="window-body">
-      <div class="terminal">
-        JACKIEBUCKETS.PARTY<br>
-        -------------------<br><br>
-        <button type="button" data-page="internet">&gt; INTERNET</button>
-        <button type="button" data-page="photos">&gt; PHOTOS</button>
-        <button type="button" data-page="music">&gt; MUSIC</button>
-        <button type="button" data-page="journal">&gt; JOURNAL</button>
-        <button type="button" data-page="unknown">&gt; ???</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="window" id="contentWindow" hidden aria-modal="true" role="dialog" aria-labelledby="contentTitle">
-    <div class="window-title">
-      <span id="contentTitle">WINDOW</span>
-      <button type="button" data-close aria-label="Close">×</button>
-    </div>
-    <div class="window-body">
-      <div id="contentBody"></div>
-      <div class="dialog-actions">
-        <button class="win-button" type="button" data-close>OK</button>
-      </div>
-    </div>
-  </section>
 </div>
 
+<section class="window" id="computerWindow" hidden aria-modal="true" role="dialog">
+  <div class="window-title"><span>C:\JACKIEBUCKETS</span><button type="button" data-close>×</button></div>
+  <div class="window-body">
+    <div class="terminal">
+      JACKIEBUCKETS.PARTY<br>-------------------<br><br>
+      <button type="button" data-page="internet">&gt; INTERNET</button>
+      <button type="button" data-page="photos">&gt; PHOTOS</button>
+      <button type="button" data-page="music">&gt; MUSIC</button>
+      <button type="button" data-page="journal">&gt; JOURNAL</button>
+      <button type="button" data-page="unknown">&gt; ???</button>
+    </div>
+  </div>
+</section>
+
+<section class="window" id="contentWindow" hidden aria-modal="true" role="dialog">
+  <div class="window-title"><span id="contentTitle">WINDOW</span><button type="button" data-close>×</button></div>
+  <div class="window-body"><div id="contentBody"></div><div class="dialog-actions"><button class="win-button" data-close>OK</button></div></div>
+</section>
+
 <script>
-(() => {
-  const status = document.getElementById('statusText');
-  const viewport = document.getElementById('viewport');
-  const computerWindow = document.getElementById('computerWindow');
-  const contentWindow = document.getElementById('contentWindow');
-  const contentTitle = document.getElementById('contentTitle');
-  const contentBody = document.getElementById('contentBody');
-  const modeLabel = document.getElementById('modeLabel');
-  const clockLabel = document.getElementById('clockLabel');
+(()=>{
+  const view=document.getElementById('view');
+  const world=document.getElementById('world');
+  const layers=[document.getElementById('back'),document.getElementById('mid'),document.getElementById('front')];
+  const reticle=document.getElementById('reticle');
+  const status=document.getElementById('statusText');
+  const modeLabel=document.getElementById('modeLabel');
+  const clock=document.getElementById('clock');
+  const computerWindow=document.getElementById('computerWindow');
+  const contentWindow=document.getElementById('contentWindow');
+  const contentTitle=document.getElementById('contentTitle');
+  const contentBody=document.getElementById('contentBody');
 
-  const say = (text) => { status.textContent = text; };
+  let tx=0,ty=0,cx=0,cy=0;
+  let dragging=false,startX=0,startY=0,startTX=0,startTY=0;
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const say=t=>status.textContent=t;
 
-  function setMode(mode) {
-    document.body.classList.toggle('dark', mode === 'dark');
-    modeLabel.textContent = mode === 'dark' ? 'DARK MODE' : 'LIGHT MODE';
-    say(mode === 'dark' ? 'LIGHTS OUT.' : 'THAT\'S BETTER.');
+  function updateCamera(){
+    cx+=(tx-cx)*0.08; cy+=(ty-cy)*0.08;
+    layers[0].style.transform=`translate(calc(-50% + ${cx*5}px),calc(-50% + ${cy*3}px)) scale(1.02)`;
+    layers[1].style.transform=`translate(calc(-50% + ${cx*10}px),calc(-50% + ${cy*6}px)) scale(1.025)`;
+    layers[2].style.transform=`translate(calc(-50% + ${cx*16}px),calc(-50% + ${cy*10}px)) scale(1.03)`;
+    requestAnimationFrame(updateCamera);
   }
+  requestAnimationFrame(updateCamera);
 
-  function toggleMode() {
-    setMode(document.body.classList.contains('dark') ? 'light' : 'dark');
+  function aim(clientX,clientY){
+    const r=view.getBoundingClientRect();
+    const nx=((clientX-r.left)/r.width)*2-1;
+    const ny=((clientY-r.top)/r.height)*2-1;
+    tx=clamp(nx,-1,1); ty=clamp(ny,-1,1);
+    reticle.style.left=(clientX-r.left-8)+'px';
+    reticle.style.top=(clientY-r.top-8)+'px';
   }
-
-  function openWindow(el) {
-    el.hidden = false;
-    const close = el.querySelector('[data-close]');
-    if (close) close.focus();
-  }
-
-  function closeWindows() {
-    computerWindow.hidden = true;
-    contentWindow.hidden = true;
-    say('CLICK AROUND.');
-  }
-
-  function showPage(kind) {
-    const pages = {
-      internet: ['INTERNET', 'LINKS WILL LIVE HERE.<br><br>THE INTERNET USED TO BE WEIRDER.'],
-      photos: ['PHOTOS', 'PHOTO ALBUM COMING SOON.<br><br>YOU REMEMBER THIS DIFFERENTLY.'],
-      music: ['MUSIC', 'NOW PLAYING: NOTHING YET.<br><br>THE TURNTABLE STILL WORKS.'],
-      journal: ['JOURNAL', 'WORDS GO HERE.<br><br>NOT EVERYTHING NEEDS TO BE POSTED.'],
-      unknown: ['???', 'YOU FOUND SOMETHING THAT DOESN\'T EXIST YET.']
-    };
-    const [title, body] = pages[kind] || ['ERROR', 'NOT FOUND.'];
-    contentTitle.textContent = title;
-    contentBody.innerHTML = body;
-    computerWindow.hidden = true;
-    openWindow(contentWindow);
-  }
-
-  const hotspots = {
-    lamp: {
-      hover: 'THE HULA LAMP.',
-      click: () => toggleMode()
-    },
-    computer: {
-      hover: 'THE COMPUTER.',
-      click: () => { say('BOOTING...'); openWindow(computerWindow); }
-    },
-    stereo: {
-      hover: 'IT STILL WORKS.',
-      click: () => showPage('music')
-    },
-    photos: {
-      hover: 'YOU REMEMBER THIS DIFFERENTLY.',
-      click: () => showPage('photos')
-    },
-    tapestry: {
-      hover: 'YOU\'VE LOOKED AT THIS A LOT.',
-      click: () => say('IT DOESN\'T DO ANYTHING. PROBABLY.')
-    },
-    skull: {
-      hover: 'LITTLE BEADED GUY.',
-      click: () => say('HE KNOWS SOMETHING.')
-    },
-    door: {
-      hover: 'A CLOSED DOOR.',
-      click: () => say('NOT YET.')
-    },
-    guitar: {
-      hover: 'THE PINK STRAT.',
-      click: () => say('DON\'T DROP IT.')
-    },
-    records: {
-      hover: 'RECORDS. BOOKS. HUMAN DESTINY.',
-      click: () => say('YOU COULD STAY HERE A WHILE.')
+  view.addEventListener('pointermove',e=>{
+    if(e.pointerType==='mouse'){view.classList.add('pointer');aim(e.clientX,e.clientY)}
+    if(dragging && e.pointerType!=='mouse'){
+      tx=clamp(startTX+(e.clientX-startX)/180,-1,1);
+      ty=clamp(startTY+(e.clientY-startY)/180,-1,1);
     }
+  });
+  view.addEventListener('pointerdown',e=>{
+    if(e.pointerType!=='mouse'){
+      dragging=true;startX=e.clientX;startY=e.clientY;startTX=tx;startTY=ty;
+      view.setPointerCapture(e.pointerId);
+    }
+  });
+  view.addEventListener('pointerup',e=>{dragging=false;try{view.releasePointerCapture(e.pointerId)}catch(_){}});
+
+  function setMode(mode){
+    document.body.classList.toggle('dark',mode==='dark');
+    modeLabel.textContent=mode==='dark'?'DARK MODE':'LIGHT MODE';
+    say(mode==='dark'?'NIGHT AGAIN.':'DAYLIGHT.');
+  }
+  function toggleMode(){setMode(document.body.classList.contains('dark')?'light':'dark')}
+
+  function openWindow(el){el.hidden=false;const c=el.querySelector('[data-close]');if(c)c.focus()}
+  function closeWindows(){computerWindow.hidden=true;contentWindow.hidden=true;say('CLICK AROUND.')}
+  function showPage(kind){
+    const p={
+      internet:['INTERNET','LINKS WILL LIVE HERE.<br><br>THE INTERNET USED TO BE WEIRDER.'],
+      photos:['PHOTOS','PHOTO ALBUM COMING SOON.<br><br>YOU REMEMBER THIS DIFFERENTLY.'],
+      music:['MUSIC','NOW PLAYING: NOTHING YET.<br><br>THE TURNTABLE STILL WORKS.'],
+      journal:['JOURNAL','WORDS GO HERE.<br><br>NOT EVERYTHING NEEDS TO BE POSTED.'],
+      unknown:['???',"YOU FOUND SOMETHING THAT DOESN'T EXIST YET."]
+    }[kind];
+    contentTitle.textContent=p[0];contentBody.innerHTML=p[1];computerWindow.hidden=true;openWindow(contentWindow);
+  }
+
+  const hotspots={
+    lamp:['THE HULA LAMP.',()=>toggleMode()],
+    computer:['THE COMPUTER.',()=>{say('BOOTING...');openWindow(computerWindow)}],
+    stereo:['IT STILL WORKS.',()=>showPage('music')],
+    photos:['YOU REMEMBER THIS DIFFERENTLY.',()=>showPage('photos')],
+    tapestry:["YOU'VE LOOKED AT THIS A LOT.",()=>say("IT DOESN'T DO ANYTHING. PROBABLY.")],
+    skull:['LITTLE BEADED GUY.',()=>say('HE KNOWS SOMETHING.')],
+    door:['A CLOSED DOOR.',()=>say('NOT YET.')],
+    guitar:['THE PINK STRAT.',()=>say("DON'T DROP IT.")],
+    records:['RECORDS. BOOKS. HUMAN DESTINY.',()=>say('YOU COULD STAY HERE A WHILE.')]
   };
-
-  Object.entries(hotspots).forEach(([id, config]) => {
-    const el = document.getElementById(id);
-    el.addEventListener('mouseenter', () => say(config.hover));
-    el.addEventListener('focus', () => say(config.hover));
-    el.addEventListener('mouseleave', () => say('CLICK AROUND.'));
-    el.addEventListener('click', config.click);
+  Object.entries(hotspots).forEach(([id,[hover,click]])=>{
+    const el=document.getElementById(id);
+    el.addEventListener('mouseenter',()=>say(hover));
+    el.addEventListener('focus',()=>say(hover));
+    el.addEventListener('mouseleave',()=>say('CLICK AROUND.'));
+    el.addEventListener('click',click);
   });
 
-  document.querySelectorAll('[data-close]').forEach(btn => {
-    btn.addEventListener('click', closeWindows);
-  });
+  document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeWindows));
+  document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWindows()});
 
-  document.querySelectorAll('[data-page]').forEach(btn => {
-    btn.addEventListener('click', () => showPage(btn.dataset.page));
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeWindows();
-  });
-
-  function updateClock() {
-    const now = new Date();
-    clockLabel.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  function updateClock(){
+    clock.textContent=new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
   }
-  updateClock();
-  setInterval(updateClock, 30000);
-
-  // On small screens, begin near the center of the room instead of the far-left edge.
-  function centerMobile() {
-    if (window.innerWidth <= 700) {
-      viewport.scrollLeft = Math.max(0, (viewport.scrollWidth - viewport.clientWidth) * 0.42);
-    }
-  }
-  window.addEventListener('load', centerMobile, { once: true });
+  updateClock();setInterval(updateClock,30000);
 })();
 </script>
 </body>
