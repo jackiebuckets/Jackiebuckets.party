@@ -6,63 +6,75 @@
 <title>Jackiebuckets.party</title>
 <style>
 :root{
-  --blue:#0000a8;
-  --cyan:#78f7ff;
-  --hud:#050505;
+  --blue:#0000aa;
+  --cyan:#75f6ff;
+  --panel:#c0c0c0;
 }
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020407;font-family:"Courier New",monospace}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020407}
+body{font-family:"Courier New",monospace;color:#fff}
 #app{position:fixed;inset:0;background:#020407}
-#game{position:absolute;left:0;right:0;top:36px;bottom:44px;overflow:hidden}
-canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
 #titlebar{
-  position:absolute;z-index:20;left:0;right:0;top:0;height:36px;
+  position:absolute;z-index:50;left:0;right:0;top:0;height:42px;
+  background:var(--blue);color:#fff;border:2px solid #eee;
+  box-shadow:inset -2px -2px #666,inset 2px 2px #fff;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 5px 0 9px;color:#fff;background:var(--blue);
-  border:2px solid #efefef;box-shadow:inset -2px -2px #666,inset 2px 2px #fff;
-  font-weight:bold;font-size:18px
+  padding:0 5px 0 10px;font-size:19px;font-weight:bold
 }
-.winbuttons{display:flex;gap:2px}
+#buttons{display:flex;gap:2px}
 .winbtn{
-  width:27px;height:24px;background:#c0c0c0;color:#111;display:grid;place-items:center;
-  border:2px solid #f4f4f4;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
+  width:29px;height:27px;background:#c0c0c0;color:#111;
+  border:2px solid #eee;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
+  display:grid;place-items:center;font-weight:bold
+}
+#game{
+  position:absolute;z-index:1;left:0;right:0;top:42px;bottom:52px;
+  overflow:hidden;background:#07101a;touch-action:none
+}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+#scan{
+  position:absolute;z-index:10;inset:42px 0 52px;pointer-events:none;
+  background:
+    repeating-linear-gradient(to bottom,rgba(255,255,255,.012) 0 1px,rgba(0,0,0,.028) 2px 3px),
+    radial-gradient(circle at 50% 48%,transparent 52%,rgba(0,0,0,.16) 100%);
+  mix-blend-mode:overlay;opacity:.62
 }
 #statusbar{
-  position:absolute;z-index:20;left:0;right:0;bottom:0;min-height:44px;
-  background:#000;color:#f3f3f3;border-top:1px solid #555;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:8px 15px calc(8px + env(safe-area-inset-bottom));
-  font-size:14px;letter-spacing:.05em
+  position:absolute;z-index:50;left:0;right:0;bottom:0;min-height:52px;
+  background:#000;border-top:1px solid #555;
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:8px 18px calc(8px + env(safe-area-inset-bottom));
+  gap:12px;font-size:14px;letter-spacing:.045em
 }
-#statusRight{color:#8f8f8f;font-size:11px;white-space:nowrap}
+#status{white-space:nowrap}
+#hint{text-align:center;color:#aaa;font-size:12px;white-space:nowrap}
+#right{text-align:right;color:#8e8e8e;font-size:11px;white-space:nowrap}
 #mode{
-  position:absolute;z-index:18;right:14px;top:50px;
-  min-width:138px;background:#d6d6d6;color:#111;padding:6px 8px;
-  border:2px solid #efefef;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
+  position:absolute;z-index:30;right:14px;top:56px;
+  min-width:145px;background:#d9d9d9;color:#111;padding:7px 9px;
+  border:2px solid #eee;box-shadow:inset -2px -2px #777,inset 2px 2px #fff;
   font-size:12px;line-height:1.3
 }
-#mode b{display:block;font-size:14px}
-#crosshair{
-  position:absolute;z-index:17;left:50%;top:50%;width:15px;height:15px;
-  transform:translate(-50%,-50%);pointer-events:none;opacity:.55
+#mode strong{display:block;font-size:15px}
+#reticle{
+  position:absolute;z-index:25;left:50%;top:50%;
+  width:15px;height:15px;transform:translate(-50%,-50%);
+  pointer-events:none;opacity:.48
 }
-#crosshair:before,#crosshair:after{content:"";position:absolute;background:var(--cyan)}
-#crosshair:before{left:7px;top:0;width:1px;height:15px}
-#crosshair:after{left:0;top:7px;width:15px;height:1px}
-#tip{
-  position:absolute;z-index:18;left:50%;bottom:60px;transform:translateX(-50%);
-  background:rgba(0,0,0,.72);color:#ddd;padding:6px 10px;border:1px solid #555;
-  font-size:11px;pointer-events:none;opacity:.9
-}
+#reticle::before,#reticle::after{content:"";position:absolute;background:var(--cyan)}
+#reticle::before{left:7px;top:0;width:1px;height:15px}
+#reticle::after{left:0;top:7px;width:15px;height:1px}
+
 #dialog{
-  position:absolute;z-index:30;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:min(560px,calc(100vw - 28px));background:#c0c0c0;color:#000;
-  border:2px solid #fff;box-shadow:inset -2px -2px #707070,inset 2px 2px #dfdfdf,8px 8px 0 rgba(0,0,0,.45)
+  position:absolute;z-index:80;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(560px,calc(100vw - 28px));
+  background:#c0c0c0;color:#000;border:2px solid #fff;
+  box-shadow:inset -2px -2px #707070,inset 2px 2px #dfdfdf,8px 8px 0 rgba(0,0,0,.45)
 }
 #dialog[hidden]{display:none}
 .dialog-title{
   background:#0000aa;color:#fff;font-weight:bold;padding:4px 5px 4px 7px;
-  display:flex;align-items:center;justify-content:space-between
+  display:flex;justify-content:space-between;align-items:center
 }
 .dialog-title button{
   width:27px;height:24px;background:#c0c0c0;border:2px solid #fff;
@@ -70,54 +82,58 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
 }
 .dialog-body{padding:14px}
 .terminal{
-  background:#051014;color:var(--cyan);border:3px inset #aaa;padding:14px;min-height:220px;line-height:1.6
+  background:#061015;color:var(--cyan);border:3px inset #aaa;
+  padding:14px;min-height:235px;line-height:1.55
 }
 .terminal button{
-  display:block;width:100%;padding:5px 0;border:0;background:transparent;color:var(--cyan);
-  font:inherit;text-align:left
+  display:block;width:100%;padding:5px 0;background:transparent;border:0;
+  color:var(--cyan);font:inherit;text-align:left;cursor:pointer
 }
-#scanlines{
-  position:absolute;z-index:10;inset:36px 0 44px 0;pointer-events:none;
-  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.012) 0 1px,rgba(0,0,0,.03) 2px 3px);
-  mix-blend-mode:overlay;opacity:.42
-}
+.terminal button:focus-visible{outline:1px dashed var(--cyan)}
+
 @media(max-width:700px){
-  #titlebar{font-size:16px}
-  #statusRight{display:none}
-  #tip{bottom:54px;white-space:nowrap}
-  #mode{right:8px;top:45px}
+  #titlebar{height:40px;font-size:16px}
+  #game{top:40px;bottom:58px}
+  #scan{inset:40px 0 58px}
+  #statusbar{min-height:58px;grid-template-columns:1fr;padding:9px 14px calc(9px + env(safe-area-inset-bottom));font-size:13px}
+  #hint,#right{display:none}
+  #mode{right:8px;top:51px;min-width:130px}
 }
 </style>
 </head>
-<body>
+<body class="night">
 <div id="app">
   <div id="titlebar">
     <span>Jackiebuckets.party</span>
-    <div class="winbuttons"><span class="winbtn">_</span><span class="winbtn">□</span><span class="winbtn">×</span></div>
+    <div id="buttons"><span class="winbtn">_</span><span class="winbtn">□</span><span class="winbtn">×</span></div>
   </div>
 
   <div id="game"></div>
-  <div id="scanlines"></div>
-  <div id="crosshair"></div>
+  <div id="scan"></div>
+  <div id="reticle"></div>
 
-  <div id="mode"><b id="modeLabel">NIGHT MODE</b><span id="clock">--:-- --</span></div>
-  <div id="tip">DRAG TO LOOK · TAP OBJECTS</div>
+  <div id="mode"><strong id="modeLabel">NIGHT MODE</strong><span id="clock">--:-- --</span></div>
 
-  <div id="statusbar">
+  <div id="statusbar" aria-live="polite">
     <span id="status">CLICK AROUND.</span>
-    <span id="statusRight">SOME THINGS WORK. SOME THINGS DON'T.</span>
+    <span id="hint">DRAG TO LOOK · TAP OBJECTS</span>
+    <span id="right">SOME THINGS WORK. SOME THINGS DON'T.</span>
   </div>
 
-  <section id="dialog" hidden>
-    <div class="dialog-title"><span id="dialogTitle">C:\JACKIEBUCKETS</span><button id="closeDialog">×</button></div>
+  <section id="dialog" hidden role="dialog" aria-modal="true">
+    <div class="dialog-title">
+      <span id="dialogTitle">C:\JACKIEBUCKETS</span>
+      <button id="closeDialog" type="button">×</button>
+    </div>
     <div class="dialog-body">
-      <div class="terminal" id="terminal">
-        JACKIEBUCKETS.PARTY<br>-------------------<br><br>
-        <button data-page="internet">&gt; INTERNET</button>
-        <button data-page="photos">&gt; PHOTOS</button>
-        <button data-page="music">&gt; MUSIC</button>
-        <button data-page="journal">&gt; JOURNAL</button>
-        <button data-page="unknown">&gt; ???</button>
+      <div id="terminal" class="terminal">
+        JACKIEBUCKETS.PARTY<br>
+        -------------------<br><br>
+        <button type="button" data-page="internet">&gt; INTERNET</button>
+        <button type="button" data-page="photos">&gt; PHOTOS</button>
+        <button type="button" data-page="music">&gt; MUSIC</button>
+        <button type="button" data-page="journal">&gt; JOURNAL</button>
+        <button type="button" data-page="unknown">&gt; ???</button>
       </div>
     </div>
   </section>
@@ -134,268 +150,288 @@ const dialog = document.getElementById("dialog");
 const dialogTitle = document.getElementById("dialogTitle");
 const terminal = document.getElementById("terminal");
 
-const renderer = new THREE.WebGLRenderer({antialias:false, powerPreference:"high-performance"});
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.25));
+const renderer = new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:"high-performance"});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.35));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 game.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x07101c);
-scene.fog = new THREE.Fog(0x07101c, 8, 18);
+scene.background = new THREE.Color(0x06101a);
 
-const camera = new THREE.PerspectiveCamera(66, 1, 0.1, 100);
-camera.position.set(0, 1.65, 6.8);
+const camera = new THREE.PerspectiveCamera(50,1,0.1,30);
+camera.position.set(0,0,0);
 
-let yaw = 0;
-let pitch = -0.04;
-let targetYaw = 0;
-let targetPitch = -0.04;
+const ROOM_W = 1536;
+const ROOM_H = 910;
+const ASPECT = ROOM_W / ROOM_H;
+const BASE_DISTANCE = 5.0;
+const WORLD_H = 5.0;
+const WORLD_W = WORLD_H * ASPECT;
 
-const room = new THREE.Group();
-scene.add(room);
+// ---------------------------------------------------------
+// Depth-painted mesh.
+// At the default viewpoint every vertex projects back onto
+// the exact same pixel it came from, so the locked artwork
+// remains visually unchanged. Moving the camera reveals depth.
+// ---------------------------------------------------------
+const COLS = 128;
+const ROWS = 76;
+const geometry = new THREE.PlaneGeometry(WORLD_W,WORLD_H,COLS,ROWS);
+const pos = geometry.attributes.position;
 
-function mat(color, rough=0.85, metal=0.0){
-  return new THREE.MeshStandardMaterial({color, roughness:rough, metalness:metal});
+function smoothstep(a,b,x){
+  const t=Math.max(0,Math.min(1,(x-a)/(b-a)));
+  return t*t*(3-2*t);
 }
-function box(name, size, pos, color, rough=.85, metal=0){
-  const m = new THREE.Mesh(new THREE.BoxGeometry(...size), mat(color,rough,metal));
-  m.name = name;
-  m.position.set(...pos);
-  m.castShadow = true;
-  m.receiveShadow = true;
-  room.add(m);
-  return m;
+function ellipse(u,v,cx,cy,rx,ry){
+  const q=Math.sqrt(((u-cx)/rx)**2 + ((v-cy)/ry)**2);
+  return 1-smoothstep(.55,1.0,q);
 }
-function plane(name,w,h,pos,rot,color){
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat(color));
-  m.name=name;m.position.set(...pos);m.rotation.set(...rot);m.receiveShadow=true;room.add(m);return m;
+function rectSoft(u,v,x1,y1,x2,y2,feather=.06){
+  const ix=smoothstep(x1-feather,x1+feather,u)*(1-smoothstep(x2-feather,x2+feather,u));
+  const iy=smoothstep(y1-feather,y1+feather,v)*(1-smoothstep(y2-feather,y2+feather,v));
+  return ix*iy;
 }
+function depthAt(u,v){
+  let d=0;
 
-const clickable = [];
-function tag(mesh,id,label){
-  mesh.userData.interactive=id;
-  mesh.userData.label=label;
-  clickable.push(mesh);
-  return mesh;
-}
+  // Floor comes progressively toward the viewer.
+  const floor = smoothstep(.61,1.0,v);
+  d = Math.max(d, floor*0.60);
 
-// room shell
-box("floor",[10,0.18,8],[0,-0.1,0],0x2a201b);
-box("backwall",[10,4.8,0.18],[0,2.3,-3.3],0x303844);
-box("leftwall",[0.18,4.8,8],[-5,2.3,0],0x2a323c);
-box("rightwall",[0.18,4.8,8],[5,2.3,0],0x27303a);
+  // Bed / plant mass in the near-left foreground.
+  d = Math.max(d, ellipse(u,v,.11,.80,.23,.30)*1.20);
 
-// rug
-box("rug",[6.1,0.04,3.8],[-0.4,0.05,0.7],0x4c3b35);
+  // Office chair.
+  d = Math.max(d, ellipse(u,v,.29,.72,.16,.27)*1.00);
 
-// desk + chair
-box("deskTop",[5.4,0.18,1.25],[-0.6,1.22,-1.8],0x4b2f1e);
-box("deskL",[0.18,1.25,1.0],[-3.1,0.58,-1.8],0x352217);
-box("deskR",[0.18,1.25,1.0],[1.9,0.58,-1.8],0x352217);
-box("chairSeat",[1.2,0.18,1.0],[-1.25,0.72,-0.2],0x15171b);
-box("chairBack",[1.35,1.8,0.18],[-1.25,1.55,0.22],0x15171b);
-box("chairBase",[0.15,0.8,0.15],[-1.25,0.35,-0.2],0x22262d,0.4,0.5);
+  // Coffee table / books foreground.
+  d = Math.max(d, ellipse(u,v,.68,.91,.20,.16)*1.12);
 
-// CRT
-const crt=tag(box("crt",[1.7,1.35,0.95],[-0.65,1.95,-1.85],0xd0ccc1),"computer","THE COMPUTER.");
-box("crtScreen",[1.37,0.92,0.02],[-0.65,1.99,-1.35],0x061318);
-box("keyboard",[1.6,0.10,0.55],[-0.65,1.37,-1.2],0xbdb8ac);
+  // Right foreground chair.
+  d = Math.max(d, ellipse(u,v,.95,.82,.18,.29)*1.15);
 
-// stereo shelf
-box("stereoShelf",[2.75,0.18,1.1],[2.55,0.95,-1.9],0x4a2f20);
-box("stereoLegL",[0.15,1.0,1.0],[1.35,0.45,-1.9],0x342116);
-box("stereoLegR",[0.15,1.0,1.0],[3.75,0.45,-1.9],0x342116);
-const stereo=tag(box("stereo",[2.0,0.42,0.72],[2.5,1.36,-1.75],0x17191d,0.45,0.25),"stereo","IT STILL WORKS.");
-const platter=tag(new THREE.Mesh(new THREE.CylinderGeometry(.48,.48,.06,32),mat(0x141414,.35,.3)),"stereo","THE TURNTABLE.");
-platter.rotation.x=Math.PI/2;platter.position.set(2.5,1.62,-1.65);room.add(platter);clickable.push(platter);
+  // Desk/CRT/stereo live in the middle distance.
+  d = Math.max(d, rectSoft(u,v,.21,.44,.76,.79,.055)*0.36);
 
-// records
-for(let i=0;i<17;i++){
-  const rec=box("record",[0.05,0.72,0.72],[1.55+i*0.11,0.55,-1.75], i%3===0?0x4a2030:0x1b2430);
-  rec.rotation.z=(i%4-1.5)*0.015;
-}
-tag(box("books",[0.62,0.6,0.7],[3.25,0.55,-1.72],0x725b32),"records","RECORDS. BOOKS. HUMAN DESTINY.");
+  // Lamp / guitar are slightly in front of the desk/wall.
+  d = Math.max(d, ellipse(u,v,.255,.53,.065,.17)*0.54);
+  d = Math.max(d, ellipse(u,v,.145,.57,.055,.18)*0.42);
 
-// door
-tag(box("door",[1.6,3.65,0.15],[4.0,1.82,-3.17],0x3f4145),"door","A CLOSED DOOR.");
+  // Shelf foliage gives a little depth against the wall.
+  d = Math.max(d, ellipse(u,v,.35,.37,.12,.18)*0.26);
 
-// window + blinds
-box("windowFrame",[2.25,2.25,0.10],[-3.75,2.55,-3.16],0x111a22);
-box("windowGlow",[1.9,1.9,0.03],[-3.75,2.55,-3.08],0x0a3858);
-for(let y=1.73;y<3.38;y+=0.16){
-  box("blind",[1.85,0.045,0.03],[-3.75,y,-3.0],0x557086);
+  return d;
 }
 
-// plants: chunky low-poly
-function plant(x,z,scale=1){
-  const pot=new THREE.Mesh(new THREE.CylinderGeometry(.22*scale,.28*scale,.35*scale,8),mat(0x5a3b2a));
-  pot.position.set(x,.22,z);room.add(pot);
-  for(let i=0;i<7;i++){
-    const leaf=new THREE.Mesh(new THREE.ConeGeometry(.10*scale,.65*scale,5),mat(0x1f4c34));
-    leaf.position.set(x+(i-3)*.08*scale,.65*scale,z);
-    leaf.rotation.z=(i-3)*.25;
-    leaf.rotation.x=(i%2?0.3:-0.2);
-    room.add(leaf);
-  }
+// Compensate x/y for each displaced depth so the default
+// camera still reproduces the original 2D image exactly.
+for(let i=0;i<pos.count;i++){
+  const x0=pos.getX(i);
+  const y0=pos.getY(i);
+  const u=x0/WORLD_W + .5;
+  const v=.5 - y0/WORLD_H;
+  const offset=depthAt(u,v);
+  const dist=BASE_DISTANCE-offset;
+  const scale=dist/BASE_DISTANCE;
+  pos.setXYZ(i,x0*scale,y0*scale,-dist);
 }
-plant(-4.55,-1.0,1.3); plant(-2.8,-2.7,.85);
+geometry.computeVertexNormals();
 
-// lamp - static visually, clickable for world lighting
-const lampGroup=new THREE.Group(); lampGroup.position.set(-2.7,1.35,-1.0);room.add(lampGroup);
-const lampBase=new THREE.Mesh(new THREE.CylinderGeometry(.18,.24,.22,10),mat(0x9a4d2e));lampGroup.add(lampBase);
-const lampStem=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.68,8),mat(0x75391f));lampStem.position.y=.45;lampGroup.add(lampStem);
-const shade=new THREE.Mesh(new THREE.CylinderGeometry(.25,.52,.46,12,1,true),mat(0xb27b4d));shade.position.y=.95;lampGroup.add(shade);
-const hulaBody=new THREE.Mesh(new THREE.CylinderGeometry(.10,.12,.52,8),mat(0x9f5532));hulaBody.position.y=.36;lampGroup.add(hulaBody);
-tag(shade,"lamp","THE HULA LAMP.");
+const texture = new THREE.TextureLoader().load("room.png");
+texture.colorSpace = THREE.SRGBColorSpace;
+texture.minFilter = THREE.NearestFilter;
+texture.magFilter = THREE.NearestFilter;
 
-// pink strat as simple low-poly silhouette
-const guitar=new THREE.Group();guitar.position.set(-4.25,.2,-2.55);guitar.rotation.z=-.08;room.add(guitar);
-const body1=new THREE.Mesh(new THREE.SphereGeometry(.27,10,8),mat(0xe35d8c));body1.scale.set(1.0,1.25,.35);body1.position.y=.58;guitar.add(body1);
-const body2=new THREE.Mesh(new THREE.SphereGeometry(.23,10,8),mat(0xe35d8c));body2.scale.set(1.0,1.2,.35);body2.position.set(.18,.76,0);guitar.add(body2);
-const neck=box("guitarNeck",[0.10,1.35,0.06],[-4.20,1.42,-2.55],0x7f573b);
-const head=box("guitarHead",[0.18,0.30,0.08],[-4.18,2.22,-2.55],0xb58d62);
-tag(body1,"guitar","THE PINK STRAT."); clickable.push(body2); body2.userData={interactive:"guitar",label:"THE PINK STRAT."};
+const roomMat = new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide});
+const roomMesh = new THREE.Mesh(geometry,roomMat);
+scene.add(roomMesh);
 
-// wall art textures
-const loader=new THREE.TextureLoader();
-function artTex(name,path,w,h,x,y,z=-3.19){
-  const tex=loader.load(path); tex.colorSpace=THREE.SRGBColorSpace;
-  tex.minFilter=THREE.NearestFilter; tex.magFilter=THREE.NearestFilter;
-  const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:tex,roughness:.9}));
-  p.name=name;p.position.set(x,y,z);room.add(p);return p;
+// Invisible click targets exist in the same perspective space.
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2(0,0);
+const targets=[];
+
+function worldFromUV(u,v,depth=0.25){
+  const x0=(u-.5)*WORLD_W;
+  const y0=(.5-v)*WORLD_H;
+  const dist=BASE_DISTANCE-depth;
+  const s=dist/BASE_DISTANCE;
+  return new THREE.Vector3(x0*s,y0*s,-dist);
 }
-tag(artTex("eye","assets/eye_chart.jpg",1.05,2.1,-3.15,2.62),"photos","THE EYE CHART.");
-tag(artTex("gorilla","assets/gorilla.jpg",1.45,1.55,-1.75,2.78),"photos","THE GORILLA.");
-tag(artTex("orange","assets/orange_tapestry.jpg",2.25,3.0,.65,2.25),"tapestry","THE ORANGE TAPESTRY.");
-tag(artTex("skull","assets/skull_beads.jpg",.8,1.15,2.35,3.0),"skull","LITTLE BEADED GUY.");
-
-// shelf under wall art
-box("wallShelf",[2.45,0.12,0.44],[-1.8,2.02,-2.98],0x4a2f20);
-
-// lights
-const hemi=new THREE.HemisphereLight(0x7aa8c6,0x1c1512,1.35);scene.add(hemi);
-const sun=new THREE.DirectionalLight(0xffd2a3,1.7);sun.position.set(-5,5,4);sun.castShadow=true;scene.add(sun);
-const blue=new THREE.PointLight(0x4b8cff,2.1,9,2);blue.position.set(-2.5,2.4,2.5);scene.add(blue);
-const crtGlow=new THREE.PointLight(0x69e7ff,1.25,4,2);crtGlow.position.set(-.7,2.0,-.8);scene.add(crtGlow);
-const warmBounce=new THREE.PointLight(0xff9d54,.55,5,2);warmBounce.position.set(-2.7,1.6,-.8);scene.add(warmBounce);
-
-let mode="night";
-function setMode(next){
-  mode=next;
-  const day=mode==="day";
-  scene.background.set(day?0x7b92a2:0x07101c);
-  scene.fog.color.set(day?0x7b92a2:0x07101c);
-  hemi.intensity=day?2.2:1.35;
-  hemi.color.set(day?0xdbe9ef:0x7aa8c6);
-  sun.intensity=day?2.5:0.45;
-  blue.intensity=day?.25:2.1;
-  crtGlow.intensity=day?.45:1.25;
-  warmBounce.intensity=day?.18:.55;
-  modeLabel.textContent=day?"DAY MODE":"NIGHT MODE";
-  say(day?"DAYLIGHT.":"NIGHT AGAIN.");
+function hotspot(id,label,u,v,w,h,depth=.28){
+  const center=worldFromUV(u,v,depth);
+  const dist=BASE_DISTANCE-depth;
+  const s=dist/BASE_DISTANCE;
+  const mesh=new THREE.Mesh(
+    new THREE.PlaneGeometry(WORLD_W*w*s,WORLD_H*h*s),
+    new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false})
+  );
+  mesh.position.copy(center);
+  mesh.userData={id,label};
+  scene.add(mesh);targets.push(mesh);
 }
-function toggleMode(){setMode(mode==="night"?"day":"night")}
-setMode("night");
+hotspot("lamp","THE HULA LAMP.",.255,.52,.085,.21,.50);
+hotspot("computer","THE COMPUTER.",.405,.53,.15,.20,.36);
+hotspot("stereo","IT STILL WORKS.",.655,.58,.18,.18,.35);
+hotspot("photos","YOU REMEMBER THIS DIFFERENTLY.",.34,.23,.20,.35,.08);
+hotspot("tapestry","YOU'VE LOOKED AT THIS A LOT.",.565,.27,.22,.48,.05);
+hotspot("skull","LITTLE BEADED GUY.",.71,.20,.09,.25,.05);
+hotspot("door","A CLOSED DOOR.",.82,.48,.16,.62,.03);
+hotspot("guitar","THE PINK STRAT.",.155,.57,.07,.27,.40);
+hotspot("records","RECORDS. BOOKS. HUMAN DESTINY.",.655,.74,.20,.20,.30);
 
-const raycaster=new THREE.Raycaster();
-const pointer=new THREE.Vector2(0,0);
-let hovered=null;
-function say(t){statusEl.textContent=t}
+// Camera / look controls.
+let currentX=0,currentY=0,targetX=0,targetY=0;
+let dragging=false,startX=0,startY=0,startTX=0,startTY=0,moved=0;
+let focus = null;
+let focusZoom = 1;
 
-function onInteract(){
-  raycaster.setFromCamera(pointer,camera);
-  const hits=raycaster.intersectObjects(clickable,true);
-  if(!hits.length){say("CLICK AROUND.");return}
-  const obj=hits[0].object;
-  const id=obj.userData.interactive || obj.parent?.userData?.interactive;
-  if(id==="lamp"){toggleMode();return}
-  if(id==="computer"){dialog.hidden=false;say("BOOTING...");return}
-  if(id==="stereo"){say("IT STILL WORKS.");return}
-  if(id==="door"){say("NOT YET.");return}
-  if(id==="guitar"){say("DON'T DROP IT.");return}
-  if(id==="records"){say("YOU COULD STAY HERE A WHILE.");return}
-  if(id==="tapestry"){say("YOU'VE LOOKED AT THIS A LOT.");return}
-  if(id==="skull"){say("HE KNOWS SOMETHING.");return}
-  if(id==="photos"){say("YOU REMEMBER THIS DIFFERENTLY.");return}
+function limits(){
+  const portrait=game.clientWidth/game.clientHeight < .85;
+  return portrait ? {x:1.05,y:.16} : {x:.24,y:.09};
 }
-
-let dragging=false, sx=0, sy=0, syaw=0, spitch=0, moved=0;
 renderer.domElement.addEventListener("pointerdown",e=>{
-  dragging=true;sx=e.clientX;sy=e.clientY;syaw=targetYaw;spitch=targetPitch;moved=0;
+  dragging=true;
+  startX=e.clientX; startY=e.clientY;
+  startTX=targetX; startTY=targetY;
+  moved=0;
   renderer.domElement.setPointerCapture(e.pointerId);
 });
 renderer.domElement.addEventListener("pointermove",e=>{
   const r=renderer.domElement.getBoundingClientRect();
   pointer.x=((e.clientX-r.left)/r.width)*2-1;
   pointer.y=-((e.clientY-r.top)/r.height)*2+1;
+
   if(dragging){
-    const dx=e.clientX-sx,dy=e.clientY-sy;moved=Math.max(moved,Math.hypot(dx,dy));
-    targetYaw=THREE.MathUtils.clamp(syaw-dx*0.0045,-0.72,0.72);
-    targetPitch=THREE.MathUtils.clamp(spitch-dy*0.0035,-0.28,0.22);
+    const dx=e.clientX-startX,dy=e.clientY-startY;
+    moved=Math.max(moved,Math.hypot(dx,dy));
+    const lim=limits();
+    targetX=THREE.MathUtils.clamp(startTX-dx/(game.clientWidth*.55),-1,1)*lim.x;
+    targetY=THREE.MathUtils.clamp(startTY+dy/(game.clientHeight*1.6),-1,1)*lim.y;
   }
 });
 renderer.domElement.addEventListener("pointerup",e=>{
   dragging=false;
   try{renderer.domElement.releasePointerCapture(e.pointerId)}catch{}
-  if(moved<8) onInteract();
+  if(moved<8) interact();
 });
-renderer.domElement.addEventListener("wheel",e=>{
-  camera.position.z=THREE.MathUtils.clamp(camera.position.z+e.deltaY*0.002,5.5,8.0);
-},{passive:true});
 
-document.getElementById("closeDialog").onclick=()=>{dialog.hidden=true;say("CLICK AROUND.")};
-document.querySelectorAll("[data-page]").forEach(btn=>{
-  btn.onclick=()=>{
-    const k=btn.dataset.page;
-    const pages={
-      internet:["INTERNET","LINKS WILL LIVE HERE.<br><br>THE INTERNET USED TO BE WEIRDER."],
-      photos:["PHOTOS","PHOTO ALBUM COMING SOON.<br><br>YOU REMEMBER THIS DIFFERENTLY."],
-      music:["MUSIC","THE TURNTABLE STILL WORKS."],
-      journal:["JOURNAL","NOT EVERYTHING NEEDS TO BE POSTED."],
-      unknown:["???","YOU FOUND SOMETHING THAT DOESN'T EXIST YET."]
-    }[k];
-    terminal.innerHTML=pages[1];
-    dialogTitle.textContent=pages[0];
+function say(t){statusEl.textContent=t}
+
+let mode="night";
+function setMode(next){
+  mode=next;
+  if(mode==="night"){
+    renderer.domElement.style.filter="brightness(1) saturate(1)";
+    scene.background.set(0x06101a);
+    modeLabel.textContent="NIGHT MODE";
+    say("NIGHT AGAIN.");
+  }else{
+    renderer.domElement.style.filter="brightness(1.32) saturate(.88) sepia(.10)";
+    scene.background.set(0xaab7bb);
+    modeLabel.textContent="DAY MODE";
+    say("DAYLIGHT.");
+  }
+}
+function toggleMode(){setMode(mode==="night"?"day":"night")}
+setMode("night");
+
+function openComputer(){
+  dialogTitle.textContent="C:\\JACKIEBUCKETS";
+  terminal.innerHTML=`
+    JACKIEBUCKETS.PARTY<br>
+    -------------------<br><br>
+    <button type="button" data-page="internet">&gt; INTERNET</button>
+    <button type="button" data-page="photos">&gt; PHOTOS</button>
+    <button type="button" data-page="music">&gt; MUSIC</button>
+    <button type="button" data-page="journal">&gt; JOURNAL</button>
+    <button type="button" data-page="unknown">&gt; ???</button>`;
+  wireTerminal();
+  dialog.hidden=false;
+}
+function showPage(kind){
+  const pages={
+    internet:["INTERNET","LINKS WILL LIVE HERE.<br><br>THE INTERNET USED TO BE WEIRDER."],
+    photos:["PHOTOS","PHOTO ALBUM COMING SOON.<br><br>YOU REMEMBER THIS DIFFERENTLY."],
+    music:["MUSIC","THE TURNTABLE STILL WORKS."],
+    journal:["JOURNAL","NOT EVERYTHING NEEDS TO BE POSTED."],
+    unknown:["???","YOU FOUND SOMETHING THAT DOESN'T EXIST YET."]
   };
+  const [title,body]=pages[kind];
+  dialogTitle.textContent=title;
+  terminal.innerHTML=body;
+}
+function wireTerminal(){
+  terminal.querySelectorAll("[data-page]").forEach(b=>{
+    b.addEventListener("click",()=>showPage(b.dataset.page));
+  });
+}
+function interact(){
+  raycaster.setFromCamera(pointer,camera);
+  const hit=raycaster.intersectObjects(targets,false)[0];
+  if(!hit){say("CLICK AROUND.");return}
+  const id=hit.object.userData.id;
+  if(id==="lamp"){toggleMode();return}
+  if(id==="computer"){say("BOOTING...");openComputer();return}
+  if(id==="stereo"){say("IT STILL WORKS.");return}
+  if(id==="photos"){say("YOU REMEMBER THIS DIFFERENTLY.");return}
+  if(id==="tapestry"){say("IT DOESN'T DO ANYTHING. PROBABLY.");return}
+  if(id==="skull"){say("HE KNOWS SOMETHING.");return}
+  if(id==="door"){say("NOT YET.");return}
+  if(id==="guitar"){say("DON'T DROP IT.");return}
+  if(id==="records"){say("YOU COULD STAY HERE A WHILE.");return}
+}
+document.getElementById("closeDialog").addEventListener("click",()=>{
+  dialog.hidden=true;say("CLICK AROUND.");
 });
+wireTerminal();
 
 function resize(){
   const w=game.clientWidth,h=game.clientHeight;
   renderer.setSize(w,h,false);
   camera.aspect=w/h;
-  camera.fov = w/h < .8 ? 72 : 64;
+
+  // Fit the locked artwork naturally:
+  // portrait fills height and crops sides; landscape nearly shows it all.
+  if(camera.aspect >= ASPECT){
+    const visibleH = WORLD_W / camera.aspect;
+    camera.fov = THREE.MathUtils.radToDeg(2*Math.atan((visibleH/2)/BASE_DISTANCE))*1.035;
+  }else{
+    camera.fov = THREE.MathUtils.radToDeg(2*Math.atan((WORLD_H/2)/BASE_DISTANCE))*1.025;
+  }
   camera.updateProjectionMatrix();
 }
-window.addEventListener("resize",resize);resize();
+window.addEventListener("resize",resize);
+resize();
 
 function updateClock(){
   clockEl.textContent=new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
-updateClock();setInterval(updateClock,30000);
+updateClock();
+setInterval(updateClock,30000);
 
+let hoverId=null;
 function animate(){
-  yaw += (targetYaw-yaw)*.08;
-  pitch += (targetPitch-pitch)*.08;
-  camera.rotation.order="YXZ";
-  camera.rotation.y=yaw;
-  camera.rotation.x=pitch;
+  currentX += (targetX-currentX)*.075;
+  currentY += (targetY-currentY)*.075;
 
-  // tiny physically-plausible head drift, not fake layered parallax
-  camera.position.x=Math.sin(yaw)*0.18;
-  camera.position.y=1.65 + Math.sin(pitch)*0.07;
+  camera.position.x=currentX;
+  camera.position.y=currentY;
+  camera.position.z=0;
 
-  // hover raycast
-  raycaster.setFromCamera(pointer,camera);
-  const hit=raycaster.intersectObjects(clickable,true)[0];
-  const next=hit?.object?.userData?.interactive || hit?.object?.parent?.userData?.interactive || null;
-  if(next!==hovered){
-    hovered=next;
-    if(hit){
-      const label=hit.object.userData.label || hit.object.parent?.userData?.label;
-      if(label) say(label);
-    } else if(!dragging) say("CLICK AROUND.");
+  // Keep the view parallel to the art plane. The different vertex depths
+  // create the parallax instead of rotating a flat photo.
+  camera.rotation.set(0,0,0);
+
+  if(!dragging && dialog.hidden){
+    raycaster.setFromCamera(pointer,camera);
+    const hit=raycaster.intersectObjects(targets,false)[0];
+    const id=hit?.object?.userData?.id || null;
+    if(id!==hoverId){
+      hoverId=id;
+      say(hit ? hit.object.userData.label : "CLICK AROUND.");
+    }
   }
 
   renderer.render(scene,camera);
