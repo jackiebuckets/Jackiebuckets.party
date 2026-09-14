@@ -57,33 +57,20 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 }
 .hotspot.debug{outline:2px solid rgba(255,0,0,.8);background:rgba(255,0,0,.08)}
 
-/* V7 LIVE CRT — deliberately minimal so it cannot break the room controls */
-#liveCrt{
- position:absolute;
- z-index:12;
- left:36.0%;
- top:45.2%;
- width:14.2%;
- height:15.0%;
- box-sizing:border-box;
- padding:5px 7px;
- overflow:hidden;
- background:#03141b;
- color:#91f7ff;
- border-radius:2px;
- font-size:clamp(5px,.72vw,10px);
- line-height:1.18;
- letter-spacing:.01em;
- text-shadow:0 0 3px rgba(100,245,255,.42);
- box-shadow:inset 0 0 12px rgba(100,245,255,.10);
- pointer-events:none;
+
+/* V8 STARTUP PERFORMANCE — no visual overlay, no camera remap */
+#scene{
+  will-change: transform;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  contain: layout paint;
 }
-#liveCrt:after{
- content:"";position:absolute;inset:0;pointer-events:none;
- background:repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0 1px,rgba(0,0,0,.05) 2px 3px);
+#scene img{
+  -webkit-user-drag:none;
+  user-select:none;
+  pointer-events:none;
 }
-#liveCrt .blink{animation:v7blink .85s steps(1,end) infinite}
-@keyframes v7blink{50%{opacity:0}}
 
 </style>
 </head>
@@ -95,7 +82,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    <div class="camera" id="camera">
     <img class="room night" src="room-night.png" alt="">
     <img class="room day" src="room-day.png" alt="">
-    <div id="liveCrt" aria-hidden="true"></div>
     <button class="hotspot" id="computer" aria-label="Computer"></button>
     <button class="hotspot" id="music" aria-label="Stereo and records"></button>
     <button class="hotspot" id="photos" aria-label="Photos"></button>
@@ -239,24 +225,6 @@ function toggleLamp(){
 }
 
 
-const liveCrt=document.getElementById('liveCrt');
-function crtMenu(){
- liveCrt.innerHTML=`
- <div>JACKIEBUCKETS.PARTY</div>
- <div>----------------</div>
- <div>&gt; INTERNET</div>
- <div>&gt; PHOTOS</div>
- <div>&gt; MUSIC</div>
- <div>&gt; JOURNAL</div>
- <div>&gt; ???</div>
- <div><br>C:\\&gt;<span class="blink">_</span></div>`;
-}
-function crtBoot(){
- liveCrt.innerHTML=`JACKIEBUCKETS BIOS<br>MEMORY... OK<br>VIDEO... OK<br><br>C:\\&gt;<span class="blink">_</span>`;
- setTimeout(crtMenu,700);
-}
-crtBoot();
-
 function updateTime(){
  const d=new Date();
  if(lightMode===null){
@@ -265,7 +233,19 @@ function updateTime(){
  }
  document.getElementById('clock').textContent=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
 }
-updateTime();setInterval(updateTime,30000);
+updateTime();
+
+/* Prime Safari/Chrome's compositor before the user starts dragging. */
+requestAnimationFrame(()=>{
+  scene.style.willChange='transform';
+  void scene.offsetWidth;
+  requestAnimationFrame(()=>render());
+});
+window.addEventListener('load',()=>{
+  render();
+  setTimeout(render,40);
+},{once:true});
+setInterval(updateTime,30000);
 
 document.getElementById('lamp').addEventListener('click',(e)=>{
  e.stopPropagation();
