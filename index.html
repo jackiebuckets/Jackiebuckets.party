@@ -183,7 +183,7 @@ back=document.getElementById('back'), hint=document.getElementById('hint');
 let panX=0, panY=0, dragging=false, moved=false, sx=0, sy=0, startX=0, startY=0, zoomed=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const ROOM_ASPECT=768/455;
-let verticalPanTarget=18; // V27: intentionally small up/down look range
+let verticalPanTarget=9; // V28: half-size vertical look range
 
 function getPanLimit(){
  return Math.max(0,(camera.offsetWidth-viewport.clientWidth)/2);
@@ -191,9 +191,9 @@ function getPanLimit(){
 function sizeCamera(){
  const vw=viewport.clientWidth, vh=viewport.clientHeight;
 
- // V27: keep the finite-room behavior, but reserve a tiny vertical overscan
+ // V28: same finite-room behavior with half the V27 vertical overscan
  // so the room can still be nudged up/down. This is deliberately small.
- verticalPanTarget=clamp(vh*0.025,12,22);
+ verticalPanTarget=clamp(vh*0.0125,6,11);
  const coverScale=Math.max(vw/768, (vh+verticalPanTarget*2)/455);
  const w=Math.ceil(768*coverScale);
  const h=Math.ceil(455*coverScale);
