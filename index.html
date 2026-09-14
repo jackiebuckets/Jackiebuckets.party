@@ -386,5 +386,73 @@ document.getElementById('computerNo').addEventListener('click',(e)=>{
 back.addEventListener('click',()=>useComputer.classList.remove('open'));
 
 </script>
+
+<script>
+(function(){
+  const sceneEl=document.getElementById('scene');
+  const crt=document.getElementById('crtWindow');
+  const prompt=document.getElementById('useComputer');
+
+  function sceneTransitionMs(){
+    if(!sceneEl) return 650;
+    const cs=getComputedStyle(sceneEl);
+    const ds=cs.transitionDuration.split(',').map(s=>{
+      s=s.trim(); return s.endsWith('ms')?parseFloat(s):parseFloat(s)*1000;
+    });
+    return Math.max(...ds.filter(Number.isFinite),650);
+  }
+
+  function returnToRoom(){
+    if(prompt) prompt.classList.remove('open');
+    if(crt) crt.classList.remove('open');
+    if(typeof zoomed!=='undefined') zoomed=false;
+    if(sceneEl) sceneEl.classList.remove('zoomed');
+    const backEl=document.getElementById('back');
+    if(backEl) backEl.classList.remove('show');
+    if(typeof camera!=='undefined') camera.classList.add('stepped');
+
+    /* Make zoom-out use the same transition timing as zoom-in. */
+    const ms=sceneTransitionMs();
+    if(sceneEl){
+      sceneEl.style.transitionDuration=ms+'ms';
+    }
+    if(typeof applyPan==='function') requestAnimationFrame(()=>applyPan());
+    if(typeof status!=='undefined') status.textContent='CLICK AROUND.';
+  }
+
+  /* NO returns directly to room. */
+  const no=document.getElementById('computerNo');
+  if(no) no.addEventListener('click', function(e){
+    e.stopPropagation();
+    returnToRoom();
+  }, true);
+
+  /* Any X/close control inside the CRT closes the computer AND backs out. */
+  if(crt){
+    crt.addEventListener('click', function(e){
+      const t=e.target.closest('button,[role="button"],.close,.crt-close,.window-close');
+      if(!t) return;
+      const txt=(t.textContent||'').trim().toLowerCase();
+      const aria=(t.getAttribute('aria-label')||'').toLowerCase();
+      const title=(t.getAttribute('title')||'').toLowerCase();
+      if(txt==='x' || txt==='×' || aria.includes('close') || title.includes('close') ||
+         t.classList.contains('close') || t.classList.contains('crt-close') || t.classList.contains('window-close')){
+        setTimeout(returnToRoom,0);
+      }
+    }, true);
+  }
+
+  /* Also catch common known CRT close ids if present. */
+  ['crtClose','closeCrt','computerClose'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('click',()=>setTimeout(returnToRoom,0),true);
+  });
+})();
+</script>
+
 </body>
 </html>
+<style>
+/* V14: no separate room BACK button */
+#back, .back, .back-button { display:none !important; }
+</style>
