@@ -56,12 +56,6 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
   font-size:12px;line-height:1.3
 }
 #mode strong{display:block;font-size:15px}
-#reticle{
-  position:absolute;z-index:25;left:50%;top:50%;
-  width:15px;height:15px;transform:translate(-50%,-50%);
-  pointer-events:none;opacity:.48
-}
-#reticle::before,#reticle::after{content:"";position:absolute;background:var(--cyan)}
 #reticle::before{left:7px;top:0;width:1px;height:15px}
 #reticle::after{left:0;top:7px;width:15px;height:1px}
 
@@ -110,13 +104,12 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
 
   <div id="game"></div>
   <div id="scan"></div>
-  <div id="reticle"></div>
 
   <div id="mode"><strong id="modeLabel">NIGHT MODE</strong><span id="clock">--:-- --</span></div>
 
   <div id="statusbar" aria-live="polite">
-    <span id="status">CLICK AROUND.</span>
-    <span id="hint">DRAG TO LOOK · TAP OBJECTS</span>
+    <span id="status">TAP SOMETHING.</span>
+    <span id="hint">DRAG TO LOOK · TAP ANY OBJECT</span>
     <span id="right">SOME THINGS WORK. SOME THINGS DON'T.</span>
   </div>
 
@@ -284,39 +277,58 @@ hotspot("records","RECORDS. BOOKS. HUMAN DESTINY.",.655,.74,.20,.20,.30);
 // Camera / look controls.
 let currentX=0,currentY=0,targetX=0,targetY=0;
 let dragging=false,startX=0,startY=0,startTX=0,startTY=0,moved=0;
-let focus = null;
-let focusZoom = 1;
 
-function limits(){
-  const portrait=game.clientWidth/game.clientHeight < .85;
-  return portrait ? {x:1.05,y:.16} : {x:.24,y:.09};
+function getPanLimits(){
+  const aspect = game.clientWidth / game.clientHeight;
+  // Because the camera is fitted to the room height in portrait,
+  // this gives the actual world width currently visible at the room plane.
+  const visibleH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov/2)) * BASE_DISTANCE;
+  const visibleW = visibleH * aspect;
+  const maxX = Math.max(0, (WORLD_W - visibleW) / 2);
+  // Keep a small margin so we never reveal beyond the artwork.
+  return { x: maxX * 0.96, y: aspect < .85 ? 0.10 : 0.08 };
 }
+
+function updatePointerFromEvent(e){
+  const r=renderer.domElement.getBoundingClientRect();
+  pointer.x=((e.clientX-r.left)/r.width)*2-1;
+  pointer.y=-((e.clientY-r.top)/r.height)*2+1;
+}
+
 renderer.domElement.addEventListener("pointerdown",e=>{
+  updatePointerFromEvent(e);
   dragging=true;
   startX=e.clientX; startY=e.clientY;
   startTX=targetX; startTY=targetY;
   moved=0;
   renderer.domElement.setPointerCapture(e.pointerId);
 });
+
 renderer.domElement.addEventListener("pointermove",e=>{
-  const r=renderer.domElement.getBoundingClientRect();
-  pointer.x=((e.clientX-r.left)/r.width)*2-1;
-  pointer.y=-((e.clientY-r.top)/r.height)*2+1;
+  updatePointerFromEvent(e);
 
   if(dragging){
     const dx=e.clientX-startX,dy=e.clientY-startY;
     moved=Math.max(moved,Math.hypot(dx,dy));
-    const lim=limits();
-    targetX=THREE.MathUtils.clamp(startTX-dx/(game.clientWidth*.55),-1,1)*lim.x;
-    targetY=THREE.MathUtils.clamp(startTY+dy/(game.clientHeight*1.6),-1,1)*lim.y;
+    const lim=getPanLimits();
+
+    // Faster direct-feeling pan: roughly one room-width of movement
+    // over a comfortable thumb swipe.
+    const sensitivityX = Math.max(120, game.clientWidth * 0.42);
+    const sensitivityY = Math.max(260, game.clientHeight * 1.8);
+
+    targetX=THREE.MathUtils.clamp(startTX-dx/sensitivityX*lim.x,-lim.x,lim.x);
+    targetY=THREE.MathUtils.clamp(startTY+dy/sensitivityY,-lim.y,lim.y);
   }
 });
+
 renderer.domElement.addEventListener("pointerup",e=>{
+  updatePointerFromEvent(e);
   dragging=false;
   try{renderer.domElement.releasePointerCapture(e.pointerId)}catch{}
-  if(moved<8) interact();
+  // Tap exactly where the finger/mouse was released.
+  if(moved<9) interactAtPointer();
 });
-
 function say(t){statusEl.textContent=t}
 
 let mode="night";
@@ -367,7 +379,7 @@ function wireTerminal(){
     b.addEventListener("click",()=>showPage(b.dataset.page));
   });
 }
-function interact(){
+function interactAtPointer(){
   raycaster.setFromCamera(pointer,camera);
   const hit=raycaster.intersectObjects(targets,false)[0];
   if(!hit){say("CLICK AROUND.");return}
@@ -411,10 +423,9 @@ function updateClock(){
 updateClock();
 setInterval(updateClock,30000);
 
-let hoverId=null;
 function animate(){
-  currentX += (targetX-currentX)*.075;
-  currentY += (targetY-currentY)*.075;
+  currentX += (targetX-currentX)*.22;
+  currentY += (targetY-currentY)*.22;
 
   camera.position.x=currentX;
   camera.position.y=currentY;
@@ -423,16 +434,6 @@ function animate(){
   // Keep the view parallel to the art plane. The different vertex depths
   // create the parallax instead of rotating a flat photo.
   camera.rotation.set(0,0,0);
-
-  if(!dragging && dialog.hidden){
-    raycaster.setFromCamera(pointer,camera);
-    const hit=raycaster.intersectObjects(targets,false)[0];
-    const id=hit?.object?.userData?.id || null;
-    if(id!==hoverId){
-      hoverId=id;
-      say(hit ? hit.object.userData.label : "CLICK AROUND.");
-    }
-  }
 
   renderer.render(scene,camera);
   requestAnimationFrame(animate);
