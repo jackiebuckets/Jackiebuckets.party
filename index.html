@@ -115,6 +115,18 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 }
 .use-computer button:active{border-style:inset}
 
+
+/* V15 — one full-screen drag surface */
+.viewport{
+  touch-action:none !important;
+  overscroll-behavior:none !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+}
+.hotspot{
+  pointer-events:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -447,6 +459,165 @@ back.addEventListener('click',()=>useComputer.classList.remove('open'));
     const el=document.getElementById(id);
     if(el) el.addEventListener('click',()=>setTimeout(returnToRoom,0),true);
   });
+})();
+</script>
+
+
+<script>
+(function(){
+  const oldViewport=document.getElementById('viewport');
+  if(!oldViewport) return;
+
+  /* Clone removes all old pointer listeners without changing the rendered DOM. */
+  const vp=oldViewport.cloneNode(true);
+  oldViewport.parentNode.replaceChild(vp,oldViewport);
+
+  const cam=vp.querySelector('#camera');
+  const scn=vp.querySelector('#scene');
+  const stat=document.getElementById('status');
+
+  let down=false, pid=null, lastX=0,lastY=0,total=0;
+
+  function panLimits(){
+    const cw=cam.offsetWidth, ch=cam.offsetHeight;
+    return {
+      x:Math.max(0,(cw-vp.clientWidth)/2),
+      y:Math.max(0,(ch-vp.clientHeight)/2)*.92
+    };
+  }
+
+  function setPan(dx,dy){
+    if(typeof zoomed!=='undefined' && zoomed) return;
+    const lim=panLimits();
+    panX=Math.max(-lim.x,Math.min(lim.x,panX+dx*1.08));
+    panY=Math.max(-lim.y,Math.min(lim.y,panY+dy*.42));
+    cam.style.left=`calc(50% + ${panX}px)`;
+    cam.style.top=`calc(50% + ${panY}px)`;
+    cam.style.transform='translate(-50%,-50%) scale(1.005)';
+  }
+
+  function hotspotAt(clientX,clientY){
+    const r=cam.getBoundingClientRect();
+    const x=(clientX-r.left)/r.width*100;
+    const y=(clientY-r.top)/r.height*100;
+    const zones=[
+      ['computer',34.3,42.0,16.5,24.5],
+      ['lamp',22.8,43.0,8.3,22.5],
+      ['music',59.0,49.5,17.8,21.5],
+      ['photos',24.0,8.5,21.5,34.5],
+      ['door',76.7,10.0,17.5,60.0],
+      ['guitar',11.0,43.5,8.5,31.5],
+      ['tapestry',46.0,6.0,21.0,48.0],
+      ['skull',67.0,7.5,8.5,27.0],
+      ['records',57.0,64.0,20.0,24.0]
+    ];
+    return zones.find(z=>x>=z[1]&&x<=z[1]+z[3]&&y>=z[2]&&y<=z[2]+z[4])?.[0]||null;
+  }
+
+  vp.addEventListener('pointerdown',e=>{
+    if(e.target.closest('.crt-window,.use-computer,button')) return;
+    if(typeof zoomed!=='undefined' && zoomed) return;
+    down=true; pid=e.pointerId; lastX=e.clientX; lastY=e.clientY; total=0;
+    vp.setPointerCapture?.(pid);
+    e.preventDefault();
+  },{passive:false});
+
+  vp.addEventListener('pointermove',e=>{
+    if(!down||e.pointerId!==pid) return;
+    const dx=e.clientX-lastX, dy=e.clientY-lastY;
+    lastX=e.clientX; lastY=e.clientY;
+    total+=Math.hypot(dx,dy);
+    setPan(dx,dy);
+    e.preventDefault();
+  },{passive:false});
+
+  vp.addEventListener('pointerup',e=>{
+    if(!down||e.pointerId!==pid) return;
+    down=false;
+    try{vp.releasePointerCapture?.(pid)}catch{}
+    if(total<10){
+      const id=hotspotAt(e.clientX,e.clientY);
+      if(id){
+        const el=document.getElementById(id);
+        if(el){
+          /* Temporarily allow the existing click behavior to run programmatically. */
+          el.click();
+        }
+      }else if(stat){
+        stat.textContent='CLICK AROUND.';
+      }
+    }
+    e.preventDefault();
+  },{passive:false});
+
+  vp.addEventListener('pointercancel',()=>{down=false;pid=null});
+})();
+</script>
+
+
+<script>
+(function(){
+  function reverseComputerZoom(){
+    const prompt=document.getElementById('useComputer');
+    const crt=document.getElementById('crtWindow');
+    if(prompt) prompt.classList.remove('open');
+    if(crt) crt.classList.remove('open');
+
+    const roomW=camera.offsetWidth, roomH=camera.offsetHeight;
+    const n={fx:.127,fy:-.072,s:1.70};
+    const roomLeft=viewport.clientWidth/2+panX;
+    const roomTop=viewport.clientHeight/2+panY;
+    const zoomLeft=viewport.clientWidth/2+n.fx*roomW;
+    const zoomTop=viewport.clientHeight/2+n.fy*roomH;
+
+    camera.classList.add('stepped');
+
+    const steps=[.68,.34,0];
+    let i=0;
+    const draw=t=>{
+      camera.style.left=(roomLeft+(zoomLeft-roomLeft)*t)+'px';
+      camera.style.top=(roomTop+(zoomTop-roomTop)*t)+'px';
+      camera.style.transform=`translate(-50%,-50%) scale(${1+(n.s-1)*t})`;
+    };
+
+    draw(steps[0]);
+    const timer=setInterval(()=>{
+      i++;
+      if(i>=steps.length){
+        clearInterval(timer);
+        zoomed=false;
+        scene.classList.remove('zoomed');
+        hint.style.opacity='1';
+        status.textContent='CLICK AROUND.';
+        return;
+      }
+      draw(steps[i]);
+    },85);
+  }
+
+  /* Capture the controls before older V14 exit handlers can snap the camera. */
+  const no=document.getElementById('computerNo');
+  if(no) no.addEventListener('click',e=>{
+    e.stopImmediatePropagation();
+    reverseComputerZoom();
+  },true);
+
+  const crt=document.getElementById('crtWindow');
+  if(crt) crt.addEventListener('click',e=>{
+    const t=e.target.closest('button,[role="button"],.close,.crt-close,.window-close');
+    if(!t)return;
+    const txt=(t.textContent||'').trim().toLowerCase();
+    const aria=(t.getAttribute('aria-label')||'').toLowerCase();
+    const title=(t.getAttribute('title')||'').toLowerCase();
+    const close=txt==='x'||txt==='×'||aria.includes('close')||title.includes('close')||
+      t.classList.contains('close')||t.classList.contains('crt-close')||t.classList.contains('window-close');
+    if(close){
+      e.stopImmediatePropagation();
+      reverseComputerZoom();
+    }
+  },true);
+
+  window.reverseComputerZoom=reverseComputerZoom;
 })();
 </script>
 
