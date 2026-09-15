@@ -188,6 +188,28 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  .bg-post{padding:7px}.bg-avatar{width:28px;height:28px;font-size:15px}.bg-photo{border-width:1px}.magic-input{font-size:8px;padding:0 3px}.magic-shake{font-size:8px;border-width:2px}.magic-result{font-size:8px}
 }
 
+
+/* V5 top-down record player */
+.record-window{position:fixed!important;inset:0!important;z-index:80!important;background:#120b08;display:none!important;pointer-events:none!important;overflow:hidden!important}
+.record-window.open{display:flex!important;align-items:center;justify-content:center;pointer-events:auto!important}
+.record-stage{position:relative!important;width:min(100vw,150vh)!important;aspect-ratio:3/2!important;height:auto!important;max-height:100vh!important;pointer-events:auto!important;overflow:hidden!important;background:#120b08}
+.record-scene-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:auto;user-select:none;-webkit-user-drag:none}
+.record-hit{position:absolute;border:0;background:transparent;padding:0;cursor:pointer;z-index:5;-webkit-tap-highlight-color:transparent}
+.record-hit:active{background:#fff1}
+.record-back-hit{left:7.5%;top:40%;width:12.5%;height:21%}
+.record-vinyl-hit{left:27.6%;top:10.8%;width:31%;height:48%;border-radius:50%}
+.record-sleeve-hit{top:66%;height:29%}
+.record-sleeve-hit.s1{left:2.6%;width:17.8%}.record-sleeve-hit.s2{left:22.2%;width:17.8%}.record-sleeve-hit.s3{left:41.2%;width:17.8%}.record-sleeve-hit.s4{left:60.3%;width:17.8%}.record-sleeve-hit.s5{left:79.5%;width:17.8%}
+.record-spin{position:absolute;left:27.65%;top:11.3%;width:30.6%;aspect-ratio:1;z-index:3;border-radius:50%;pointer-events:none;opacity:0;object-fit:contain;filter:drop-shadow(0 2px 2px #0008)}
+.record-window.playing .record-spin{opacity:1;animation:recordSpin 2.25s linear infinite}
+.record-playing-dot{position:absolute;left:29.6%;top:55.1%;width:8px;height:8px;border-radius:50%;background:#ff3a20;box-shadow:0 0 8px #ff4a20;z-index:6;opacity:0;pointer-events:none}
+.record-window.playing .record-playing-dot{opacity:1}
+.record-status{position:absolute;left:50%;top:62.2%;transform:translateX(-50%);z-index:7;background:#140d09cc;color:#f4d49d;padding:4px 8px;font:700 7px/1.1 "Courier New",monospace;letter-spacing:.4px;text-shadow:1px 1px #000;pointer-events:none;opacity:0;transition:opacity .15s}
+.record-window.show-status .record-status{opacity:1}
+.record-credit{position:absolute!important;left:50%!important;bottom:.8%!important;transform:translateX(-50%)!important;z-index:8!important;color:#e6c99a!important;font-size:5px!important;background:#130c08b8;padding:2px 5px;opacity:.8!important}
+.record-now,.record-controls,.record-shelf,.turntable,.record-close{display:none!important}
+@media(max-aspect-ratio:3/2){.record-stage{width:100vw!important;height:66.6667vw!important}}
+
 </style>
 </head>
 <body>
@@ -237,15 +259,18 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
    <section class="record-window" id="recordWindow" aria-label="Record player">
     <div class="record-stage">
-      <button class="record-close" id="recordClose" aria-label="Back to room">← BACK TO ROOM</button>
-      <div class="turntable">
-        <div class="platter"><div class="record-disc"><div class="record-label" id="recordLabel">SIDE<br>A</div></div></div>
-        <div class="tonearm"></div>
-      </div>
-      <div class="record-now"><b id="recordTitle">J U P I T E R</b><span id="recordArtist">DEOXYS BEATS</span><br><span id="recordPrompt">PICK A RECORD OR PRESS PLAY</span></div>
+      <img class="record-scene-art" src="record-player-ui.png" alt="Top-down pixel art record player">
+      <img class="record-spin" src="record-disc.png" alt="">
+      <button class="record-hit record-back-hit" id="recordClose" aria-label="Back to room"></button>
+      <button class="record-hit record-vinyl-hit" id="recordPlay" aria-label="Play or pause record"></button>
+      <button class="record-hit record-sleeve-hit s1" data-record="0" aria-label="Night Drive"></button>
+      <button class="record-hit record-sleeve-hit s2" data-record="1" aria-label="Tokyo Lounge"></button>
+      <button class="record-hit record-sleeve-hit s3" data-record="2" aria-label="Bossa for Later"></button>
+      <button class="record-hit record-sleeve-hit s4" data-record="3" aria-label="Dusty Grooves"></button>
+      <button class="record-hit record-sleeve-hit s5" data-record="4" aria-label="Elevator Music for Dreamers"></button>
+      <div class="record-playing-dot"></div>
+      <div class="record-status" id="recordPrompt">PICK A RECORD</div>
       <audio id="recordAudio" preload="metadata"></audio>
-      <div class="record-controls"><button id="recordPrev">◀</button><button id="recordPlay">PLAY</button><button id="recordNext">▶</button><span class="record-time" id="recordTime">0:00 / --:--</span></div>
-      <div class="record-shelf" id="recordShelf"></div>
       <div class="record-credit" id="recordCredit"></div>
     </div>
    </section>
@@ -478,50 +503,40 @@ const recordWindow=document.getElementById('recordWindow');
 const recordClose=document.getElementById('recordClose');
 const recordAudio=document.getElementById('recordAudio');
 const recordPlay=document.getElementById('recordPlay');
-const recordPrev=document.getElementById('recordPrev');
-const recordNext=document.getElementById('recordNext');
-const recordShelf=document.getElementById('recordShelf');
-const recordTitle=document.getElementById('recordTitle');
-const recordArtist=document.getElementById('recordArtist');
-const recordLabel=document.getElementById('recordLabel');
 const recordPrompt=document.getElementById('recordPrompt');
-const recordTime=document.getElementById('recordTime');
 const recordCredit=document.getElementById('recordCredit');
 recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 recordWindow.addEventListener('click',e=>e.stopPropagation());
 
+// Five deliberately mellow lounge / elevator records. Wikimedia-hosted originals,
+// each licensed for reuse with attribution on its source page.
 const recordCollection=[
- {title:'FREELY TOMORROW',artist:'MITCHIE M feat. HATSUNE MIKU',url:'https://upload.wikimedia.org/wikipedia/commons/2/24/Freely_Tomorrow.ogg',credit:'Mitchie M · CC BY 3.0'},
- {title:'KAMU YANG KASIH TINGGAL',artist:'REINOUVO509',url:'https://upload.wikimedia.org/wikipedia/commons/e/e8/DJ_GAFUR_X_KAMU_YANG_KASIH_TINGGAL_STYLE_POP_PUNK_MENGKANE_YANG_KALIAN_CARI_YANG_FYP_DI_TIKTOK.ogg',credit:'Reinouvo509 · CC BY 4.0'},
- {title:'WHAT’S IT TO YA PUNK',artist:'JASON SHAW',url:'https://upload.wikimedia.org/wikipedia/commons/a/aa/Audionautix-com-ccby-whatsittoyapunk.mp3',credit:'Jason Shaw / Audionautix · CC BY 3.0'},
- {title:'THE FUNKHOUSER',artist:'SONATEMA',url:'https://upload.wikimedia.org/wikipedia/commons/9/94/Sonatema_-_The_Funkhouser_%28Versi%C3%B3n_original%29.wav',credit:'Lebrozu / Sonatema · CC0'},
- {title:'ARPEGGIO DREAMER',artist:'DOLPHINANA',url:'https://upload.wikimedia.org/wikipedia/commons/f/f5/Arpeggio_Dreamer.ogg',credit:'dolphinana · CC0'}
+ {title:'NIGHT DRIVE',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/9/9c/Study_And_Relax_by_Kevin_MacLeod.ogg',credit:'Study And Relax — Kevin MacLeod · CC BY 4.0'},
+ {title:'TOKYO LOUNGE',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/0/05/Airport_Lounge_%28ISRC_USUAN1100806%29.mp3',credit:'Airport Lounge — Kevin MacLeod · CC BY 3.0'},
+ {title:'BOSSA FOR LATER',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/6/60/Bossa_Antigua_%28ISRC_USUAN1700069%29.mp3',credit:'Bossa Antigua — Kevin MacLeod · CC BY 3.0'},
+ {title:'DUSTY GROOVES',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/8/8d/Ultralounge_%28ISRC_USUAN1500017%29.mp3',credit:'Ultralounge — Kevin MacLeod · CC BY 3.0'},
+ {title:'ELEVATOR DREAMS',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/9/9f/Local_Forecast_-_Elevator_%28ISRC_USUAN1300012%29.mp3',credit:'Local Forecast - Elevator — Kevin MacLeod · CC BY 3.0'}
 ];
-let currentRecord=0;
-function fmtTime(v){if(!Number.isFinite(v))return '--:--';v=Math.max(0,Math.floor(v));return Math.floor(v/60)+':'+String(v%60).padStart(2,'0');}
+let currentRecord=0,statusTimer=null;
+function showRecordStatus(text){
+ recordPrompt.textContent=text;recordWindow.classList.add('show-status');
+ clearTimeout(statusTimer);statusTimer=setTimeout(()=>recordWindow.classList.remove('show-status'),1500);
+}
 function loadRecord(i,autoplay=false){
  currentRecord=(i+recordCollection.length)%recordCollection.length;
  const r=recordCollection[currentRecord];
- recordAudio.pause(); recordWindow.classList.remove('playing');
- recordAudio.src=r.url; recordAudio.load();
- recordTitle.textContent=r.title; recordArtist.textContent=r.artist;
- recordLabel.innerHTML='SIDE<br>'+String.fromCharCode(65+currentRecord);
- recordPrompt.textContent='PRESS PLAY'; recordPlay.textContent='PLAY';
- recordCredit.textContent=r.credit; recordTime.textContent='0:00 / --:--';
- [...recordShelf.children].forEach((b,n)=>b.classList.toggle('active',n===currentRecord));
- if(autoplay) recordAudio.play().catch(()=>{recordPrompt.textContent='TAP PLAY';});
+ recordAudio.pause();recordWindow.classList.remove('playing');
+ recordAudio.src=r.url;recordAudio.load();recordCredit.textContent=r.credit;
+ showRecordStatus(r.title);
+ document.querySelectorAll('[data-record]').forEach((b,n)=>b.style.filter=n===currentRecord?'brightness(1.16)':'');
+ if(autoplay)recordAudio.play().catch(()=>showRecordStatus('TAP THE RECORD'));
 }
-recordCollection.forEach((r,i)=>{const b=document.createElement('button');b.className='record-pick';b.setAttribute('aria-label',r.title+' by '+r.artist);b.innerHTML='<span>'+r.title+'</span>';b.addEventListener('click',()=>loadRecord(i,true));recordShelf.appendChild(b);});
-recordPlay.addEventListener('click',()=>{if(recordAudio.paused)recordAudio.play().catch(()=>{});else recordAudio.pause();});
-document.querySelector('.record-disc').addEventListener('click',()=>{if(recordAudio.paused)recordAudio.play().catch(()=>{});else recordAudio.pause();});
-recordPrev.addEventListener('click',()=>loadRecord(currentRecord-1,true));
-recordNext.addEventListener('click',()=>loadRecord(currentRecord+1,true));
-recordAudio.addEventListener('play',()=>{recordWindow.classList.add('playing');recordPlay.textContent='PAUSE';recordPrompt.textContent='NOW SPINNING';});
-recordAudio.addEventListener('pause',()=>{recordWindow.classList.remove('playing');recordPlay.textContent='PLAY';if(!recordAudio.ended)recordPrompt.textContent='PAUSED';});
+document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>loadRecord(+b.dataset.record,true)));
+recordPlay.addEventListener('click',()=>{if(recordAudio.paused)recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));else recordAudio.pause();});
+recordAudio.addEventListener('play',()=>{recordWindow.classList.add('playing');showRecordStatus(recordCollection[currentRecord].title);});
+recordAudio.addEventListener('pause',()=>{recordWindow.classList.remove('playing');if(!recordAudio.ended)showRecordStatus('PAUSED');});
 recordAudio.addEventListener('ended',()=>loadRecord(currentRecord+1,true));
-recordAudio.addEventListener('timeupdate',()=>{recordTime.textContent=fmtTime(recordAudio.currentTime)+' / '+fmtTime(recordAudio.duration);});
-recordAudio.addEventListener('loadedmetadata',()=>{recordTime.textContent=fmtTime(recordAudio.currentTime)+' / '+fmtTime(recordAudio.duration);});
-recordAudio.addEventListener('error',()=>{recordPrompt.textContent='THIS RECORD DIDN\'T LOAD';});
+recordAudio.addEventListener('error',()=>showRecordStatus('THIS RECORD DIDN\'T LOAD'));
 loadRecord(0,false);
 
 function exitRecordPlayer(){
