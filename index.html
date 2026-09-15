@@ -267,7 +267,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
 
 .hula-glow{
- position:absolute;left:17.3%;top:43.2%;width:14.5%;height:25%;z-index:3;
+ position:absolute;left:17.3%;top:43.2%;width:14.5%;height:25%;z-index:8;
  pointer-events:none;opacity:0;
  background:radial-gradient(ellipse at 50% 35%,
  rgba(255,205,105,.58) 0%,rgba(255,166,65,.34) 25%,
@@ -277,7 +277,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 }
 .hula-glow.on{opacity:1;transform:scale(1)}
 .hula-core{
- position:absolute;left:21.15%;top:47.3%;width:5.4%;height:9.8%;z-index:4;
+ position:absolute;left:21.15%;top:47.3%;width:5.4%;height:9.8%;z-index:9;
  pointer-events:none;opacity:0;
  background:radial-gradient(ellipse at 50% 35%,rgba(255,224,145,.46),rgba(255,156,55,.15) 52%,transparent 76%);
  transition:opacity .24s steps(4,end);
@@ -475,7 +475,7 @@ function applyPan(){
 function pointerDown(e){
  if(zoomed || e.target.closest(".crt-window,.use-computer,button")) return;
  const downId=roomObjectAt(e.clientX,e.clientY);
- if(downId==='lamp') sfxLamp();
+ if(downId==='lamp'){sfxLamp();toggleHulaLight();}
  if(downId==='door') sfxDoor();
  dragging=true; moved=false;
  sx=e.clientX; sy=e.clientY;
@@ -723,7 +723,7 @@ function toggleHulaLight(){
  if(hulaGlow)hulaGlow.classList.toggle('on',hulaLampOn);
  if(hulaCore)hulaCore.classList.toggle('on',hulaLampOn);
 }
-lampHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxLamp();toggleHulaLight();},{passive:true});
+lampHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxLamp();},{passive:true});
 lampHotspot.addEventListener('click',(e)=>{
  e.stopPropagation();
  moved=false;
