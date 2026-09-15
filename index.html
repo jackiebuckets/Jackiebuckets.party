@@ -190,9 +190,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
 
 /* Record player — locked portrait low-poly master */
-.record-window{position:fixed!important;inset:0!important;z-index:80!important;background:#07132e!important;display:none!important;pointer-events:none!important;overflow:hidden!important}
+.record-window{position:fixed!important;left:0!important;right:0!important;top:44px!important;bottom:54px!important;z-index:80!important;background:#07132e!important;display:none!important;pointer-events:none!important;overflow:hidden!important}
 .record-window.open{display:flex!important;align-items:center;justify-content:center;pointer-events:auto!important}
-.record-stage{position:relative!important;height:100vh!important;width:auto!important;aspect-ratio:2/3!important;min-width:100vw!important;pointer-events:auto!important;overflow:hidden!important;background:#07132e}
+.record-stage{position:relative!important;height:100%!important;width:auto!important;aspect-ratio:2/3!important;min-width:100vw!important;pointer-events:auto!important;overflow:hidden!important;background:#07132e}
 .record-scene-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:auto;user-select:none;-webkit-user-drag:none}
 .record-hit{position:absolute;border:0;background:transparent;padding:0;cursor:pointer;z-index:7;-webkit-tap-highlight-color:transparent}
 .record-hit:active{background:#fff1}
@@ -212,7 +212,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .record-window.show-status .record-status{opacity:1}
 .record-credit{position:absolute!important;left:50%!important;bottom:.8%!important;transform:translateX(-50%)!important;z-index:8!important;color:#b8c5df!important;font-size:5px!important;background:#07132eb8;padding:2px 5px;opacity:.72!important;white-space:nowrap}
 .record-now,.record-controls,.record-shelf,.turntable,.record-close{display:none!important}
-@media(min-aspect-ratio:2/3){.record-stage{height:auto!important;width:100vw!important;min-width:0!important;aspect-ratio:2/3!important}}
+@media(max-width:720px){.record-window{top:48px!important;bottom:54px!important}}
+@media(min-aspect-ratio:2/3){.record-stage{height:100%!important;width:auto!important;min-width:0!important;aspect-ratio:2/3!important}}
 
 </style>
 </head>
