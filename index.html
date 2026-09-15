@@ -210,14 +210,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .record-window.playing .record-playing-dot{opacity:1}
 .record-status{position:absolute;left:50%;top:64.2%;transform:translateX(-50%);z-index:8;background:#07132ed9;color:#f4d49d;padding:4px 8px;font:700 7px/1.1 "Courier New",monospace;letter-spacing:.4px;text-shadow:1px 1px #000;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}
 .record-window.show-status .record-status{opacity:1}
-.record-volume-toggle{
- position:absolute;left:10.2%;top:30.4%;z-index:20;
- border:1px solid #2a211b;background:#b69a6b;color:#211812;
- padding:4px 7px;font:700 6px/1 "Courier New",monospace;letter-spacing:.25px;
- box-shadow:2px 2px 0 #0008,inset 1px 1px 0 #dfc694;
- cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;
-}
-.record-volume-toggle.quiet{background:#746a5b;color:#eee1c6}
+
+
 
 .record-credit{position:absolute!important;left:50%!important;bottom:.8%!important;transform:translateX(-50%)!important;z-index:8!important;color:#b8c5df!important;font-size:5px!important;background:#07132eb8;padding:2px 5px;opacity:.72!important;white-space:nowrap}
 .record-now,.record-controls,.record-shelf,.turntable,.record-close{display:none!important}
@@ -333,7 +327,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
       <button class="record-hit record-sleeve-hit s4" data-record="3" aria-label="Local Forecast"></button>
       <button class="record-hit record-sleeve-hit s5" data-record="4" aria-label="Night Floors"></button>
       <div class="record-playing-dot"></div>
-      <button class="record-volume-toggle" id="recordVolumeToggle" type="button">VOL: NORMAL</button>
       <div class="record-status" id="recordPrompt">PICK A RECORD</div>
       <audio id="recordAudio" preload="metadata"></audio>
       <div class="record-credit" id="recordCredit"></div>
@@ -616,21 +609,7 @@ const recordPlay=document.getElementById('recordPlay');
 const recordSpin=document.getElementById('recordSpin');
 const recordPrompt=document.getElementById('recordPrompt');
 const recordCredit=document.getElementById('recordCredit');
-const recordVolumeToggle=document.getElementById('recordVolumeToggle');
-let recordVolumeMode='normal';
-function applyRecordVolume(){
- const quiet=recordVolumeMode==='quiet';
- recordAudio.volume=quiet?0.5:1;
- recordVolumeToggle.textContent=quiet?'VOL: QUIET':'VOL: NORMAL';
- recordVolumeToggle.classList.toggle('quiet',quiet);
-}
-recordVolumeToggle.addEventListener('pointerdown',e=>e.stopPropagation(),{passive:true});
-recordVolumeToggle.addEventListener('click',e=>{
- e.stopPropagation();
- recordVolumeMode=recordVolumeMode==='normal'?'quiet':'normal';
- applyRecordVolume();
-});
-applyRecordVolume();
+
 
 recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 recordWindow.addEventListener('click',e=>e.stopPropagation());
