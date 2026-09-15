@@ -130,7 +130,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
 
 
-/* Record player — custom room UI with official Spotify playback */
+/* Record player — self-host-style CC collection, streamed from Wikimedia Commons */
 .record-window{
  position:absolute;z-index:55;display:none;left:50%;top:50%;transform:translate(-50%,-50%);
  width:min(620px,92vw);background:#b9b3a3;color:#17140f;border:4px outset #eee;
@@ -152,11 +152,18 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .tonearm:after{content:"";position:absolute;width:26px;height:18px;background:#181818;border:2px solid #000;left:-8px;bottom:-8px}
 .record-note{position:absolute;left:310px;right:16px;top:25px;color:#f1d8aa;font-size:13px;line-height:1.35}
 .record-note b{display:block;font-size:18px;color:#fff0c7;margin-bottom:7px}.record-note span{opacity:.8}
-.spotify-shell{margin-top:10px;background:#17130f;border:3px inset #d8c7ab;padding:5px;height:90px;overflow:hidden}
-.spotify-shell iframe{display:block;width:100%;height:80px;border:0}
-.record-footer{padding-top:7px;color:#f1d8aa;font-size:11px;text-align:center;opacity:.85}
+.record-controls{margin-top:10px;background:#17130f;border:3px inset #d8c7ab;padding:7px;display:flex;gap:6px;align-items:center}
+.record-controls button,.record-pick{font:700 11px/1.1 "Courier New",monospace;color:#f4dfb7;background:#4b2c18;border:2px outset #a98261;padding:7px 9px;cursor:pointer}
+.record-controls button:active,.record-pick:active{border-style:inset}
+.record-time{margin-left:auto;color:#d9bd8c;font-size:10px;white-space:nowrap}
+.record-shelf{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}
+.record-pick{min-height:42px;padding:5px 4px;overflow:hidden;text-overflow:ellipsis}
+.record-pick.active{background:#d0a45e;color:#21150c;border-style:inset}
+.record-footer{padding-top:7px;color:#f1d8aa;font-size:10px;text-align:center;opacity:.9}
+.record-credit{color:#f1d8aa;text-decoration:underline}
+.record-window.playing .tonearm{transform:rotate(-9deg)}
 @media(max-width:560px){
- .turntable{height:188px}.platter{width:150px;height:150px;left:18px;top:18px}.tonearm{left:190px;height:135px}.record-note{left:245px;top:22px;font-size:11px}.record-note b{font-size:14px}.spotify-shell{height:88px}
+ .turntable{height:188px}.platter{width:150px;height:150px;left:18px;top:18px}.tonearm{left:190px;height:135px}.record-note{left:245px;top:22px;font-size:10px}.record-note b{font-size:13px}.record-shelf{grid-template-columns:repeat(5,1fr)}.record-pick{font-size:8px;padding:4px 2px}.record-controls button{font-size:10px;padding:7px 8px}
 }
 
 /* Bucketgram — fixed chrome, scrollable middle feed only */
@@ -242,14 +249,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <div class="record-titlebar">NOW SPINNING.EXE <button class="record-close" id="recordClose" aria-label="Close record player">×</button></div>
     <div class="record-body">
       <div class="turntable">
-        <div class="platter"><div class="record-disc"><div class="record-label">JACKIE<br>BUCKETS</div></div></div>
+        <div class="platter"><div class="record-disc"><div class="record-label" id="recordLabel">SIDE<br>A</div></div></div>
         <div class="tonearm"></div>
-        <div class="record-note"><b>RECORD 01</b>ON MELANCHOLY HILL<br><span>GORILLAZ · PLASTIC BEACH</span><br><br>PRESS PLAY ↓</div>
+        <div class="record-note"><b id="recordNumber">RECORD 01</b><span id="recordTitle">LIVING IN REVERSE</span><br><span id="recordArtist">BROKE FOR FREE</span><br><br><span id="recordPrompt">PRESS PLAY ↓</span></div>
       </div>
-      <div class="spotify-shell">
-        <iframe id="spotifyPlayer" title="Spotify player" src="https://open.spotify.com/embed/track/4ercRiJZl8kBm8vfPaNjrl?utm_source=generator&amp;theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-      </div>
-      <div class="record-footer">SPOTIFY HANDLES THE NEEDLE. WE HANDLE THE VIBES.</div>
+      <audio id="recordAudio" preload="metadata"></audio>
+      <div class="record-controls"><button id="recordPrev">◀</button><button id="recordPlay">PLAY</button><button id="recordNext">▶</button><span class="record-time" id="recordTime">0:00 / --:--</span></div>
+      <div class="record-shelf" id="recordShelf"></div>
+      <div class="record-footer">5 RECORDS · NO LOGIN · FULL TRACKS<br><span id="recordCredit"></span></div>
     </div>
    </section>
 
@@ -479,8 +486,55 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 const recordWindow=document.getElementById('recordWindow');
 const recordClose=document.getElementById('recordClose');
+const recordAudio=document.getElementById('recordAudio');
+const recordPlay=document.getElementById('recordPlay');
+const recordPrev=document.getElementById('recordPrev');
+const recordNext=document.getElementById('recordNext');
+const recordShelf=document.getElementById('recordShelf');
+const recordTitle=document.getElementById('recordTitle');
+const recordArtist=document.getElementById('recordArtist');
+const recordNumber=document.getElementById('recordNumber');
+const recordLabel=document.getElementById('recordLabel');
+const recordPrompt=document.getElementById('recordPrompt');
+const recordTime=document.getElementById('recordTime');
+const recordCredit=document.getElementById('recordCredit');
 recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 recordWindow.addEventListener('click',e=>e.stopPropagation());
+
+const recordCollection=[
+ {title:'LIVING IN REVERSE',artist:'BROKE FOR FREE',file:'Broke For Free - 08 - Living In Reverse.ogg',license:'CC BY 3.0',credit:'Broke For Free · CC BY 3.0'},
+ {title:'QUASI MOTION',artist:'KEVIN MACLEOD',file:'Kevin MacLeod - Quasi Motion.ogg',license:'CC BY 3.0',credit:'Kevin MacLeod · CC BY 3.0'},
+ {title:'A003',artist:'MONROEVILLE MUSIC CENTER',file:'Monroeville Music Center - 03 - A003.ogg',license:'CC BY 3.0',credit:'Monroeville Music Center · CC BY 3.0'},
+ {title:'CRAZY GLUE',artist:'JOSH WOODWARD',file:'Josh Woodward - The Wake - 04 - Crazy Glue.ogg',license:'CC BY 3.0 US',credit:'Josh Woodward · CC BY 3.0 US'},
+ {title:'LEVEL 9',artist:'KOMIKU',file:'Komiku - 08 - Level 9 One more step till the fall of patriarchy.ogg',license:'CC0',credit:'Komiku · CC0'}
+];
+let currentRecord=0;
+function commonsAudio(file){return 'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(file);}
+function fmtTime(v){if(!Number.isFinite(v))return '--:--';v=Math.max(0,Math.floor(v));return Math.floor(v/60)+':'+String(v%60).padStart(2,'0');}
+function loadRecord(i,autoplay=false){
+ currentRecord=(i+recordCollection.length)%recordCollection.length;
+ const r=recordCollection[currentRecord];
+ recordAudio.pause(); recordWindow.classList.remove('playing');
+ recordAudio.src=commonsAudio(r.file); recordAudio.load();
+ recordNumber.textContent='RECORD '+String(currentRecord+1).padStart(2,'0');
+ recordTitle.textContent=r.title; recordArtist.textContent=r.artist;
+ recordLabel.innerHTML='SIDE<br>'+String.fromCharCode(65+currentRecord);
+ recordPrompt.textContent='PRESS PLAY ↓'; recordPlay.textContent='PLAY';
+ recordCredit.textContent=r.credit; recordTime.textContent='0:00 / --:--';
+ [...recordShelf.children].forEach((b,n)=>b.classList.toggle('active',n===currentRecord));
+ if(autoplay) recordAudio.play().catch(()=>{});
+}
+recordCollection.forEach((r,i)=>{const b=document.createElement('button');b.className='record-pick';b.innerHTML=String(i+1).padStart(2,'0')+'<br>'+r.title;b.addEventListener('click',()=>loadRecord(i,true));recordShelf.appendChild(b);});
+recordPlay.addEventListener('click',()=>{if(recordAudio.paused)recordAudio.play().catch(()=>{});else recordAudio.pause();});
+recordPrev.addEventListener('click',()=>loadRecord(currentRecord-1,true));
+recordNext.addEventListener('click',()=>loadRecord(currentRecord+1,true));
+recordAudio.addEventListener('play',()=>{recordWindow.classList.add('playing');recordPlay.textContent='PAUSE';recordPrompt.textContent='NOW SPINNING';});
+recordAudio.addEventListener('pause',()=>{recordWindow.classList.remove('playing');recordPlay.textContent='PLAY';if(!recordAudio.ended)recordPrompt.textContent='PAUSED';});
+recordAudio.addEventListener('ended',()=>loadRecord(currentRecord+1,true));
+recordAudio.addEventListener('timeupdate',()=>{recordTime.textContent=fmtTime(recordAudio.currentTime)+' / '+fmtTime(recordAudio.duration);});
+recordAudio.addEventListener('loadedmetadata',()=>{recordTime.textContent=fmtTime(recordAudio.currentTime)+' / '+fmtTime(recordAudio.duration);});
+recordAudio.addEventListener('error',()=>{recordPrompt.textContent='RECORD SKIPPED — TRY AGAIN';});
+loadRecord(0,false);
 
 function exitRecordPlayer(){
  recordWindow.classList.remove('open');
@@ -499,16 +553,6 @@ document.getElementById('music').addEventListener('click',(e)=>{
  setTimeout(()=>{ recordWindow.classList.add('open'); status.textContent='DROP THE NEEDLE.'; },zoomDuration+35);
 });
 recordClose.addEventListener('click',(e)=>{e.stopPropagation();exitRecordPlayer();});
-
-// The Spotify embed owns playback. Listen for its postMessage playback updates
-// when available so the on-screen vinyl spins only while the track is playing.
-window.addEventListener('message',(e)=>{
- if(!String(e.origin||'').includes('spotify.com')) return;
- const d=e.data||{};
- const payload=d.payload||d;
- const paused=payload.isPaused ?? payload.paused;
- if(typeof paused==='boolean') recordWindow.classList.toggle('playing',!paused);
-});
 
 
 let lightMode=null; // null = choose initial state from actual time
