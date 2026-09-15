@@ -215,17 +215,51 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 @media(max-width:720px){.record-window{top:48px!important;bottom:54px!important}}
 /* Safari fix: size from the fixed record-window itself, NOT 100vw. On iPhone Safari, 100vw can resolve to the wider layout viewport and crop both sides. */
 
-/* V5.17 — night skull tapestry / hidden key */
-.secret-recess{position:absolute;left:66.5%;top:6.5%;width:10%;height:29%;z-index:3;display:none;background:linear-gradient(90deg,#111018,#21162a 55%,#0b0a0f);border:2px inset rgba(90,74,63,.75);box-shadow:inset 0 0 18px #000,0 0 10px rgba(185,35,20,.22);pointer-events:none}
+/* V5.23 — exact cutout tapestry + recessed secret compartment */
+.secret-recess{
+ position:absolute;left:67.35%;top:7.65%;width:7.05%;height:19.65%;z-index:4;display:none;
+ background:
+   linear-gradient(90deg,rgba(0,0,0,.58),transparent 13%,transparent 84%,rgba(0,0,0,.66)),
+   linear-gradient(180deg,#2b2526 0%,#171416 16%,#121012 82%,#080708 100%);
+ border:1px solid #493c36;
+ box-shadow:
+   inset 4px 4px 0 rgba(0,0,0,.55),
+   inset -3px -3px 0 rgba(94,70,53,.28),
+   inset 0 0 10px #000,
+   0 1px 0 rgba(111,84,63,.35);
+ pointer-events:none;
+ image-rendering:pixelated;
+}
+.secret-recess:before{
+ content:'';position:absolute;inset:7% 9% 8%;
+ border-left:1px solid rgba(116,87,66,.24);
+ border-top:1px solid rgba(116,87,66,.18);
+ box-shadow:inset 2px 2px 4px rgba(0,0,0,.72);
+ pointer-events:none;
+}
 .secret-recess.show{display:block}
-.secret-key{position:absolute;left:50%;top:57%;width:34%;height:9%;transform:translate(-50%,-50%) rotate(-16deg);background:#b98a35;border:1px solid #e1bd67;box-shadow:0 0 7px rgba(255,190,62,.6);display:none;pointer-events:auto;cursor:pointer}
-.secret-key:before{content:'';position:absolute;left:-28%;top:-80%;width:48%;aspect-ratio:1;border:4px solid #c79b47;border-radius:50%;background:#161119}
-.secret-key:after{content:'';position:absolute;right:-3%;top:52%;width:28%;height:95%;border-left:5px solid #b98a35;border-bottom:5px solid #b98a35}
-.secret-recess.key-ready{pointer-events:auto}.secret-recess.key-ready .secret-key{display:block}
-.skull-tapestry-overlay{position:absolute;left:66.5%;top:6.5%;width:10%;height:29%;z-index:5;object-fit:fill;image-rendering:pixelated;pointer-events:none;display:none;transform-origin:50% 8%}
+.secret-key{
+ position:absolute;left:50%;top:54%;width:31%;height:auto;aspect-ratio:18/44;
+ transform:translate(-50%,-50%) rotate(-10deg);
+ background:transparent url("secret-key-rusted.png") center/contain no-repeat;
+ border:0;box-shadow:none;padding:0;display:none;pointer-events:auto;cursor:pointer;
+ image-rendering:pixelated;
+ filter:drop-shadow(1px 2px 1px rgba(0,0,0,.75));
+}
+.secret-key:before,.secret-key:after{content:none}
+.secret-recess.key-ready{pointer-events:auto}
+.secret-recess.key-ready .secret-key{display:block}
+.skull-tapestry-overlay{
+ position:absolute;left:67.3177%;top:7.4725%;width:7.1615%;height:20%;z-index:5;
+ object-fit:fill;image-rendering:pixelated;pointer-events:none;display:none;
+ transform-origin:50% 7%;
+}
 .skull-tapestry-overlay.active{display:block}
-.skull-tapestry-overlay.awake{filter:brightness(1.13) contrast(1.08) drop-shadow(0 0 5px rgba(255,45,25,.55))}
-.skull-tapestry-overlay.moved{transform:translate(82%,-5%) rotate(7deg);transition:transform .42s steps(6,end)}
+.skull-tapestry-overlay.awake{filter:drop-shadow(0 0 3px rgba(180,25,20,.38))}
+.skull-tapestry-overlay.moved{
+ transform:translate(94%,-4%) rotate(8deg);
+ transition:transform .46s steps(6,end);
+}
 .scene.has-key #skull{cursor:default}
 
 </style>
@@ -353,11 +387,23 @@ const sfxFiles={
  tapestry:'sfx-tapestry.wav'
 };
 const sfxPool={};
-function playSfx(name,volume=1){
- const src=sfxFiles[name]; if(!src)return;
+Object.entries(sfxFiles).forEach(([name,src])=>{
  try{
-   const a=(sfxPool[name]||(sfxPool[name]=new Audio(src))).cloneNode();
-   a.volume=volume; a.play().catch(()=>{});
+   const a=new Audio();
+   a.preload='auto';
+   a.src=src;
+   a.load();
+   sfxPool[name]=a;
+ }catch{}
+});
+function playSfx(name,volume=1){
+ const base=sfxPool[name]; if(!base)return;
+ try{
+   const a=base.cloneNode(true);
+   a.preload='auto';
+   a.volume=volume;
+   a.currentTime=0;
+   a.play().catch(()=>{});
  }catch{}
 }
 function sfxLamp(){playSfx('mechanical',.9)}
@@ -404,6 +450,9 @@ function applyPan(){
 }
 function pointerDown(e){
  if(zoomed || e.target.closest(".crt-window,.use-computer,button")) return;
+ const downId=roomObjectAt(e.clientX,e.clientY);
+ if(downId==='lamp') sfxLamp();
+ if(downId==='door') sfxDoor();
  dragging=true; moved=false;
  sx=e.clientX; sy=e.clientY;
  startX=e.clientX; startY=e.clientY;
@@ -640,7 +689,7 @@ updateTime();
 setInterval(updateTime,30000);
 
 const lampHotspot=document.getElementById('lamp');
-lampHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxLamp();});
+lampHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxLamp();},{passive:true});
 lampHotspot.addEventListener('click',(e)=>{
  e.stopPropagation();
  moved=false;
@@ -658,7 +707,7 @@ function openSkullSecret(){
    skullOverlay.classList.add('active');
    status.textContent='...DID THAT EYE JUST MOVE?';
    setTimeout(()=>skullOverlay.classList.add('awake'),180);
-   setTimeout(()=>{sfxTapestry();secretRecess.classList.add('show');skullOverlay.classList.add('moved');status.textContent='THERE\'S SOMETHING BEHIND IT.';},520);
+   setTimeout(()=>{sfxTapestry();secretRecess.classList.add('show');skullOverlay.classList.add('moved');status.textContent='THERE\'S A RECESS BEHIND IT.';},520);
    setTimeout(()=>{secretRecess.classList.add('key-ready');secretOpen=true;secretBusy=false;status.textContent='A KEY.';},980);
  },zoomDuration+60);
 }
@@ -673,7 +722,7 @@ document.getElementById('skull').addEventListener('click',(e)=>{e.stopPropagatio
 secretKey.addEventListener('pointerdown',(e)=>{e.stopPropagation();if(secretOpen&&!hasKey)sfxKey();});
 secretKey.addEventListener('click',(e)=>{e.stopPropagation();if(!secretOpen||hasKey)return;hasKey=true;scene.classList.add('has-key');secretKey.style.display='none';status.textContent='GOT A KEY.';setTimeout(closeSkullSecret,700);});
 const doorHotspot=document.getElementById('door');
-doorHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxDoor();});
+doorHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxDoor();},{passive:true});
 doorHotspot.addEventListener('click',(e)=>{e.stopPropagation();moved=false;if(!hasKey){status.textContent="IT'S LOCKED. LOOKS LIKE I'M STUCK IN HERE.";}else{status.textContent='THE KEY FITS. ...DO I ACTUALLY WANT TO LEAVE?';}});
 document.getElementById('records').addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false; status.textContent='THE RECORDS ARE RIGHT THERE. TRY THE PLAYER.';
@@ -763,7 +812,7 @@ useComputer.addEventListener('pointerdown',e=>e.stopPropagation());
 useComputer.addEventListener('click',e=>e.stopPropagation());
 
 const computerYes=document.getElementById('computerYes');
-computerYes.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxTyping();});
+computerYes.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxTyping();},{passive:true});
 computerYes.addEventListener('click',(e)=>{
  e.stopPropagation();
  useComputer.classList.remove('open');
