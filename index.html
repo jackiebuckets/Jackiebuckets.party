@@ -130,35 +130,31 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
 
 
-/* Record player V3 — physical interaction over the room, no app window */
+/* Record player V4 — room-native interaction. No popup/chrome. */
 .record-window{position:absolute;z-index:55;display:none;inset:0;pointer-events:none;font-family:"Courier New",monospace}
 .record-window.open{display:block}
-.record-stage{position:absolute;left:50%;top:52%;width:min(610px,92vw);height:330px;transform:translate(-50%,-50%);pointer-events:auto}
-.record-close{position:absolute;right:0;top:-28px;border:0;background:transparent;color:#f4dfb7;font:700 12px "Courier New";text-shadow:2px 2px #000;cursor:pointer;padding:8px}
-.turntable{position:absolute;left:50%;top:2px;width:310px;height:210px;transform:translateX(-50%);background:linear-gradient(145deg,#5d4028,#2e2118 72%);border:4px solid #1c130d;box-shadow:0 12px 18px #0009,inset 0 0 0 3px #8a6240;border-radius:5px}
-.turntable:after{content:"";position:absolute;right:22px;bottom:20px;width:18px;height:18px;border-radius:50%;background:#b84e39;box-shadow:0 0 0 3px #21160f}
-.platter{position:absolute;width:174px;height:174px;left:20px;top:16px;border-radius:50%;background:#151515;border:6px solid #292929;box-shadow:0 5px 0 #080808}
-.record-disc{position:absolute;inset:8px;border-radius:50%;background:repeating-radial-gradient(circle,#080808 0 2px,#171717 3px 5px);animation:recordSpin 2.2s linear infinite;animation-play-state:paused;box-shadow:inset 0 0 12px #000}
+.record-stage{position:absolute;inset:0;pointer-events:none}
+.record-close{position:absolute;left:18px;top:18px;pointer-events:auto;border:0;background:#0008;color:#f4dfb7;font:700 11px "Courier New";text-shadow:1px 1px #000;cursor:pointer;padding:7px 9px;box-shadow:2px 2px #0006}
+.turntable{position:absolute;left:49%;top:45%;width:118px;height:118px;transform:translate(-50%,-50%);pointer-events:auto;background:transparent;border:0;box-shadow:none}
+.turntable:after{display:none}
+.platter{position:absolute;inset:0;border-radius:50%;background:transparent;border:0;box-shadow:none}
+.record-disc{position:absolute;inset:8px;border-radius:50%;background:repeating-radial-gradient(circle,#080808 0 2px,#151515 3px 5px);animation:recordSpin 2.2s linear infinite;animation-play-state:paused;box-shadow:0 3px 7px #0009,inset 0 0 8px #000;cursor:pointer;opacity:.94}
 .record-window.playing .record-disc{animation-play-state:running}
-.record-label{position:absolute;left:50%;top:50%;width:58px;height:58px;transform:translate(-50%,-50%);border-radius:50%;background:#d9788f;color:#241217;display:grid;place-items:center;text-align:center;font:bold 8px/1 "Courier New";box-shadow:inset 0 0 0 2px #542432}
-.record-label:after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:#111;left:50%;top:50%;transform:translate(-50%,-50%)}
+.record-label{position:absolute;left:50%;top:50%;width:34px;height:34px;transform:translate(-50%,-50%);border-radius:50%;background:#cf6d82;color:#241217;display:grid;place-items:center;text-align:center;font:bold 6px/1 "Courier New";box-shadow:inset 0 0 0 1px #542432}
+.record-label:after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#111;left:50%;top:50%;transform:translate(-50%,-50%)}
 @keyframes recordSpin{to{transform:rotate(360deg)}}
-.tonearm{position:absolute;left:225px;top:22px;width:12px;height:148px;background:#bcae9b;border:3px solid #251c16;transform:rotate(-18deg);transform-origin:50% 10px;box-shadow:3px 3px #0006;transition:transform .25s steps(3,end)}
-.tonearm:before{content:"";position:absolute;width:31px;height:31px;border-radius:50%;background:#8c806f;border:4px solid #241b15;left:-12px;top:-15px}.tonearm:after{content:"";position:absolute;width:25px;height:17px;background:#181818;border:2px solid #000;left:-8px;bottom:-8px}
+.tonearm{position:absolute;left:101px;top:0;width:6px;height:91px;background:#bcae9b;border:2px solid #251c16;transform:rotate(-20deg);transform-origin:50% 7px;box-shadow:2px 2px #0006;transition:transform .25s steps(3,end)}
+.tonearm:before{content:"";position:absolute;width:19px;height:19px;border-radius:50%;background:#8c806f;border:2px solid #241b15;left:-8px;top:-9px}.tonearm:after{content:"";position:absolute;width:15px;height:10px;background:#181818;border:1px solid #000;left:-6px;bottom:-5px}
 .record-window.playing .tonearm{transform:rotate(-8deg)}
-.record-now{position:absolute;left:50%;top:218px;transform:translateX(-50%);width:390px;text-align:center;color:#f4dfb7;text-shadow:2px 2px 0 #000;font-size:11px;line-height:1.25}
-.record-now b{display:block;color:#fff4d0;font-size:15px;letter-spacing:.5px}.record-now span{opacity:.9}
-.record-controls{position:absolute;left:50%;top:265px;transform:translateX(-50%);display:flex;align-items:center;gap:9px}
-.record-controls button{width:38px;height:28px;border:2px solid #21160f;background:#725039;color:#f4dfb7;font:bold 13px "Courier New";box-shadow:2px 3px 0 #0008;cursor:pointer}.record-controls #recordPlay{width:62px}.record-time{color:#f4dfb7;font-size:9px;text-shadow:2px 2px #000;min-width:72px}
-.record-shelf{position:absolute;left:50%;bottom:-90px;transform:translateX(-50%);display:flex;gap:9px;align-items:flex-end}
-.record-pick{position:relative;width:76px;height:76px;border:3px solid #1a120d;padding:0;cursor:pointer;box-shadow:4px 5px 0 #0009;overflow:hidden;color:#fff;font:700 8px/1.05 "Courier New";text-shadow:1px 1px #000;background:#744d57}
+.record-now{position:absolute;left:50%;top:68%;transform:translateX(-50%);width:min(360px,84vw);text-align:center;color:#f4dfb7;text-shadow:2px 2px #000;font-size:9px;line-height:1.2;pointer-events:none}
+.record-now b{display:block;color:#fff4d0;font-size:11px;letter-spacing:.4px}.record-now span{opacity:.85}
+.record-controls{display:none}
+.record-shelf{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);display:flex;gap:7px;align-items:flex-end;pointer-events:auto}
+.record-pick{position:relative;width:58px;height:58px;border:2px solid #1a120d;padding:0;cursor:pointer;box-shadow:3px 4px #0009;overflow:hidden;color:#fff;font:700 6px/1.05 "Courier New";text-shadow:1px 1px #000;background:#744d57;image-rendering:pixelated}
 .record-pick:nth-child(2){background:#354d69}.record-pick:nth-child(3){background:#a45b3f}.record-pick:nth-child(4){background:#5f6a4a}.record-pick:nth-child(5){background:#5b426f}
-.record-pick:before{content:"";position:absolute;width:50px;height:50px;border-radius:50%;background:#111;left:13px;top:8px;box-shadow:inset 0 0 0 10px #222}
-.record-pick:after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#e2b26d;left:30px;top:25px}
-.record-pick span{position:absolute;left:2px;right:2px;bottom:3px;z-index:2;background:#0008;padding:2px 1px}
-.record-pick.active{transform:translateY(-9px);box-shadow:4px 14px 0 #0007;outline:2px solid #f0d99e}
-.record-credit{position:absolute;left:50%;bottom:-112px;transform:translateX(-50%);white-space:nowrap;color:#d9c39b;font-size:7px;text-shadow:1px 1px #000;opacity:.75}
-@media(max-width:560px){.record-stage{top:48%;height:300px}.turntable{width:265px;height:185px}.platter{width:150px;height:150px;left:15px;top:14px}.tonearm{left:194px;height:128px}.record-now{top:192px;width:330px}.record-controls{top:235px}.record-shelf{bottom:-80px;gap:6px}.record-pick{width:59px;height:59px}.record-pick:before{width:39px;height:39px;left:10px;top:5px;box-shadow:inset 0 0 0 8px #222}.record-pick:after{width:13px;height:13px;left:23px;top:18px}.record-pick span{font-size:6px}.record-credit{bottom:-99px;font-size:6px}}
+.record-pick:before{content:"";position:absolute;width:38px;height:38px;border-radius:50%;background:#111;left:9px;top:5px;box-shadow:inset 0 0 0 8px #222}.record-pick:after{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:#e2b26d;left:22px;top:18px}.record-pick span{position:absolute;left:2px;right:2px;bottom:2px;z-index:2;background:#0009;padding:2px 1px}.record-pick.active{transform:translateY(-7px);box-shadow:3px 11px #0007;outline:1px solid #f0d99e}
+.record-credit{position:absolute;left:50%;bottom:2.5%;transform:translateX(-50%);white-space:nowrap;color:#d9c39b;font-size:6px;text-shadow:1px 1px #000;opacity:.65;pointer-events:none}
+@media(max-width:560px){.turntable{left:50%;top:43%;width:94px;height:94px}.tonearm{left:80px;height:73px}.record-shelf{bottom:9%;gap:5px}.record-pick{width:49px;height:49px}.record-pick:before{width:32px;height:32px;left:7px;top:4px;box-shadow:inset 0 0 0 7px #222}.record-pick:after{width:10px;height:10px;left:18px;top:15px}.record-now{top:63%}.record-credit{bottom:3%}}
 
 /* Bucketgram — fixed chrome, scrollable middle feed only */
 .bucketgram-window{
@@ -495,11 +491,11 @@ recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 recordWindow.addEventListener('click',e=>e.stopPropagation());
 
 const recordCollection=[
- {title:'J U P I T E R',artist:'DEOXYS BEATS',url:'https://www.free-stock-music.com/music/deoxys-beats/mp3/deoxys-beats-j-u-p-i-t-e-r.mp3',credit:'Deoxys Beats · CC BY-SA 3.0'},
- {title:'SHINKANSEN 2',artist:'GLITCH',url:'https://www.free-stock-music.com/music/glitch/mp3/glitch-shinkansen-2.mp3',credit:'Glitch · CC BY-NC 3.0'},
- {title:'MAMACITA',artist:'MIKE LEITE',url:'https://www.free-stock-music.com/music/mike-leite/mp3/mike-leite-mamacita.mp3',credit:'Mike Leite · CC BY 3.0'},
- {title:'RAINBOW BRIDGE',artist:'ENLIA',url:'https://www.free-stock-music.com/music/enlia/mp3/enlia-rainbow-bridge.mp3',credit:'Enlia · CC BY-ND 3.0'},
- {title:'DANDELIONS',artist:'APOSINE',url:'https://www.free-stock-music.com/music/aposine/mp3/aposine-dandelions.mp3',credit:'Aposine · CC BY-SA 3.0'}
+ {title:'FREELY TOMORROW',artist:'MITCHIE M feat. HATSUNE MIKU',url:'https://upload.wikimedia.org/wikipedia/commons/2/24/Freely_Tomorrow.ogg',credit:'Mitchie M · CC BY 3.0'},
+ {title:'KAMU YANG KASIH TINGGAL',artist:'REINOUVO509',url:'https://upload.wikimedia.org/wikipedia/commons/e/e8/DJ_GAFUR_X_KAMU_YANG_KASIH_TINGGAL_STYLE_POP_PUNK_MENGKANE_YANG_KALIAN_CARI_YANG_FYP_DI_TIKTOK.ogg',credit:'Reinouvo509 · CC BY 4.0'},
+ {title:'WHAT’S IT TO YA PUNK',artist:'JASON SHAW',url:'https://upload.wikimedia.org/wikipedia/commons/a/aa/Audionautix-com-ccby-whatsittoyapunk.mp3',credit:'Jason Shaw / Audionautix · CC BY 3.0'},
+ {title:'THE FUNKHOUSER',artist:'SONATEMA',url:'https://upload.wikimedia.org/wikipedia/commons/9/94/Sonatema_-_The_Funkhouser_%28Versi%C3%B3n_original%29.wav',credit:'Lebrozu / Sonatema · CC0'},
+ {title:'ARPEGGIO DREAMER',artist:'DOLPHINANA',url:'https://upload.wikimedia.org/wikipedia/commons/f/f5/Arpeggio_Dreamer.ogg',credit:'dolphinana · CC0'}
 ];
 let currentRecord=0;
 function fmtTime(v){if(!Number.isFinite(v))return '--:--';v=Math.max(0,Math.floor(v));return Math.floor(v/60)+':'+String(v%60).padStart(2,'0');}
@@ -511,12 +507,13 @@ function loadRecord(i,autoplay=false){
  recordTitle.textContent=r.title; recordArtist.textContent=r.artist;
  recordLabel.innerHTML='SIDE<br>'+String.fromCharCode(65+currentRecord);
  recordPrompt.textContent='PRESS PLAY'; recordPlay.textContent='PLAY';
- recordCredit.textContent=r.credit+' · free-stock-music.com'; recordTime.textContent='0:00 / --:--';
+ recordCredit.textContent=r.credit; recordTime.textContent='0:00 / --:--';
  [...recordShelf.children].forEach((b,n)=>b.classList.toggle('active',n===currentRecord));
  if(autoplay) recordAudio.play().catch(()=>{recordPrompt.textContent='TAP PLAY';});
 }
 recordCollection.forEach((r,i)=>{const b=document.createElement('button');b.className='record-pick';b.setAttribute('aria-label',r.title+' by '+r.artist);b.innerHTML='<span>'+r.title+'</span>';b.addEventListener('click',()=>loadRecord(i,true));recordShelf.appendChild(b);});
 recordPlay.addEventListener('click',()=>{if(recordAudio.paused)recordAudio.play().catch(()=>{});else recordAudio.pause();});
+document.querySelector('.record-disc').addEventListener('click',()=>{if(recordAudio.paused)recordAudio.play().catch(()=>{});else recordAudio.pause();});
 recordPrev.addEventListener('click',()=>loadRecord(currentRecord-1,true));
 recordNext.addEventListener('click',()=>loadRecord(currentRecord+1,true));
 recordAudio.addEventListener('play',()=>{recordWindow.classList.add('playing');recordPlay.textContent='PAUSE';recordPrompt.textContent='NOW SPINNING';});
