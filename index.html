@@ -211,9 +211,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .record-status{position:absolute;left:50%;top:64.2%;transform:translateX(-50%);z-index:8;background:#07132ed9;color:#f4d49d;padding:4px 8px;font:700 7px/1.1 "Courier New",monospace;letter-spacing:.4px;text-shadow:1px 1px #000;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}
 .record-window.show-status .record-status{opacity:1}
 .record-volume-toggle{
- position:absolute;right:5.2%;top:35.2%;z-index:9;pointer-events:auto;
+ position:absolute;left:43.8%;top:55.8%;z-index:9;pointer-events:auto;
  border:1px solid #2a211b;background:#b69a6b;color:#211812;
- padding:4px 6px;font:700 6px/1 "Courier New",monospace;letter-spacing:.25px;
+ padding:3px 5px;font:700 5.5px/1 "Courier New",monospace;letter-spacing:.25px;
  box-shadow:2px 2px 0 #0008,inset 1px 1px 0 #dfc694;
  text-shadow:none;cursor:pointer;-webkit-tap-highlight-color:transparent;
 }
@@ -618,9 +618,10 @@ const recordPrompt=document.getElementById('recordPrompt');
 const recordCredit=document.getElementById('recordCredit');
 const recordVolumeToggle=document.getElementById('recordVolumeToggle');
 let recordVolumeMode='normal';
+const getRecordVolume=()=>recordVolumeMode==='quiet'?0.5:1.0;
 function applyRecordVolume(){
  const quiet=recordVolumeMode==='quiet';
- recordAudio.volume=quiet ? 0.5 : 1.0;
+ recordAudio.volume=getRecordVolume();
  recordVolumeToggle.textContent=quiet ? 'VOL: QUIET' : 'VOL: NORMAL';
  recordVolumeToggle.classList.toggle('quiet',quiet);
  recordVolumeToggle.setAttribute('aria-label','Record volume: '+(quiet?'quiet':'normal'));
