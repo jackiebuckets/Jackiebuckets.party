@@ -190,9 +190,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
 
 /* V5 top-down record player */
-.record-window{position:fixed!important;inset:0!important;z-index:80!important;background:#120b08;display:none!important;pointer-events:none!important;overflow:hidden!important}
+.record-window{position:fixed!important;inset:0!important;z-index:80!important;background-image:url('room-night.png')!important;background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important;display:none!important;pointer-events:none!important;overflow:hidden!important}
 .record-window.open{display:flex!important;align-items:center;justify-content:center;pointer-events:auto!important}
-.record-stage{position:relative!important;width:min(100vw,150vh)!important;aspect-ratio:3/2!important;height:auto!important;max-height:100vh!important;pointer-events:auto!important;overflow:hidden!important;background:#120b08}
+.record-window.daytime{background-image:url('room-day.png')!important}
+.record-stage{position:relative!important;width:min(100vw,150vh)!important;aspect-ratio:3/2!important;height:auto!important;max-height:100vh!important;pointer-events:auto!important;overflow:hidden!important;background:transparent}
 .record-scene-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:auto;user-select:none;-webkit-user-drag:none}
 .record-hit{position:absolute;border:0;background:transparent;padding:0;cursor:pointer;z-index:5;-webkit-tap-highlight-color:transparent}
 .record-hit:active{background:#fff1}
@@ -263,11 +264,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
       <img class="record-spin" src="record-disc.png" alt="">
       <button class="record-hit record-back-hit" id="recordClose" aria-label="Back to room"></button>
       <button class="record-hit record-vinyl-hit" id="recordPlay" aria-label="Play or pause record"></button>
-      <button class="record-hit record-sleeve-hit s1" data-record="0" aria-label="Night Drive"></button>
-      <button class="record-hit record-sleeve-hit s2" data-record="1" aria-label="Tokyo Lounge"></button>
-      <button class="record-hit record-sleeve-hit s3" data-record="2" aria-label="Bossa for Later"></button>
-      <button class="record-hit record-sleeve-hit s4" data-record="3" aria-label="Dusty Grooves"></button>
-      <button class="record-hit record-sleeve-hit s5" data-record="4" aria-label="Elevator Music for Dreamers"></button>
+      <button class="record-hit record-sleeve-hit s1" data-record="0" aria-label="Elevator Dreams"></button>
+      <button class="record-hit record-sleeve-hit s2" data-record="1" aria-label="Lobby Time"></button>
+      <button class="record-hit record-sleeve-hit s3" data-record="2" aria-label="Airport Lounge"></button>
+      <button class="record-hit record-sleeve-hit s4" data-record="3" aria-label="Local Forecast"></button>
+      <button class="record-hit record-sleeve-hit s5" data-record="4" aria-label="Night Floors"></button>
       <div class="record-playing-dot"></div>
       <div class="record-status" id="recordPrompt">PICK A RECORD</div>
       <audio id="recordAudio" preload="metadata"></audio>
@@ -500,6 +501,10 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 
 const recordWindow=document.getElementById('recordWindow');
+// Keep the close-up viewport-sized so portrait screens show the real room around the 3:2 artwork.
+document.body.appendChild(recordWindow);
+function syncRecordRoomBackground(){recordWindow.classList.toggle('daytime',scene.classList.contains('daytime'));}
+syncRecordRoomBackground();
 const recordClose=document.getElementById('recordClose');
 const recordAudio=document.getElementById('recordAudio');
 const recordPlay=document.getElementById('recordPlay');
@@ -511,11 +516,11 @@ recordWindow.addEventListener('click',e=>e.stopPropagation());
 // Five deliberately mellow lounge / elevator records. Wikimedia-hosted originals,
 // each licensed for reuse with attribution on its source page.
 const recordCollection=[
- {title:'NIGHT DRIVE',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/9/9c/Study_And_Relax_by_Kevin_MacLeod.ogg',credit:'Study And Relax — Kevin MacLeod · CC BY 4.0'},
- {title:'TOKYO LOUNGE',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/0/05/Airport_Lounge_%28ISRC_USUAN1100806%29.mp3',credit:'Airport Lounge — Kevin MacLeod · CC BY 3.0'},
- {title:'BOSSA FOR LATER',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/6/60/Bossa_Antigua_%28ISRC_USUAN1700069%29.mp3',credit:'Bossa Antigua — Kevin MacLeod · CC BY 3.0'},
- {title:'DUSTY GROOVES',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/8/8d/Ultralounge_%28ISRC_USUAN1500017%29.mp3',credit:'Ultralounge — Kevin MacLeod · CC BY 3.0'},
- {title:'ELEVATOR DREAMS',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/9/9f/Local_Forecast_-_Elevator_%28ISRC_USUAN1300012%29.mp3',credit:'Local Forecast - Elevator — Kevin MacLeod · CC BY 3.0'}
+ {title:'ELEVATOR DREAMS',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/9/9f/Local_Forecast_-_Elevator_%28ISRC_USUAN1300012%29.mp3',credit:'Local Forecast - Elevator — Kevin MacLeod · CC BY 3.0'},
+ {title:'LOBBY TIME',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/8/87/Lobby_Time_%28ISRC_USUAN1600054%29.mp3',credit:'Lobby Time — Kevin MacLeod · CC BY 3.0'},
+ {title:'AIRPORT LOUNGE',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/0/05/Airport_Lounge_%28ISRC_USUAN1100806%29.mp3',credit:'Airport Lounge — Kevin MacLeod · CC BY 3.0'},
+ {title:'LOCAL FORECAST',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/8/8e/Local_Forecast_%28ISRC_USUAN1300010%29.mp3',credit:'Local Forecast — Kevin MacLeod · CC BY 3.0'},
+ {title:'NIGHT FLOORS',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/4/4a/Local_Forecast_-_Slower_%28ISRC_USUAN1300011%29.mp3',credit:'Local Forecast - Slower — Kevin MacLeod · CC BY 3.0'}
 ];
 let currentRecord=0,statusTimer=null;
 function showRecordStatus(text){
@@ -553,7 +558,7 @@ function exitRecordPlayer(){
 
 document.getElementById('music').addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false; goView('record');
- setTimeout(()=>{ recordWindow.classList.add('open'); status.textContent='DROP THE NEEDLE.'; },zoomDuration+35);
+ setTimeout(()=>{ syncRecordRoomBackground(); recordWindow.classList.add('open'); status.textContent='DROP THE NEEDLE.'; },zoomDuration+35);
 });
 recordClose.addEventListener('click',(e)=>{e.stopPropagation();exitRecordPlayer();});
 
