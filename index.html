@@ -273,7 +273,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
       <button data-crt="bulletins">[2] BULLETINS</button>
       <button data-crt="music">[3] MUSIC</button>
       <button data-crt="unknown">[4] ?????</button>
-      <div class="crt-help">SELECT PROGRAM_</div>
+      <div class="crt-help">SYSTEM READY.<br>AWAITING INPUT...</div>
     </div>
    </section>
 
@@ -434,7 +434,7 @@ const views={
 
 const computerZoom={fx:.127,fy:-.072,s:1.70};
 const recordZoom={fx:-.245,fy:-.105,s:1.62};
-const skullZoom={fx:-.205,fy:.155,s:2.18};
+const skullZoom={fx:-.499,fy:.682,s:2.35};
 let activeZoom=computerZoom;
 const zoomDuration=340;
 let zoomAnim=0;
@@ -711,7 +711,7 @@ bucketgramClose.addEventListener('click',()=>{
  bucketgramWindow.classList.remove('open');
  crtWindow.classList.add('open');
  showCrtHome();
- status.textContent='THE COMPUTER IS AWAKE.';
+ status.textContent='SYSTEM READY. AWAITING INPUT...';
 });
 magicShake.addEventListener('click',()=>{
  const q=magicInput.value.trim();
@@ -736,7 +736,7 @@ document.getElementById('computerYes').addEventListener('click',(e)=>{
  e.stopPropagation();
  useComputer.classList.remove('open');
  crtWindow.classList.add('open');
- status.textContent='THE COMPUTER IS AWAKE.';
+ status.textContent='SYSTEM READY. AWAITING INPUT...';
 });
 
 document.getElementById('computerNo').addEventListener('click',(e)=>{ e.stopPropagation(); exitComputer(); });
