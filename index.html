@@ -266,23 +266,29 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .scene.has-key #skull{cursor:default}
 
 
-.hula-glow{
- position:absolute;left:17.3%;top:43.2%;width:14.5%;height:25%;z-index:8;
- pointer-events:none;opacity:0;
- background:radial-gradient(ellipse at 50% 35%,
- rgba(255,205,105,.58) 0%,rgba(255,166,65,.34) 25%,
- rgba(255,135,42,.16) 48%,rgba(255,120,30,0) 72%);
- mix-blend-mode:screen;transform:scale(.92);transform-origin:50% 35%;
- transition:opacity .28s steps(5,end),transform .28s steps(5,end);
+
+
+
+/* V5.37 — isolated hula lamp illumination */
+.hula-spill{
+ position:absolute;left:20.1%;top:45.8%;width:10.5%;height:18.5%;z-index:8;
+ pointer-events:none;opacity:0;border-radius:50%;
+ background:radial-gradient(ellipse at 48% 43%,
+ rgba(255,190,92,.20) 0%,rgba(255,155,62,.10) 34%,
+ rgba(255,130,45,.035) 58%,transparent 76%);
+ filter:blur(7px);
+ transform:scale(.88);
+ transition:opacity .24s steps(5,end),transform .24s steps(5,end);
 }
-.hula-glow.on{opacity:1;transform:scale(1)}
-.hula-core{
- position:absolute;left:21.15%;top:47.3%;width:5.4%;height:9.8%;z-index:9;
- pointer-events:none;opacity:0;
- background:radial-gradient(ellipse at 50% 35%,rgba(255,224,145,.46),rgba(255,156,55,.15) 52%,transparent 76%);
- transition:opacity .24s steps(4,end);
+.hula-spill.on{opacity:1;transform:scale(1)}
+.hula-lit{
+ position:absolute;left:22.55%;top:48.45%;width:7.0%;height:auto;z-index:9;
+ pointer-events:none;opacity:0;image-rendering:pixelated;
+ filter:brightness(1.18) sepia(.18) saturate(1.12)
+        drop-shadow(0 0 2px rgba(255,177,76,.38));
+ transition:opacity .22s steps(5,end);
 }
-.hula-core.on{opacity:1}
+.hula-lit.on{opacity:.92}
 
 </style>
 </head>
@@ -294,8 +300,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    <div class="camera stepped" id="camera">
     <img class="room night" src="room-night.png" alt="">
     <img class="room day" src="room-day.png" alt="">
-    <div class="hula-glow" id="hulaGlow"></div>
-    <div class="hula-core" id="hulaCore"></div>
+    <div class="hula-spill" id="hulaSpill"></div>
+    <img class="hula-lit" id="hulaLit" src="hula-lamp-isolated.png" alt="">
+    
     <button class="hotspot" id="computer" aria-label="Computer"></button>
     <button class="hotspot" id="music" aria-label="Stereo and records"></button>
     <button class="hotspot" id="photos" aria-label="Photos"></button>
@@ -715,13 +722,13 @@ updateTime();
 setInterval(updateTime,30000);
 
 const lampHotspot=document.getElementById('lamp');
-const hulaGlow=document.getElementById('hulaGlow');
-const hulaCore=document.getElementById('hulaCore');
+const hulaSpill=document.getElementById('hulaSpill');
+const hulaLit=document.getElementById('hulaLit');
 let hulaLampOn=false;
 function toggleHulaLight(){
  hulaLampOn=!hulaLampOn;
- if(hulaGlow)hulaGlow.classList.toggle('on',hulaLampOn);
- if(hulaCore)hulaCore.classList.toggle('on',hulaLampOn);
+ if(hulaSpill)hulaSpill.classList.toggle('on',hulaLampOn);
+ if(hulaLit)hulaLit.classList.toggle('on',hulaLampOn);
 }
 lampHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxLamp();},{passive:true});
 lampHotspot.addEventListener('click',(e)=>{
