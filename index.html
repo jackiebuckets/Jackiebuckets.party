@@ -63,7 +63,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .crt-window{
   position:absolute; z-index:40; display:none;
   left:50%; top:50%; transform:translate(-50%,-50%);
-  width:min(430px,88vw);
+  width:min(350px,82vw);
   background:#c0c0c0; color:#000;
   border:4px outset #eee;
   box-shadow:8px 10px 0 rgba(0,0,0,.45);
@@ -81,21 +81,20 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
   font:bold 17px Arial; line-height:17px;
 }
 .crt-screen{
-  margin:8px; padding:16px 18px; min-height:245px;
-  background:#171006; color:#ffb84a;
+  margin:8px; padding:15px 16px; min-height:0;
+  background:#061109; color:#70ff72;
   border:4px inset #ddd;
-  text-shadow:0 0 4px #ff9f1a;
-  line-height:1.65;
+  text-shadow:0 0 4px #42ff55;
+  line-height:1.48;
   box-shadow:inset 0 0 35px #000;
 }
 .crt-screen button{
-  display:block; width:100%; min-height:34px; padding:3px 6px;
+  display:block; width:100%; min-height:32px; padding:2px 5px;
   border:0; background:transparent; color:inherit;
   text-align:left; font:inherit; cursor:pointer;
 }
 .crt-screen button::before{content:"  ";white-space:pre}
-.crt-screen button.selected::before,.crt-screen button:hover::before,.crt-screen button:focus-visible::before{content:"> ";}
-.crt-screen button:active,.crt-screen button.selected{background:#ffb84a;color:#171006;text-shadow:none}
+.crt-screen button:active{background:transparent;color:inherit;text-shadow:inherit}
 .crt-help{opacity:.72;margin-top:12px;font-size:12px}
 .crt-divider{opacity:.72;white-space:nowrap;overflow:hidden}
 .crt-status{opacity:.88}
@@ -201,7 +200,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
       <b>JB-OS v0.86</b><br><br>
       <span class="crt-status">MEMORY........64K OK<br>MODEM.........READY</span><br><br>
       <div class="crt-divider">--------------------------------</div>
-      <button data-crt="internet" class="selected">[1] INTERNET........CONNECTED</button>
+      <button data-crt="internet">[1] INTERNET........CONNECTED</button>
       <button data-crt="bulletins">[2] BULLETINS</button>
       <button data-crt="music">[3] MUSIC</button>
       <button data-crt="unknown">[4] ?????</button>
