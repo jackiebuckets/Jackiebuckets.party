@@ -276,9 +276,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  opacity:0;
  background:
   radial-gradient(ellipse at 50% 35%,
-   rgba(255,190,92,.34) 0%,
-   rgba(255,157,58,.20) 25%,
-   rgba(255,130,38,.09) 48%,
+   rgba(255,205,105,.58) 0%,
+   rgba(255,166,65,.34) 25%,
+   rgba(255,135,42,.16) 48%,
    rgba(255,120,30,0) 72%);
  mix-blend-mode:screen;
  transform:scale(.92);
@@ -311,6 +311,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    <div class="camera stepped" id="camera">
     <img class="room night" src="room-night.png" alt="">
     <img class="room day" src="room-day.png" alt="">
+    <div class="lamp-local-glow" id="lampGlow"></div>
+    <div class="lamp-hot-core" id="lampCore"></div>
     <button class="hotspot" id="computer" aria-label="Computer"></button>
     <button class="hotspot" id="music" aria-label="Stereo and records"></button>
     <button class="hotspot" id="photos" aria-label="Photos"></button>
@@ -717,6 +719,15 @@ function toggleLamp(){
 }
 
 
+let hulaLampOn=false;
+const lampGlow=document.getElementById('lampGlow');
+const lampCore=document.getElementById('lampCore');
+function toggleHulaLamp(){
+ hulaLampOn=!hulaLampOn;
+ lampGlow?.classList.toggle('on',hulaLampOn);
+ lampCore?.classList.toggle('on',hulaLampOn);
+}
+
 function updateTime(){
  const d=new Date();
  if(lightMode===null){
@@ -730,11 +741,10 @@ updateTime();
 setInterval(updateTime,30000);
 
 const lampHotspot=document.getElementById('lamp');
-lampHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxLamp();toggleLamp();},{passive:true});
+lampHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxLamp();toggleHulaLamp();},{passive:true});
 lampHotspot.addEventListener('click',(e)=>{
  e.stopPropagation();
  moved=false;
- toggleLamp();
 });
 let hasKey=false,secretBusy=false,secretOpen=false;
 const skullOverlay=document.getElementById('skullTapestryOverlay');
