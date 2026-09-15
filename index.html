@@ -363,7 +363,6 @@ function playSfx(name,volume=1){
 function sfxLamp(){playSfx('mechanical',.9)}
 function sfxDoor(){playSfx('door',.9)}
 function sfxKey(){playSfx('key',.9)}
-function sfxNeedle(){playSfx('mechanical',.82)}
 function sfxTyping(){playSfx('typing',.88)}
 function sfxSingleKey(){playSfx('singleKey',.86)}
 function sfxTapestry(){playSfx('tapestry',.7)}
@@ -585,8 +584,8 @@ function loadRecord(i,autoplay=false){
  document.querySelectorAll('[data-record]').forEach((b,n)=>b.style.filter=n===currentRecord?'brightness(1.16)':'');
  if(autoplay)recordAudio.play().catch(()=>showRecordStatus('TAP THE RECORD'));
 }
-document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>{sfxNeedle();loadRecord(+b.dataset.record,true);}));
-recordPlay.addEventListener('click',()=>{if(recordAudio.paused){sfxNeedle();recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));}else recordAudio.pause();});
+document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>{loadRecord(+b.dataset.record,true);}));
+recordPlay.addEventListener('click',()=>{if(recordAudio.paused){recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));}else recordAudio.pause();});
 recordAudio.addEventListener('play',()=>{recordWindow.classList.add('playing');showRecordStatus(recordCollection[currentRecord].title);});
 recordAudio.addEventListener('pause',()=>{recordWindow.classList.remove('playing');if(!recordAudio.ended)showRecordStatus('PAUSED');});
 recordAudio.addEventListener('ended',()=>loadRecord(currentRecord+1,true));
@@ -640,10 +639,11 @@ updateTime();
 
 setInterval(updateTime,30000);
 
-document.getElementById('lamp').addEventListener('click',(e)=>{
+const lampHotspot=document.getElementById('lamp');
+lampHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxLamp();});
+lampHotspot.addEventListener('click',(e)=>{
  e.stopPropagation();
  moved=false;
- sfxLamp();
  toggleLamp();
 });
 let hasKey=false,secretBusy=false,secretOpen=false;
@@ -670,8 +670,11 @@ function closeSkullSecret(){
 }
 document.getElementById('tapestry').addEventListener('click',(e)=>{e.stopPropagation();moved=false;status.textContent="IT DOESN'T DO ANYTHING. PROBABLY.";});
 document.getElementById('skull').addEventListener('click',(e)=>{e.stopPropagation();openSkullSecret();});
-secretKey.addEventListener('click',(e)=>{e.stopPropagation();if(!secretOpen||hasKey)return;sfxKey();hasKey=true;scene.classList.add('has-key');secretKey.style.display='none';status.textContent='GOT A KEY.';setTimeout(closeSkullSecret,700);});
-document.getElementById('door').addEventListener('click',(e)=>{e.stopPropagation();moved=false;sfxDoor();if(!hasKey){status.textContent="IT'S LOCKED. LOOKS LIKE I'M STUCK IN HERE.";}else{status.textContent='THE KEY FITS. ...DO I ACTUALLY WANT TO LEAVE?';}});
+secretKey.addEventListener('pointerdown',(e)=>{e.stopPropagation();if(secretOpen&&!hasKey)sfxKey();});
+secretKey.addEventListener('click',(e)=>{e.stopPropagation();if(!secretOpen||hasKey)return;hasKey=true;scene.classList.add('has-key');secretKey.style.display='none';status.textContent='GOT A KEY.';setTimeout(closeSkullSecret,700);});
+const doorHotspot=document.getElementById('door');
+doorHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxDoor();});
+doorHotspot.addEventListener('click',(e)=>{e.stopPropagation();moved=false;if(!hasKey){status.textContent="IT'S LOCKED. LOOKS LIKE I'M STUCK IN HERE.";}else{status.textContent='THE KEY FITS. ...DO I ACTUALLY WANT TO LEAVE?';}});
 document.getElementById('records').addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false; status.textContent='THE RECORDS ARE RIGHT THERE. TRY THE PLAYER.';
 });
@@ -759,9 +762,10 @@ const useComputer=document.getElementById('useComputer');
 useComputer.addEventListener('pointerdown',e=>e.stopPropagation());
 useComputer.addEventListener('click',e=>e.stopPropagation());
 
-document.getElementById('computerYes').addEventListener('click',(e)=>{
+const computerYes=document.getElementById('computerYes');
+computerYes.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxTyping();});
+computerYes.addEventListener('click',(e)=>{
  e.stopPropagation();
- sfxTyping();
  useComputer.classList.remove('open');
  crtWindow.classList.add('open');
  status.textContent='SYSTEM READY. AWAITING INPUT...';
