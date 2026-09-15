@@ -130,41 +130,35 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
 
 
-/* Record player — self-host-style CC collection, streamed from Wikimedia Commons */
-.record-window{
- position:absolute;z-index:55;display:none;left:50%;top:50%;transform:translate(-50%,-50%);
- width:min(620px,92vw);background:#b9b3a3;color:#17140f;border:4px outset #eee;
- box-shadow:9px 12px 0 rgba(0,0,0,.48);font-family:"Courier New",monospace;
-}
+/* Record player V3 — physical interaction over the room, no app window */
+.record-window{position:absolute;z-index:55;display:none;inset:0;pointer-events:none;font-family:"Courier New",monospace}
 .record-window.open{display:block}
-.record-titlebar{height:32px;display:flex;align-items:center;padding:3px 5px 3px 8px;background:#4c260e;color:#f3d59a;font-weight:bold}
-.record-close{margin-left:auto;width:28px;height:24px;border:3px outset #eee;background:#c0c0c0;color:#111;font:bold 17px Arial;line-height:16px}
-.record-body{padding:12px;background:#8b5a2b;border:4px inset #d5c3a5}
-.turntable{position:relative;height:210px;background:#33271d;border:3px solid #17110d;box-shadow:inset 0 0 0 3px #6b4a2f;overflow:hidden}
-.platter{position:absolute;width:176px;height:176px;left:35px;top:16px;border-radius:50%;background:repeating-radial-gradient(circle,#111 0 4px,#202020 5px 7px);border:6px solid #171717;box-shadow:0 4px 0 #0008}
-.record-disc{position:absolute;inset:9px;border-radius:50%;background:repeating-radial-gradient(circle,#080808 0 2px,#171717 3px 5px);animation:recordSpin 2.2s linear infinite;animation-play-state:paused}
+.record-stage{position:absolute;left:50%;top:52%;width:min(610px,92vw);height:330px;transform:translate(-50%,-50%);pointer-events:auto}
+.record-close{position:absolute;right:0;top:-28px;border:0;background:transparent;color:#f4dfb7;font:700 12px "Courier New";text-shadow:2px 2px #000;cursor:pointer;padding:8px}
+.turntable{position:absolute;left:50%;top:2px;width:310px;height:210px;transform:translateX(-50%);background:linear-gradient(145deg,#5d4028,#2e2118 72%);border:4px solid #1c130d;box-shadow:0 12px 18px #0009,inset 0 0 0 3px #8a6240;border-radius:5px}
+.turntable:after{content:"";position:absolute;right:22px;bottom:20px;width:18px;height:18px;border-radius:50%;background:#b84e39;box-shadow:0 0 0 3px #21160f}
+.platter{position:absolute;width:174px;height:174px;left:20px;top:16px;border-radius:50%;background:#151515;border:6px solid #292929;box-shadow:0 5px 0 #080808}
+.record-disc{position:absolute;inset:8px;border-radius:50%;background:repeating-radial-gradient(circle,#080808 0 2px,#171717 3px 5px);animation:recordSpin 2.2s linear infinite;animation-play-state:paused;box-shadow:inset 0 0 12px #000}
 .record-window.playing .record-disc{animation-play-state:running}
-.record-label{position:absolute;left:50%;top:50%;width:62px;height:62px;transform:translate(-50%,-50%);border-radius:50%;background:#e7a2bd;color:#311321;display:grid;place-items:center;text-align:center;font:bold 8px/1.05 "Courier New";box-shadow:inset 0 0 0 2px #51263a}
+.record-label{position:absolute;left:50%;top:50%;width:58px;height:58px;transform:translate(-50%,-50%);border-radius:50%;background:#d9788f;color:#241217;display:grid;place-items:center;text-align:center;font:bold 8px/1 "Courier New";box-shadow:inset 0 0 0 2px #542432}
 .record-label:after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:#111;left:50%;top:50%;transform:translate(-50%,-50%)}
 @keyframes recordSpin{to{transform:rotate(360deg)}}
-.tonearm{position:absolute;left:252px;top:25px;width:16px;height:155px;background:#c9b8a0;border:3px solid #251c16;transform:rotate(-17deg);transform-origin:50% 12px;box-shadow:3px 3px #0006}
-.tonearm:before{content:"";position:absolute;width:34px;height:34px;border-radius:50%;background:#9b8b76;border:4px solid #241b15;left:-12px;top:-15px}
-.tonearm:after{content:"";position:absolute;width:26px;height:18px;background:#181818;border:2px solid #000;left:-8px;bottom:-8px}
-.record-note{position:absolute;left:310px;right:16px;top:25px;color:#f1d8aa;font-size:13px;line-height:1.35}
-.record-note b{display:block;font-size:18px;color:#fff0c7;margin-bottom:7px}.record-note span{opacity:.8}
-.record-controls{margin-top:10px;background:#17130f;border:3px inset #d8c7ab;padding:7px;display:flex;gap:6px;align-items:center}
-.record-controls button,.record-pick{font:700 11px/1.1 "Courier New",monospace;color:#f4dfb7;background:#4b2c18;border:2px outset #a98261;padding:7px 9px;cursor:pointer}
-.record-controls button:active,.record-pick:active{border-style:inset}
-.record-time{margin-left:auto;color:#d9bd8c;font-size:10px;white-space:nowrap}
-.record-shelf{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}
-.record-pick{min-height:42px;padding:5px 4px;overflow:hidden;text-overflow:ellipsis}
-.record-pick.active{background:#d0a45e;color:#21150c;border-style:inset}
-.record-footer{padding-top:7px;color:#f1d8aa;font-size:10px;text-align:center;opacity:.9}
-.record-credit{color:#f1d8aa;text-decoration:underline}
-.record-window.playing .tonearm{transform:rotate(-9deg)}
-@media(max-width:560px){
- .turntable{height:188px}.platter{width:150px;height:150px;left:18px;top:18px}.tonearm{left:190px;height:135px}.record-note{left:245px;top:22px;font-size:10px}.record-note b{font-size:13px}.record-shelf{grid-template-columns:repeat(5,1fr)}.record-pick{font-size:8px;padding:4px 2px}.record-controls button{font-size:10px;padding:7px 8px}
-}
+.tonearm{position:absolute;left:225px;top:22px;width:12px;height:148px;background:#bcae9b;border:3px solid #251c16;transform:rotate(-18deg);transform-origin:50% 10px;box-shadow:3px 3px #0006;transition:transform .25s steps(3,end)}
+.tonearm:before{content:"";position:absolute;width:31px;height:31px;border-radius:50%;background:#8c806f;border:4px solid #241b15;left:-12px;top:-15px}.tonearm:after{content:"";position:absolute;width:25px;height:17px;background:#181818;border:2px solid #000;left:-8px;bottom:-8px}
+.record-window.playing .tonearm{transform:rotate(-8deg)}
+.record-now{position:absolute;left:50%;top:218px;transform:translateX(-50%);width:390px;text-align:center;color:#f4dfb7;text-shadow:2px 2px 0 #000;font-size:11px;line-height:1.25}
+.record-now b{display:block;color:#fff4d0;font-size:15px;letter-spacing:.5px}.record-now span{opacity:.9}
+.record-controls{position:absolute;left:50%;top:265px;transform:translateX(-50%);display:flex;align-items:center;gap:9px}
+.record-controls button{width:38px;height:28px;border:2px solid #21160f;background:#725039;color:#f4dfb7;font:bold 13px "Courier New";box-shadow:2px 3px 0 #0008;cursor:pointer}.record-controls #recordPlay{width:62px}.record-time{color:#f4dfb7;font-size:9px;text-shadow:2px 2px #000;min-width:72px}
+.record-shelf{position:absolute;left:50%;bottom:-90px;transform:translateX(-50%);display:flex;gap:9px;align-items:flex-end}
+.record-pick{position:relative;width:76px;height:76px;border:3px solid #1a120d;padding:0;cursor:pointer;box-shadow:4px 5px 0 #0009;overflow:hidden;color:#fff;font:700 8px/1.05 "Courier New";text-shadow:1px 1px #000;background:#744d57}
+.record-pick:nth-child(2){background:#354d69}.record-pick:nth-child(3){background:#a45b3f}.record-pick:nth-child(4){background:#5f6a4a}.record-pick:nth-child(5){background:#5b426f}
+.record-pick:before{content:"";position:absolute;width:50px;height:50px;border-radius:50%;background:#111;left:13px;top:8px;box-shadow:inset 0 0 0 10px #222}
+.record-pick:after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#e2b26d;left:30px;top:25px}
+.record-pick span{position:absolute;left:2px;right:2px;bottom:3px;z-index:2;background:#0008;padding:2px 1px}
+.record-pick.active{transform:translateY(-9px);box-shadow:4px 14px 0 #0007;outline:2px solid #f0d99e}
+.record-credit{position:absolute;left:50%;bottom:-112px;transform:translateX(-50%);white-space:nowrap;color:#d9c39b;font-size:7px;text-shadow:1px 1px #000;opacity:.75}
+@media(max-width:560px){.record-stage{top:48%;height:300px}.turntable{width:265px;height:185px}.platter{width:150px;height:150px;left:15px;top:14px}.tonearm{left:194px;height:128px}.record-now{top:192px;width:330px}.record-controls{top:235px}.record-shelf{bottom:-80px;gap:6px}.record-pick{width:59px;height:59px}.record-pick:before{width:39px;height:39px;left:10px;top:5px;box-shadow:inset 0 0 0 8px #222}.record-pick:after{width:13px;height:13px;left:23px;top:18px}.record-pick span{font-size:6px}.record-credit{bottom:-99px;font-size:6px}}
 
 /* Bucketgram — fixed chrome, scrollable middle feed only */
 .bucketgram-window{
@@ -246,17 +240,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    </section>
 
    <section class="record-window" id="recordWindow" aria-label="Record player">
-    <div class="record-titlebar">NOW SPINNING.EXE <button class="record-close" id="recordClose" aria-label="Close record player">×</button></div>
-    <div class="record-body">
+    <div class="record-stage">
+      <button class="record-close" id="recordClose" aria-label="Back to room">← BACK TO ROOM</button>
       <div class="turntable">
         <div class="platter"><div class="record-disc"><div class="record-label" id="recordLabel">SIDE<br>A</div></div></div>
         <div class="tonearm"></div>
-        <div class="record-note"><b id="recordNumber">RECORD 01</b><span id="recordTitle">LIVING IN REVERSE</span><br><span id="recordArtist">BROKE FOR FREE</span><br><br><span id="recordPrompt">PRESS PLAY ↓</span></div>
       </div>
+      <div class="record-now"><b id="recordTitle">J U P I T E R</b><span id="recordArtist">DEOXYS BEATS</span><br><span id="recordPrompt">PICK A RECORD OR PRESS PLAY</span></div>
       <audio id="recordAudio" preload="metadata"></audio>
       <div class="record-controls"><button id="recordPrev">◀</button><button id="recordPlay">PLAY</button><button id="recordNext">▶</button><span class="record-time" id="recordTime">0:00 / --:--</span></div>
       <div class="record-shelf" id="recordShelf"></div>
-      <div class="record-footer">5 RECORDS · NO LOGIN · FULL TRACKS<br><span id="recordCredit"></span></div>
+      <div class="record-credit" id="recordCredit"></div>
     </div>
    </section>
 
@@ -493,7 +487,6 @@ const recordNext=document.getElementById('recordNext');
 const recordShelf=document.getElementById('recordShelf');
 const recordTitle=document.getElementById('recordTitle');
 const recordArtist=document.getElementById('recordArtist');
-const recordNumber=document.getElementById('recordNumber');
 const recordLabel=document.getElementById('recordLabel');
 const recordPrompt=document.getElementById('recordPrompt');
 const recordTime=document.getElementById('recordTime');
@@ -502,29 +495,27 @@ recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 recordWindow.addEventListener('click',e=>e.stopPropagation());
 
 const recordCollection=[
- {title:'LIVING IN REVERSE',artist:'BROKE FOR FREE',file:'Broke For Free - 08 - Living In Reverse.ogg',license:'CC BY 3.0',credit:'Broke For Free · CC BY 3.0'},
- {title:'QUASI MOTION',artist:'KEVIN MACLEOD',file:'Kevin MacLeod - Quasi Motion.ogg',license:'CC BY 3.0',credit:'Kevin MacLeod · CC BY 3.0'},
- {title:'A003',artist:'MONROEVILLE MUSIC CENTER',file:'Monroeville Music Center - 03 - A003.ogg',license:'CC BY 3.0',credit:'Monroeville Music Center · CC BY 3.0'},
- {title:'CRAZY GLUE',artist:'JOSH WOODWARD',file:'Josh Woodward - The Wake - 04 - Crazy Glue.ogg',license:'CC BY 3.0 US',credit:'Josh Woodward · CC BY 3.0 US'},
- {title:'LEVEL 9',artist:'KOMIKU',file:'Komiku - 08 - Level 9 One more step till the fall of patriarchy.ogg',license:'CC0',credit:'Komiku · CC0'}
+ {title:'J U P I T E R',artist:'DEOXYS BEATS',url:'https://www.free-stock-music.com/music/deoxys-beats/mp3/deoxys-beats-j-u-p-i-t-e-r.mp3',credit:'Deoxys Beats · CC BY-SA 3.0'},
+ {title:'SHINKANSEN 2',artist:'GLITCH',url:'https://www.free-stock-music.com/music/glitch/mp3/glitch-shinkansen-2.mp3',credit:'Glitch · CC BY-NC 3.0'},
+ {title:'MAMACITA',artist:'MIKE LEITE',url:'https://www.free-stock-music.com/music/mike-leite/mp3/mike-leite-mamacita.mp3',credit:'Mike Leite · CC BY 3.0'},
+ {title:'RAINBOW BRIDGE',artist:'ENLIA',url:'https://www.free-stock-music.com/music/enlia/mp3/enlia-rainbow-bridge.mp3',credit:'Enlia · CC BY-ND 3.0'},
+ {title:'DANDELIONS',artist:'APOSINE',url:'https://www.free-stock-music.com/music/aposine/mp3/aposine-dandelions.mp3',credit:'Aposine · CC BY-SA 3.0'}
 ];
 let currentRecord=0;
-function commonsAudio(file){return 'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(file);}
 function fmtTime(v){if(!Number.isFinite(v))return '--:--';v=Math.max(0,Math.floor(v));return Math.floor(v/60)+':'+String(v%60).padStart(2,'0');}
 function loadRecord(i,autoplay=false){
  currentRecord=(i+recordCollection.length)%recordCollection.length;
  const r=recordCollection[currentRecord];
  recordAudio.pause(); recordWindow.classList.remove('playing');
- recordAudio.src=commonsAudio(r.file); recordAudio.load();
- recordNumber.textContent='RECORD '+String(currentRecord+1).padStart(2,'0');
+ recordAudio.src=r.url; recordAudio.load();
  recordTitle.textContent=r.title; recordArtist.textContent=r.artist;
  recordLabel.innerHTML='SIDE<br>'+String.fromCharCode(65+currentRecord);
- recordPrompt.textContent='PRESS PLAY ↓'; recordPlay.textContent='PLAY';
- recordCredit.textContent=r.credit; recordTime.textContent='0:00 / --:--';
+ recordPrompt.textContent='PRESS PLAY'; recordPlay.textContent='PLAY';
+ recordCredit.textContent=r.credit+' · free-stock-music.com'; recordTime.textContent='0:00 / --:--';
  [...recordShelf.children].forEach((b,n)=>b.classList.toggle('active',n===currentRecord));
- if(autoplay) recordAudio.play().catch(()=>{});
+ if(autoplay) recordAudio.play().catch(()=>{recordPrompt.textContent='TAP PLAY';});
 }
-recordCollection.forEach((r,i)=>{const b=document.createElement('button');b.className='record-pick';b.innerHTML=String(i+1).padStart(2,'0')+'<br>'+r.title;b.addEventListener('click',()=>loadRecord(i,true));recordShelf.appendChild(b);});
+recordCollection.forEach((r,i)=>{const b=document.createElement('button');b.className='record-pick';b.setAttribute('aria-label',r.title+' by '+r.artist);b.innerHTML='<span>'+r.title+'</span>';b.addEventListener('click',()=>loadRecord(i,true));recordShelf.appendChild(b);});
 recordPlay.addEventListener('click',()=>{if(recordAudio.paused)recordAudio.play().catch(()=>{});else recordAudio.pause();});
 recordPrev.addEventListener('click',()=>loadRecord(currentRecord-1,true));
 recordNext.addEventListener('click',()=>loadRecord(currentRecord+1,true));
@@ -533,7 +524,7 @@ recordAudio.addEventListener('pause',()=>{recordWindow.classList.remove('playing
 recordAudio.addEventListener('ended',()=>loadRecord(currentRecord+1,true));
 recordAudio.addEventListener('timeupdate',()=>{recordTime.textContent=fmtTime(recordAudio.currentTime)+' / '+fmtTime(recordAudio.duration);});
 recordAudio.addEventListener('loadedmetadata',()=>{recordTime.textContent=fmtTime(recordAudio.currentTime)+' / '+fmtTime(recordAudio.duration);});
-recordAudio.addEventListener('error',()=>{recordPrompt.textContent='RECORD SKIPPED — TRY AGAIN';});
+recordAudio.addEventListener('error',()=>{recordPrompt.textContent='THIS RECORD DIDN\'T LOAD';});
 loadRecord(0,false);
 
 function exitRecordPlayer(){
