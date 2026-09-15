@@ -215,16 +215,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 @media(max-width:720px){.record-window{top:48px!important;bottom:54px!important}}
 /* Safari fix: size from the fixed record-window itself, NOT 100vw. On iPhone Safari, 100vw can resolve to the wider layout viewport and crop both sides. */
 
-/* V5.20 — small skull tapestry physically slides aside; no fake recess */
-.secret-wall{position:absolute;left:67.45%;top:2.87%;width:6.9%;height:19.05%;z-index:3;display:none;background:url('skull-wall-patch.png') center/100% 100% no-repeat;image-rendering:pixelated;pointer-events:none}
-.secret-wall.show{display:block}
-.skull-tapestry-overlay{position:absolute;left:67.45%;top:2.87%;width:6.9%;height:19.05%;z-index:5;object-fit:fill;image-rendering:pixelated;pointer-events:none;display:none;transform-origin:50% 7%}
+/* V5.17 — night skull tapestry / hidden key */
+.secret-recess{position:absolute;left:66.5%;top:6.5%;width:10%;height:29%;z-index:3;display:none;background:linear-gradient(90deg,#111018,#21162a 55%,#0b0a0f);border:2px inset rgba(90,74,63,.75);box-shadow:inset 0 0 18px #000,0 0 10px rgba(185,35,20,.22);pointer-events:none}
+.secret-recess.show{display:block}
+.secret-key{position:absolute;left:50%;top:57%;width:34%;height:9%;transform:translate(-50%,-50%) rotate(-16deg);background:#b98a35;border:1px solid #e1bd67;box-shadow:0 0 7px rgba(255,190,62,.6);display:none;pointer-events:auto;cursor:pointer}
+.secret-key:before{content:'';position:absolute;left:-28%;top:-80%;width:48%;aspect-ratio:1;border:4px solid #c79b47;border-radius:50%;background:#161119}
+.secret-key:after{content:'';position:absolute;right:-3%;top:52%;width:28%;height:95%;border-left:5px solid #b98a35;border-bottom:5px solid #b98a35}
+.secret-recess.key-ready{pointer-events:auto}.secret-recess.key-ready .secret-key{display:block}
+.skull-tapestry-overlay{position:absolute;left:66.5%;top:6.5%;width:10%;height:29%;z-index:5;object-fit:fill;image-rendering:pixelated;pointer-events:none;display:none;transform-origin:50% 8%}
 .skull-tapestry-overlay.active{display:block}
-.skull-tapestry-overlay.awake{filter:brightness(1.14) contrast(1.08) drop-shadow(0 0 4px rgba(255,45,25,.55))}
-.skull-tapestry-overlay.moved{transform:translate(92%,-3%) rotate(6deg);transition:transform .44s steps(6,end)}
-.secret-key{position:absolute;left:69.85%;top:11.4%;width:2.35%;height:5.8%;z-index:4;display:none;padding:0;border:0;background:transparent;filter:drop-shadow(0 1px 1px #000) drop-shadow(0 0 3px rgba(235,183,72,.35));cursor:pointer;pointer-events:auto;transform:rotate(-13deg)}
-.secret-key.show{display:block}
-.secret-key svg{display:block;width:100%;height:100%;overflow:visible}
+.skull-tapestry-overlay.awake{filter:brightness(1.13) contrast(1.08) drop-shadow(0 0 5px rgba(255,45,25,.55))}
+.skull-tapestry-overlay.moved{transform:translate(82%,-5%) rotate(7deg);transition:transform .42s steps(6,end)}
 .scene.has-key #skull{cursor:default}
 
 </style>
@@ -245,8 +246,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <button class="hotspot" id="lamp" aria-label="Hula lamp"></button>
     <button class="hotspot" id="tapestry" aria-label="Orange tapestry"></button>
     <button class="hotspot" id="skull" aria-label="Beaded skull"></button>
-    <div class="secret-wall" id="secretWall" aria-hidden="true"></div>
-    <button class="secret-key" id="secretKey" aria-label="Hidden key"><svg viewBox="0 0 64 120" aria-hidden="true"><circle cx="25" cy="25" r="17" fill="none" stroke="#d7aa4a" stroke-width="8"/><path d="M25 42 L25 91 L39 91 L39 104 L51 104 L51 114 L31 114 L31 101 L17 101 L17 42 Z" fill="#d7aa4a" stroke="#f0cc72" stroke-width="2"/></svg></button>
+    <div class="secret-recess" id="secretRecess"><button class="secret-key" id="secretKey" aria-label="Hidden key"></button></div>
     <img class="skull-tapestry-overlay" id="skullTapestryOverlay" src="skull-tapestry.png" alt="">
     <button class="hotspot" id="records" aria-label="Records and books"></button>
    </div>
@@ -343,46 +343,30 @@ back=document.getElementById('back'), hint=document.getElementById('hint');
 let panX=0, panY=0, dragging=false, moved=false, sx=0, sy=0, startX=0, startY=0, zoomed=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 
-/* V5.19 — tiny diegetic sound layer. Generated in-browser with Web Audio,
-   so there are no extra audio files to host. */
-let sfxCtx=null;
-function getSfxCtx(){
- const AC=window.AudioContext||window.webkitAudioContext;
- if(!AC)return null;
- if(!sfxCtx)sfxCtx=new AC();
- if(sfxCtx.state==='suspended')sfxCtx.resume().catch(()=>{});
- return sfxCtx;
+/* V5.21 — approved natural Foley. Local files only; no synthesized SFX. */
+const sfxFiles={
+ typing:'sfx-computer-typing.wav',
+ singleKey:'sfx-keyboard-single.wav',
+ mechanical:'sfx-mechanical-click.wav',
+ door:'sfx-door.wav',
+ key:'sfx-key-pickup.wav',
+ tapestry:'sfx-tapestry.wav'
+};
+const sfxPool={};
+function playSfx(name,volume=1){
+ const src=sfxFiles[name]; if(!src)return;
+ try{
+   const a=(sfxPool[name]||(sfxPool[name]=new Audio(src))).cloneNode();
+   a.volume=volume; a.play().catch(()=>{});
+ }catch{}
 }
-function sfxTone(freq=440,dur=.05,vol=.025,type='square',delay=0,endFreq=null){
- const c=getSfxCtx(); if(!c)return;
- const t=c.currentTime+delay,o=c.createOscillator(),g=c.createGain();
- o.type=type;o.frequency.setValueAtTime(freq,t);
- if(endFreq)o.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),t+dur);
- g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
- o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.02);
-}
-function sfxNoise(dur=.05,vol=.02,delay=0,highpass=0){
- const c=getSfxCtx(); if(!c)return;
- const len=Math.max(1,Math.floor(c.sampleRate*dur)),buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);
- for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
- const src=c.createBufferSource(),g=c.createGain();src.buffer=buf;
- let last=src;
- if(highpass){const f=c.createBiquadFilter();f.type='highpass';f.frequency.value=highpass;src.connect(f);last=f;}
- const t=c.currentTime+delay;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);last.connect(g);g.connect(c.destination);src.start(t);
-}
-function sfxLamp(){sfxNoise(.025,.032,0,900);sfxTone(170,.035,.018,'triangle',.018,105);sfxNoise(.018,.018,.055,1200);}
-function sfxDoor(){sfxTone(105,.055,.026,'triangle',0,82);sfxNoise(.06,.035,.025,180);sfxTone(78,.07,.018,'square',.07,62);}
-function sfxKey(){sfxTone(1320,.09,.018,'sine',0,1750);sfxTone(1980,.11,.012,'sine',.045,2350);}
-function sfxCrt(){sfxTone(72,.16,.018,'sawtooth',0,118);sfxTone(920,.06,.012,'sine',.08,1320);sfxNoise(.045,.012,.02,2500);}
-function sfxNeedle(){sfxNoise(.12,.022,0,1200);sfxNoise(.035,.032,.055,2600);sfxTone(125,.045,.012,'triangle',.075,90);}
-function sfxTyping(){
- const c=getSfxCtx();if(!c)return;
- for(let i=0;i<17;i++){
-   const d=i*.042+Math.random()*.012;
-   sfxNoise(.014,.011,d,1500);
-   sfxTone(190+Math.random()*85,.018,.007,'square',d,150+Math.random()*55);
- }
-}
+function sfxLamp(){playSfx('mechanical',.9)}
+function sfxDoor(){playSfx('door',.9)}
+function sfxKey(){playSfx('key',.9)}
+function sfxNeedle(){playSfx('mechanical',.82)}
+function sfxTyping(){playSfx('typing',.88)}
+function sfxSingleKey(){playSfx('singleKey',.86)}
+function sfxTapestry(){playSfx('tapestry',.7)}
 
 const ROOM_ASPECT=768/455;
 
@@ -664,7 +648,7 @@ document.getElementById('lamp').addEventListener('click',(e)=>{
 });
 let hasKey=false,secretBusy=false,secretOpen=false;
 const skullOverlay=document.getElementById('skullTapestryOverlay');
-const secretWall=document.getElementById('secretWall');
+const secretRecess=document.getElementById('secretRecess');
 const secretKey=document.getElementById('secretKey');
 function openSkullSecret(){
  if(secretBusy||secretOpen||hasKey)return;
@@ -674,19 +658,19 @@ function openSkullSecret(){
    skullOverlay.classList.add('active');
    status.textContent='...DID THAT EYE JUST MOVE?';
    setTimeout(()=>skullOverlay.classList.add('awake'),180);
-   setTimeout(()=>{secretWall.classList.add('show');skullOverlay.classList.add('moved');status.textContent='THERE\'S SOMETHING BEHIND IT.';},520);
-   setTimeout(()=>{secretKey.classList.add('show');secretOpen=true;secretBusy=false;status.textContent='A KEY.';},980);
+   setTimeout(()=>{sfxTapestry();secretRecess.classList.add('show');skullOverlay.classList.add('moved');status.textContent='THERE\'S SOMETHING BEHIND IT.';},520);
+   setTimeout(()=>{secretRecess.classList.add('key-ready');secretOpen=true;secretBusy=false;status.textContent='A KEY.';},980);
  },zoomDuration+60);
 }
 function closeSkullSecret(){
- secretKey.classList.remove('show'); secretWall.classList.remove('show');
+ secretRecess.classList.remove('key-ready','show');
  skullOverlay.classList.remove('moved','awake','active'); secretOpen=false;
  if(!zoomBase)return;
  animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom;});
 }
 document.getElementById('tapestry').addEventListener('click',(e)=>{e.stopPropagation();moved=false;status.textContent="IT DOESN'T DO ANYTHING. PROBABLY.";});
 document.getElementById('skull').addEventListener('click',(e)=>{e.stopPropagation();openSkullSecret();});
-secretKey.addEventListener('click',(e)=>{e.stopPropagation();if(!secretOpen||hasKey)return;sfxKey();hasKey=true;scene.classList.add('has-key');secretKey.classList.remove('show');status.textContent='GOT A KEY.';setTimeout(closeSkullSecret,700);});
+secretKey.addEventListener('click',(e)=>{e.stopPropagation();if(!secretOpen||hasKey)return;sfxKey();hasKey=true;scene.classList.add('has-key');secretKey.style.display='none';status.textContent='GOT A KEY.';setTimeout(closeSkullSecret,700);});
 document.getElementById('door').addEventListener('click',(e)=>{e.stopPropagation();moved=false;sfxDoor();if(!hasKey){status.textContent="IT'S LOCKED. LOOKS LIKE I'M STUCK IN HERE.";}else{status.textContent='THE KEY FITS. ...DO I ACTUALLY WANT TO LEAVE?';}});
 document.getElementById('records').addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false; status.textContent='THE RECORDS ARE RIGHT THERE. TRY THE PLAYER.';
@@ -777,7 +761,6 @@ useComputer.addEventListener('click',e=>e.stopPropagation());
 
 document.getElementById('computerYes').addEventListener('click',(e)=>{
  e.stopPropagation();
- sfxCrt();
  sfxTyping();
  useComputer.classList.remove('open');
  crtWindow.classList.add('open');
