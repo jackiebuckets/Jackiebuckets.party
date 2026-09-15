@@ -82,19 +82,23 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 }
 .crt-screen{
   margin:8px; padding:16px 18px; min-height:245px;
-  background:#041a20; color:#a5ffe9;
+  background:#171006; color:#ffb84a;
   border:4px inset #ddd;
-  text-shadow:0 0 4px #65e8d0;
+  text-shadow:0 0 4px #ff9f1a;
   line-height:1.65;
   box-shadow:inset 0 0 35px #000;
 }
 .crt-screen button{
-  display:block; width:100%; padding:3px 0;
+  display:block; width:100%; min-height:34px; padding:3px 6px;
   border:0; background:transparent; color:inherit;
-  text-align:left; font:inherit;
+  text-align:left; font:inherit; cursor:pointer;
 }
-.crt-screen button:active{background:#a5ffe9;color:#041a20}
+.crt-screen button::before{content:"  ";white-space:pre}
+.crt-screen button.selected::before,.crt-screen button:hover::before,.crt-screen button:focus-visible::before{content:"> ";}
+.crt-screen button:active,.crt-screen button.selected{background:#ffb84a;color:#171006;text-shadow:none}
 .crt-help{opacity:.72;margin-top:12px;font-size:12px}
+.crt-divider{opacity:.72;white-space:nowrap;overflow:hidden}
+.crt-status{opacity:.88}
 
 
 /* V13 small computer confirmation */
@@ -194,13 +198,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    <section class="crt-window" id="crtWindow" aria-label="Computer">
     <div class="crt-titlebar">JACKIEBUCKETS.EXE <button class="crt-close" id="crtClose" aria-label="Close">×</button></div>
     <div class="crt-screen">
-      JACKIEBUCKETS.PARTY<br><br>
-      <button data-crt="internet">&gt; INTERNET</button>
-      <button data-crt="photos">&gt; PHOTOS</button>
-      <button data-crt="music">&gt; MUSIC</button>
-      <button data-crt="journal">&gt; JOURNAL</button>
-      <button data-crt="unknown">&gt; ???</button>
-      <div class="crt-help">C:\&gt; CLICK SOMETHING_</div>
+      <b>JB-OS v0.86</b><br><br>
+      <span class="crt-status">MEMORY........64K OK<br>MODEM.........READY</span><br><br>
+      <div class="crt-divider">--------------------------------</div>
+      <button data-crt="internet" class="selected">[1] INTERNET........CONNECTED</button>
+      <button data-crt="bulletins">[2] BULLETINS</button>
+      <button data-crt="music">[3] MUSIC</button>
+      <button data-crt="unknown">[4] ?????</button>
+      <div class="crt-help">SELECT PROGRAM_</div>
     </div>
    </section>
 
@@ -481,7 +486,7 @@ function showCrtMessage(title,lines){
 function bindCrtButtons(){
  crtScreen.querySelectorAll('[data-crt]').forEach(btn=>btn.addEventListener('click',()=>{
   const item=btn.dataset.crt;
-  if(item==='photos'){
+  if(item==='internet'){
    crtWindow.classList.remove('open');
    document.getElementById('bucketgramWindow').classList.add('open');
    status.textContent='BUCKETGRAM.EXE';
@@ -492,7 +497,7 @@ function bindCrtButtons(){
    status.textContent='GO USE THE RECORD PLAYER.';
    return;
   }
-  const messages={internet:'THE INTERNET. A TERRIBLE IDEA.',journal:'JOURNAL. COMING SOON.',unknown:'ACCESS DENIED.'};
+  const messages={bulletins:'BULLETINS. COMING SOON.',unknown:'ACCESS DENIED.'};
   status.textContent=messages[item]||'NOPE.';
  }));
 }
