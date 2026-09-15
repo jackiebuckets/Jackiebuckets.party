@@ -63,7 +63,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .crt-window{
   position:absolute; z-index:40; display:none;
   left:50%; top:50%; transform:translate(-50%,-50%);
-  width:min(520px,90vw);
+  width:min(430px,88vw);
   background:#c0c0c0; color:#000;
   border:4px outset #eee;
   box-shadow:8px 10px 0 rgba(0,0,0,.45);
@@ -81,23 +81,20 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
   font:bold 17px Arial; line-height:17px;
 }
 .crt-screen{
-  margin:7px; padding:10px 14px; min-height:0;
-  background:#061109; color:#70ff72;
+  margin:8px; padding:16px 18px; min-height:245px;
+  background:#041a20; color:#a5ffe9;
   border:4px inset #ddd;
-  text-shadow:0 0 4px #42ff55;
-  line-height:1.20;
+  text-shadow:0 0 4px #65e8d0;
+  line-height:1.65;
   box-shadow:inset 0 0 35px #000;
 }
 .crt-screen button{
-  display:block; width:100%; min-height:25px; padding:1px 5px;
+  display:block; width:100%; padding:3px 0;
   border:0; background:transparent; color:inherit;
-  text-align:left; font:inherit; cursor:pointer;
+  text-align:left; font:inherit;
 }
-.crt-screen button::before{content:"  ";white-space:pre}
-.crt-screen button:active{background:transparent;color:inherit;text-shadow:inherit}
-.crt-help{opacity:.72;margin-top:6px;font-size:12px}
-.crt-divider{opacity:.72;white-space:nowrap;overflow:hidden}
-.crt-status{opacity:.88}
+.crt-screen button:active{background:#a5ffe9;color:#041a20}
+.crt-help{opacity:.72;margin-top:12px;font-size:12px}
 
 
 /* V13 small computer confirmation */
@@ -129,36 +126,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .hotspot{pointer-events:none !important;}
 
 
-
-/* Record player — custom room UI with official Spotify playback */
-.record-window{
- position:absolute;z-index:55;display:none;left:50%;top:50%;transform:translate(-50%,-50%);
- width:min(620px,92vw);background:#b9b3a3;color:#17140f;border:4px outset #eee;
- box-shadow:9px 12px 0 rgba(0,0,0,.48);font-family:"Courier New",monospace;
-}
-.record-window.open{display:block}
-.record-titlebar{height:32px;display:flex;align-items:center;padding:3px 5px 3px 8px;background:#4c260e;color:#f3d59a;font-weight:bold}
-.record-close{margin-left:auto;width:28px;height:24px;border:3px outset #eee;background:#c0c0c0;color:#111;font:bold 17px Arial;line-height:16px}
-.record-body{padding:12px;background:#8b5a2b;border:4px inset #d5c3a5}
-.turntable{position:relative;height:210px;background:#33271d;border:3px solid #17110d;box-shadow:inset 0 0 0 3px #6b4a2f;overflow:hidden}
-.platter{position:absolute;width:176px;height:176px;left:35px;top:16px;border-radius:50%;background:repeating-radial-gradient(circle,#111 0 4px,#202020 5px 7px);border:6px solid #171717;box-shadow:0 4px 0 #0008}
-.record-disc{position:absolute;inset:9px;border-radius:50%;background:repeating-radial-gradient(circle,#080808 0 2px,#171717 3px 5px);animation:recordSpin 2.2s linear infinite;animation-play-state:paused}
-.record-window.playing .record-disc{animation-play-state:running}
-.record-label{position:absolute;left:50%;top:50%;width:62px;height:62px;transform:translate(-50%,-50%);border-radius:50%;background:#e7a2bd;color:#311321;display:grid;place-items:center;text-align:center;font:bold 8px/1.05 "Courier New";box-shadow:inset 0 0 0 2px #51263a}
-.record-label:after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:#111;left:50%;top:50%;transform:translate(-50%,-50%)}
-@keyframes recordSpin{to{transform:rotate(360deg)}}
-.tonearm{position:absolute;left:252px;top:25px;width:16px;height:155px;background:#c9b8a0;border:3px solid #251c16;transform:rotate(-17deg);transform-origin:50% 12px;box-shadow:3px 3px #0006}
-.tonearm:before{content:"";position:absolute;width:34px;height:34px;border-radius:50%;background:#9b8b76;border:4px solid #241b15;left:-12px;top:-15px}
-.tonearm:after{content:"";position:absolute;width:26px;height:18px;background:#181818;border:2px solid #000;left:-8px;bottom:-8px}
-.record-note{position:absolute;left:310px;right:16px;top:25px;color:#f1d8aa;font-size:13px;line-height:1.35}
-.record-note b{display:block;font-size:18px;color:#fff0c7;margin-bottom:7px}.record-note span{opacity:.8}
-.spotify-shell{margin-top:10px;background:#17130f;border:3px inset #d8c7ab;padding:5px;height:90px;overflow:hidden}
-.spotify-shell iframe{display:block;width:100%;height:80px;border:0}
-.record-footer{padding-top:7px;color:#f1d8aa;font-size:11px;text-align:center;opacity:.85}
-@media(max-width:560px){
- .turntable{height:188px}.platter{width:150px;height:150px;left:18px;top:18px}.tonearm{left:190px;height:135px}.record-note{left:245px;top:22px;font-size:11px}.record-note b{font-size:14px}.spotify-shell{height:88px}
-}
-
 /* Bucketgram — fixed chrome, scrollable middle feed only */
 .bucketgram-window{
  position:absolute;z-index:60;display:none;left:50%;top:50%;transform:translate(-50%,-50%);
@@ -183,12 +150,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .bucketgram-close{position:absolute;right:0.55%;top:.55%;width:3.15%;height:3.6%;border:0;background:transparent;cursor:pointer;z-index:5}
 .magic-input{position:absolute;left:1.75%;top:89.9%;width:18.5%;height:3.55%;z-index:4;border:2px solid #222;background:#f7f3e7;padding:0 7px;font:700 clamp(9px,1vw,15px) 'Courier New',monospace;color:#111}
 .magic-shake{position:absolute;left:6.35%;top:94.35%;width:9.4%;height:3.8%;z-index:4;background:#075be4;color:#fff;border:3px outset #ddd;font:700 clamp(9px,1vw,15px) 'Courier New',monospace;cursor:pointer}
-.magic-result{position:absolute;left:1.75%;top:89.9%;width:18.5%;height:3.55%;z-index:7;display:none;align-items:center;justify-content:center;box-sizing:border-box;background:#f7f3e7;color:#111;border:2px solid #222;text-align:center;font:900 clamp(9px,1vw,15px) 'Courier New',monospace;line-height:1;cursor:pointer}
+.magic-result{position:absolute;left:7.55%;top:79.55%;width:6.35%;aspect-ratio:1/1;z-index:6;display:none;align-items:center;justify-content:center;border-radius:50%;background:#f4f0df;color:#111;border:2px solid #111;text-align:center;font:900 clamp(7px,.78vw,12px) 'Courier New',monospace;line-height:.9;letter-spacing:-.04em;box-shadow:inset 0 0 0 2px #d8d0bd}
 .magic-result.show{display:flex}
 @media(max-width:720px){
  .bucketgram-window{width:98vw;max-height:86vh}
  .bucketgram-feed{left:21.5%;top:19.2%;width:50.4%;height:79.3%}
- .bg-post{padding:7px}.bg-avatar{width:28px;height:28px;font-size:15px}.bg-photo{border-width:1px}.magic-input{font-size:8px;padding:0 3px}.magic-shake{font-size:8px;border-width:2px}.magic-result{font-size:8px}
+ .bg-post{padding:7px}.bg-avatar{width:28px;height:28px;font-size:15px}.bg-photo{border-width:1px}.magic-input{font-size:8px;padding:0 3px}.magic-shake{font-size:8px;border-width:2px}.magic-result{font-size:6px}
 }
 
 </style>
@@ -227,29 +194,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    <section class="crt-window" id="crtWindow" aria-label="Computer">
     <div class="crt-titlebar">JACKIEBUCKETS.EXE <button class="crt-close" id="crtClose" aria-label="Close">×</button></div>
     <div class="crt-screen">
-      <b>JB-OS v0.86</b><br><br>
-      <span class="crt-status">MEMORY........64K OK&nbsp;&nbsp;&nbsp;&nbsp;MODEM.........READY</span><br>
-      <div class="crt-divider">--------------------------------</div>
-      <button data-crt="internet">[1] INTERNET........CONNECTED</button>
-      <button data-crt="bulletins">[2] BULLETINS</button>
-      <button data-crt="music">[3] MUSIC</button>
-      <button data-crt="unknown">[4] ?????</button>
-      <div class="crt-help">SELECT PROGRAM_</div>
-    </div>
-   </section>
-
-   <section class="record-window" id="recordWindow" aria-label="Record player">
-    <div class="record-titlebar">NOW SPINNING.EXE <button class="record-close" id="recordClose" aria-label="Close record player">×</button></div>
-    <div class="record-body">
-      <div class="turntable">
-        <div class="platter"><div class="record-disc"><div class="record-label">JACKIE<br>BUCKETS</div></div></div>
-        <div class="tonearm"></div>
-        <div class="record-note"><b>RECORD 01</b>ON MELANCHOLY HILL<br><span>GORILLAZ · PLASTIC BEACH</span><br><br>PRESS PLAY ↓</div>
-      </div>
-      <div class="spotify-shell">
-        <iframe id="spotifyPlayer" title="Spotify player" src="https://open.spotify.com/embed/track/4ercRiJZl8kBm8vfPaNjrl?utm_source=generator&amp;theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-      </div>
-      <div class="record-footer">SPOTIFY HANDLES THE NEEDLE. WE HANDLE THE VIBES.</div>
+      JACKIEBUCKETS.PARTY<br><br>
+      <button data-crt="internet">&gt; INTERNET</button>
+      <button data-crt="photos">&gt; PHOTOS</button>
+      <button data-crt="music">&gt; MUSIC</button>
+      <button data-crt="journal">&gt; JOURNAL</button>
+      <button data-crt="unknown">&gt; ???</button>
+      <div class="crt-help">C:\&gt; CLICK SOMETHING_</div>
     </div>
    </section>
 
@@ -258,28 +209,21 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <div class="bucketgram-feed" id="bucketgramFeed">
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">😎</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">2d</span></div>
-       <img class="bg-photo" src="bucketgram-photos/photo1.jpeg" data-fallback="bucketgram-photos/IMG_0159.jpeg" alt="Bucketgram photo 1">
+       <img class="bg-photo" src="bucketgram-photos/IMG_0159.jpeg" alt="Bucketgram photo 1">
        <div class="bg-caption">jackiebuckets&nbsp;&nbsp; good views can’t complain</div>
        <div class="bg-actions"><span><span class="bg-heart">♥</span> 42</span><span>◯ 3</span></div>
       </article>
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">🐴</div><div class="bg-meta"><span>dirtbagdan</span><span class="bg-place">probably lost</span></div><span class="bg-age">4d</span></div>
-       <img class="bg-photo" src="bucketgram-photos/photo2.jpeg" data-fallback="bucketgram-photos/IMG_0313.png" alt="Bucketgram photo 2">
+       <img class="bg-photo" src="bucketgram-photos/IMG_0313.png" alt="Bucketgram photo 2">
        <div class="bg-caption">dirtbagdan&nbsp;&nbsp; found civilization. hated it.</div>
        <div class="bg-actions"><span><span class="bg-heart">♥</span> 19</span><span>◯ 1</span></div>
       </article>
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">your next upload</span></div><span class="bg-age">now</span></div>
-       <img class="bg-photo" src="bucketgram-photos/photo3.jpeg" data-fallback="bucketgram-photos/IMG_9922.jpeg" alt="Bucketgram photo 3">
+       <img class="bg-photo" src="bucketgram-photos/IMG_9922.jpeg" alt="Bucketgram photo 3">
        <div class="bg-caption">jackiebuckets&nbsp;&nbsp; more photos go here</div>
       </article>
-      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo4.jpeg" alt="Bucketgram photo 4"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
-      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo5.jpeg" alt="Bucketgram photo 5"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
-      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo6.jpeg" alt="Bucketgram photo 6"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
-      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo7.jpeg" alt="Bucketgram photo 7"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
-      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo8.jpeg" alt="Bucketgram photo 8"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
-      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo9.jpeg" alt="Bucketgram photo 9"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
-      <article class="bg-post"><div class="bg-post-head"><div class="bg-avatar">📷</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">now</span></div><img class="bg-photo" src="bucketgram-photos/photo10.jpeg" alt="Bucketgram photo 10"><div class="bg-caption">jackiebuckets&nbsp;&nbsp; photo dump</div></article>
     </div>
     <div class="magic-result" id="magicResult"></div>
     <input class="magic-input" id="magicInput" maxlength="80" placeholder="Will I send it?" aria-label="Ask the Magic 8 Ball">
@@ -390,8 +334,6 @@ const views={
 };
 
 const computerZoom={fx:.127,fy:-.072,s:1.70};
-const recordZoom={fx:-.245,fy:-.105,s:1.62};
-let activeZoom=computerZoom;
 const zoomDuration=340;
 let zoomAnim=0;
 let zoomBase=null;
@@ -404,11 +346,11 @@ function computerFrame(t){
  const roomW=camera.offsetWidth, roomH=camera.offsetHeight;
  const baseLeft=zoomBase.left;
  const baseTop=zoomBase.top;
- const targetLeft=viewport.clientWidth/2+activeZoom.fx*roomW;
- const targetTop=viewport.clientHeight/2+activeZoom.fy*roomH;
+ const targetLeft=viewport.clientWidth/2+computerZoom.fx*roomW;
+ const targetTop=viewport.clientHeight/2+computerZoom.fy*roomH;
  camera.style.left=(baseLeft+(targetLeft-baseLeft)*t)+'px';
  camera.style.top=(baseTop+(targetTop-baseTop)*t)+'px';
- camera.style.transform=`translate(-50%,-50%) scale(${1+(activeZoom.s-1)*t})`;
+ camera.style.transform=`translate(-50%,-50%) scale(${1+(computerZoom.s-1)*t})`;
 }
 
 function animateComputerZoom(from,to,done){
@@ -437,14 +379,13 @@ function animateComputerZoom(from,to,done){
 }
 
 function goView(name){
- if(name!=='computer' && name!=='record')return;
- activeZoom=name==='record'?recordZoom:computerZoom;
+ if(name!=='computer')return;
  zoomed=true;
  scene.classList.add('zoomed');
  hint.style.opacity='0';
  zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};
  animateComputerZoom(0,1);
- status.textContent=name==='record'?'THE RECORD PLAYER.':'THE COMPUTER.';
+ status.textContent='THE COMPUTER.';
 }
 
 function exitComputer(){
@@ -475,40 +416,6 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 });
 
 
-
-
-const recordWindow=document.getElementById('recordWindow');
-const recordClose=document.getElementById('recordClose');
-recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
-recordWindow.addEventListener('click',e=>e.stopPropagation());
-
-function exitRecordPlayer(){
- recordWindow.classList.remove('open');
- if(!zoomBase) zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};
- animateComputerZoom(1,0,()=>{
-   zoomed=false; scene.classList.remove('zoomed'); hint.style.opacity='1';
-   camera.style.left=(viewport.clientWidth/2+panX)+'px';
-   camera.style.top=(viewport.clientHeight/2+panY)+'px';
-   camera.style.transform='translate(-50%,-50%) scale(1.005)';
-   status.textContent='CLICK AROUND.'; zoomBase=null; activeZoom=computerZoom;
- });
-}
-
-document.getElementById('music').addEventListener('click',(e)=>{
- e.stopPropagation(); moved=false; goView('record');
- setTimeout(()=>{ recordWindow.classList.add('open'); status.textContent='DROP THE NEEDLE.'; },zoomDuration+35);
-});
-recordClose.addEventListener('click',(e)=>{e.stopPropagation();exitRecordPlayer();});
-
-// The Spotify embed owns playback. Listen for its postMessage playback updates
-// when available so the on-screen vinyl spins only while the track is playing.
-window.addEventListener('message',(e)=>{
- if(!String(e.origin||'').includes('spotify.com')) return;
- const d=e.data||{};
- const payload=d.payload||d;
- const paused=payload.isPaused ?? payload.paused;
- if(typeof paused==='boolean') recordWindow.classList.toggle('playing',!paused);
-});
 
 
 let lightMode=null; // null = choose initial state from actual time
@@ -550,7 +457,7 @@ document.getElementById('skull').addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false; status.textContent='HE KNOWS SOMETHING.';
 });
 document.getElementById('records').addEventListener('click',(e)=>{
- e.stopPropagation(); moved=false; status.textContent='THE RECORDS ARE RIGHT THERE. TRY THE PLAYER.';
+ e.stopPropagation(); moved=false; status.textContent='YOU COULD STAY HERE A WHILE.';
 });
 
 const crtWindow=document.getElementById('crtWindow');
@@ -567,7 +474,7 @@ function showCrtMessage(title,lines){
 function bindCrtButtons(){
  crtScreen.querySelectorAll('[data-crt]').forEach(btn=>btn.addEventListener('click',()=>{
   const item=btn.dataset.crt;
-  if(item==='internet'){
+  if(item==='photos'){
    crtWindow.classList.remove('open');
    document.getElementById('bucketgramWindow').classList.add('open');
    status.textContent='BUCKETGRAM.EXE';
@@ -578,7 +485,7 @@ function bindCrtButtons(){
    status.textContent='GO USE THE RECORD PLAYER.';
    return;
   }
-  const messages={bulletins:'BULLETINS. COMING SOON.',unknown:'ACCESS DENIED.'};
+  const messages={internet:'THE INTERNET. A TERRIBLE IDEA.',journal:'JOURNAL. COMING SOON.',unknown:'ACCESS DENIED.'};
   status.textContent=messages[item]||'NOPE.';
  }));
 }
@@ -591,24 +498,6 @@ const magicInput=document.getElementById('magicInput');
 const magicShake=document.getElementById('magicShake');
 const magicResult=document.getElementById('magicResult');
 const eightBallAnswers=['YAH DAWG','NO DAWG'];
-// Stable Bucketgram photo slots: photo1.jpeg through photo10.jpeg.
-// The first three still fall back to the older GitHub filenames during the transition.
-// Any missing slot hides its entire post, so there are never broken-image boxes.
-document.querySelectorAll('.bg-photo').forEach(img=>{
- img.addEventListener('error',()=>{
-  const fallback=img.dataset.fallback;
-  if(fallback && img.getAttribute('src')!==fallback){
-   img.setAttribute('src',fallback);
-   return;
-  }
-  const post=img.closest('.bg-post');
-  if(post) post.style.display='none';
- },{once:false});
- img.addEventListener('load',()=>{
-  const post=img.closest('.bg-post');
-  if(post) post.style.display='';
- });
-});
 bucketgramWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 bucketgramWindow.addEventListener('click',e=>e.stopPropagation());
 bucketgramClose.addEventListener('click',()=>{
@@ -628,7 +517,6 @@ magicShake.addEventListener('click',()=>{
  magicResult.classList.add('show');
 });
 magicInput.addEventListener('keydown',e=>{ if(e.key==='Enter') magicShake.click(); });
-magicResult.addEventListener('click',()=>{ magicResult.classList.remove('show'); magicInput.value=''; magicInput.focus(); });
 
 
 
