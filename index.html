@@ -215,6 +215,19 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 @media(max-width:720px){.record-window{top:48px!important;bottom:54px!important}}
 /* Safari fix: size from the fixed record-window itself, NOT 100vw. On iPhone Safari, 100vw can resolve to the wider layout viewport and crop both sides. */
 
+/* V5.17 — night skull tapestry / hidden key */
+.secret-recess{position:absolute;left:66.5%;top:6.5%;width:10%;height:29%;z-index:3;display:none;background:linear-gradient(90deg,#111018,#21162a 55%,#0b0a0f);border:2px inset rgba(90,74,63,.75);box-shadow:inset 0 0 18px #000,0 0 10px rgba(185,35,20,.22);pointer-events:none}
+.secret-recess.show{display:block}
+.secret-key{position:absolute;left:50%;top:57%;width:34%;height:9%;transform:translate(-50%,-50%) rotate(-16deg);background:#b98a35;border:1px solid #e1bd67;box-shadow:0 0 7px rgba(255,190,62,.6);display:none;pointer-events:auto;cursor:pointer}
+.secret-key:before{content:'';position:absolute;left:-28%;top:-80%;width:48%;aspect-ratio:1;border:4px solid #c79b47;border-radius:50%;background:#161119}
+.secret-key:after{content:'';position:absolute;right:-3%;top:52%;width:28%;height:95%;border-left:5px solid #b98a35;border-bottom:5px solid #b98a35}
+.secret-recess.key-ready{pointer-events:auto}.secret-recess.key-ready .secret-key{display:block}
+.skull-tapestry-overlay{position:absolute;left:66.5%;top:6.5%;width:10%;height:29%;z-index:5;object-fit:fill;image-rendering:pixelated;pointer-events:none;display:none;transform-origin:50% 8%}
+.skull-tapestry-overlay.active{display:block}
+.skull-tapestry-overlay.awake{filter:brightness(1.13) contrast(1.08) drop-shadow(0 0 5px rgba(255,45,25,.55))}
+.skull-tapestry-overlay.moved{transform:translate(82%,-5%) rotate(7deg);transition:transform .42s steps(6,end)}
+.scene.has-key #skull{cursor:default}
+
 </style>
 </head>
 <body>
@@ -233,6 +246,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <button class="hotspot" id="lamp" aria-label="Hula lamp"></button>
     <button class="hotspot" id="tapestry" aria-label="Orange tapestry"></button>
     <button class="hotspot" id="skull" aria-label="Beaded skull"></button>
+    <div class="secret-recess" id="secretRecess"><button class="secret-key" id="secretKey" aria-label="Hidden key"></button></div>
+    <img class="skull-tapestry-overlay" id="skullTapestryOverlay" src="skull-tapestry.png" alt="">
     <button class="hotspot" id="records" aria-label="Records and books"></button>
    </div>
    <button class="back" id="back">← BACK</button>
@@ -419,6 +434,7 @@ const views={
 
 const computerZoom={fx:.127,fy:-.072,s:1.70};
 const recordZoom={fx:-.245,fy:-.105,s:1.62};
+const skullZoom={fx:-.205,fy:.155,s:2.18};
 let activeZoom=computerZoom;
 const zoomDuration=340;
 let zoomAnim=0;
@@ -465,14 +481,14 @@ function animateComputerZoom(from,to,done){
 }
 
 function goView(name){
- if(name!=='computer' && name!=='record')return;
- activeZoom=name==='record'?recordZoom:computerZoom;
+ if(name!=='computer' && name!=='record' && name!=='skull')return;
+ activeZoom=name==='record'?recordZoom:(name==='skull'?skullZoom:computerZoom);
  zoomed=true;
  scene.classList.add('zoomed');
  hint.style.opacity='0';
  zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};
  animateComputerZoom(0,1);
- status.textContent=name==='record'?'THE RECORD PLAYER.':'THE COMPUTER.';
+ status.textContent=name==='record'?'THE RECORD PLAYER.':(name==='skull'?'...':'THE COMPUTER.');
 }
 
 function exitComputer(){
@@ -603,12 +619,32 @@ document.getElementById('lamp').addEventListener('click',(e)=>{
  moved=false;
  toggleLamp();
 });
-document.getElementById('tapestry').addEventListener('click',(e)=>{
- e.stopPropagation(); moved=false; status.textContent="IT DOESN'T DO ANYTHING. PROBABLY.";
-});
-document.getElementById('skull').addEventListener('click',(e)=>{
- e.stopPropagation(); moved=false; status.textContent='HE KNOWS SOMETHING.';
-});
+let hasKey=false,secretBusy=false,secretOpen=false;
+const skullOverlay=document.getElementById('skullTapestryOverlay');
+const secretRecess=document.getElementById('secretRecess');
+const secretKey=document.getElementById('secretKey');
+function openSkullSecret(){
+ if(secretBusy||secretOpen||hasKey)return;
+ if(scene.classList.contains('daytime')){status.textContent='JUST A WEIRD LITTLE TAPESTRY.';return;}
+ secretBusy=true; moved=false; goView('skull');
+ setTimeout(()=>{
+   skullOverlay.classList.add('active');
+   status.textContent='...DID THAT EYE JUST MOVE?';
+   setTimeout(()=>skullOverlay.classList.add('awake'),180);
+   setTimeout(()=>{secretRecess.classList.add('show');skullOverlay.classList.add('moved');status.textContent='THERE\'S SOMETHING BEHIND IT.';},520);
+   setTimeout(()=>{secretRecess.classList.add('key-ready');secretOpen=true;secretBusy=false;status.textContent='A KEY.';},980);
+ },zoomDuration+60);
+}
+function closeSkullSecret(){
+ secretRecess.classList.remove('key-ready','show');
+ skullOverlay.classList.remove('moved','awake','active'); secretOpen=false;
+ if(!zoomBase)return;
+ animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom;});
+}
+document.getElementById('tapestry').addEventListener('click',(e)=>{e.stopPropagation();moved=false;status.textContent="IT DOESN'T DO ANYTHING. PROBABLY.";});
+document.getElementById('skull').addEventListener('click',(e)=>{e.stopPropagation();openSkullSecret();});
+secretKey.addEventListener('click',(e)=>{e.stopPropagation();if(!secretOpen||hasKey)return;hasKey=true;scene.classList.add('has-key');secretKey.style.display='none';status.textContent='GOT A KEY.';setTimeout(closeSkullSecret,700);});
+document.getElementById('door').addEventListener('click',(e)=>{e.stopPropagation();moved=false;if(!hasKey){status.textContent="IT'S LOCKED. LOOKS LIKE I'M STUCK IN HERE.";}else{status.textContent='THE KEY FITS. ...DO I ACTUALLY WANT TO LEAVE?';}});
 document.getElementById('records').addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false; status.textContent='THE RECORDS ARE RIGHT THERE. TRY THE PLAYER.';
 });
@@ -720,4 +756,5 @@ document.getElementById('computerNo').addEventListener('click',(e)=>{ e.stopProp
 <style>
 /* V14: no separate room BACK button */
 #back, .back, .back-button { display:none !important; }
+
 </style>
