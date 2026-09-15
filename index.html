@@ -193,7 +193,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .record-window{position:fixed!important;left:0!important;right:0!important;top:44px!important;bottom:54px!important;z-index:80!important;background:#07132e!important;display:none!important;pointer-events:none!important;overflow:hidden!important}
 .record-window.open{display:flex!important;align-items:center;justify-content:center;pointer-events:auto!important}
 .record-stage{position:relative!important;width:100%!important;height:auto!important;aspect-ratio:2/3!important;max-width:100%!important;max-height:none!important;flex:0 0 auto!important;pointer-events:auto!important;overflow:hidden!important;background:#07132e}
-.record-scene-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:auto;user-select:none;-webkit-user-drag:none}
+.record-scene-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:auto;user-select:none;-webkit-user-drag:none;transition:opacity .18s linear}
+.record-scene-art.day{opacity:0}.record-window.daytime .record-scene-art.day{opacity:1}.record-window.daytime .record-scene-art.night{opacity:0}
 .record-hit{position:absolute;border:0;background:transparent;padding:0;cursor:pointer;z-index:7;-webkit-tap-highlight-color:transparent}
 .record-hit:active{background:#fff1}
 /* UNO reverse stack returns to the room. */
@@ -263,7 +264,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
    <section class="record-window" id="recordWindow" aria-label="Record player">
     <div class="record-stage">
-      <img class="record-scene-art" src="record-player-ui.png" alt="Top-down pixel art record player">
+      <img class="record-scene-art night" src="record-player-night.jpeg" alt="Record player at night">
+      <img class="record-scene-art day" src="record-player-day.jpeg" alt="Record player in daylight">
       <img class="record-spin" id="recordSpin" src="record-disc-1.png" alt="">
       <button class="record-hit record-back-hit" id="recordClose" aria-label="Back to room"></button>
       <button class="record-hit record-vinyl-hit" id="recordPlay" aria-label="Play or pause record"></button>
@@ -572,6 +574,7 @@ let lightMode=null; // null = choose initial state from actual time
 
 function applyLightMode(day){
  scene.classList.toggle('daytime',day);
+ syncRecordRoomBackground();
  document.getElementById('modeText').textContent=day?'DAY MODE':'NIGHT MODE';
 }
 
