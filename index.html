@@ -342,6 +342,48 @@ back=document.getElementById('back'), hint=document.getElementById('hint');
 
 let panX=0, panY=0, dragging=false, moved=false, sx=0, sy=0, startX=0, startY=0, zoomed=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+
+/* V5.19 — tiny diegetic sound layer. Generated in-browser with Web Audio,
+   so there are no extra audio files to host. */
+let sfxCtx=null;
+function getSfxCtx(){
+ const AC=window.AudioContext||window.webkitAudioContext;
+ if(!AC)return null;
+ if(!sfxCtx)sfxCtx=new AC();
+ if(sfxCtx.state==='suspended')sfxCtx.resume().catch(()=>{});
+ return sfxCtx;
+}
+function sfxTone(freq=440,dur=.05,vol=.025,type='square',delay=0,endFreq=null){
+ const c=getSfxCtx(); if(!c)return;
+ const t=c.currentTime+delay,o=c.createOscillator(),g=c.createGain();
+ o.type=type;o.frequency.setValueAtTime(freq,t);
+ if(endFreq)o.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),t+dur);
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.02);
+}
+function sfxNoise(dur=.05,vol=.02,delay=0,highpass=0){
+ const c=getSfxCtx(); if(!c)return;
+ const len=Math.max(1,Math.floor(c.sampleRate*dur)),buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);
+ for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+ const src=c.createBufferSource(),g=c.createGain();src.buffer=buf;
+ let last=src;
+ if(highpass){const f=c.createBiquadFilter();f.type='highpass';f.frequency.value=highpass;src.connect(f);last=f;}
+ const t=c.currentTime+delay;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);last.connect(g);g.connect(c.destination);src.start(t);
+}
+function sfxLamp(){sfxNoise(.025,.032,0,900);sfxTone(170,.035,.018,'triangle',.018,105);sfxNoise(.018,.018,.055,1200);}
+function sfxDoor(){sfxTone(105,.055,.026,'triangle',0,82);sfxNoise(.06,.035,.025,180);sfxTone(78,.07,.018,'square',.07,62);}
+function sfxKey(){sfxTone(1320,.09,.018,'sine',0,1750);sfxTone(1980,.11,.012,'sine',.045,2350);}
+function sfxCrt(){sfxTone(72,.16,.018,'sawtooth',0,118);sfxTone(920,.06,.012,'sine',.08,1320);sfxNoise(.045,.012,.02,2500);}
+function sfxNeedle(){sfxNoise(.12,.022,0,1200);sfxNoise(.035,.032,.055,2600);sfxTone(125,.045,.012,'triangle',.075,90);}
+function sfxTyping(){
+ const c=getSfxCtx();if(!c)return;
+ for(let i=0;i<17;i++){
+   const d=i*.042+Math.random()*.012;
+   sfxNoise(.014,.011,d,1500);
+   sfxTone(190+Math.random()*85,.018,.007,'square',d,150+Math.random()*55);
+ }
+}
+
 const ROOM_ASPECT=768/455;
 
 function getPanLimit(){
@@ -559,8 +601,8 @@ function loadRecord(i,autoplay=false){
  document.querySelectorAll('[data-record]').forEach((b,n)=>b.style.filter=n===currentRecord?'brightness(1.16)':'');
  if(autoplay)recordAudio.play().catch(()=>showRecordStatus('TAP THE RECORD'));
 }
-document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>loadRecord(+b.dataset.record,true)));
-recordPlay.addEventListener('click',()=>{if(recordAudio.paused)recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));else recordAudio.pause();});
+document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>{sfxNeedle();loadRecord(+b.dataset.record,true);}));
+recordPlay.addEventListener('click',()=>{if(recordAudio.paused){sfxNeedle();recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));}else recordAudio.pause();});
 recordAudio.addEventListener('play',()=>{recordWindow.classList.add('playing');showRecordStatus(recordCollection[currentRecord].title);});
 recordAudio.addEventListener('pause',()=>{recordWindow.classList.remove('playing');if(!recordAudio.ended)showRecordStatus('PAUSED');});
 recordAudio.addEventListener('ended',()=>loadRecord(currentRecord+1,true));
@@ -617,6 +659,7 @@ setInterval(updateTime,30000);
 document.getElementById('lamp').addEventListener('click',(e)=>{
  e.stopPropagation();
  moved=false;
+ sfxLamp();
  toggleLamp();
 });
 let hasKey=false,secretBusy=false,secretOpen=false;
@@ -643,8 +686,8 @@ function closeSkullSecret(){
 }
 document.getElementById('tapestry').addEventListener('click',(e)=>{e.stopPropagation();moved=false;status.textContent="IT DOESN'T DO ANYTHING. PROBABLY.";});
 document.getElementById('skull').addEventListener('click',(e)=>{e.stopPropagation();openSkullSecret();});
-secretKey.addEventListener('click',(e)=>{e.stopPropagation();if(!secretOpen||hasKey)return;hasKey=true;scene.classList.add('has-key');secretKey.style.display='none';status.textContent='GOT A KEY.';setTimeout(closeSkullSecret,700);});
-document.getElementById('door').addEventListener('click',(e)=>{e.stopPropagation();moved=false;if(!hasKey){status.textContent="IT'S LOCKED. LOOKS LIKE I'M STUCK IN HERE.";}else{status.textContent='THE KEY FITS. ...DO I ACTUALLY WANT TO LEAVE?';}});
+secretKey.addEventListener('click',(e)=>{e.stopPropagation();if(!secretOpen||hasKey)return;sfxKey();hasKey=true;scene.classList.add('has-key');secretKey.style.display='none';status.textContent='GOT A KEY.';setTimeout(closeSkullSecret,700);});
+document.getElementById('door').addEventListener('click',(e)=>{e.stopPropagation();moved=false;sfxDoor();if(!hasKey){status.textContent="IT'S LOCKED. LOOKS LIKE I'M STUCK IN HERE.";}else{status.textContent='THE KEY FITS. ...DO I ACTUALLY WANT TO LEAVE?';}});
 document.getElementById('records').addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false; status.textContent='THE RECORDS ARE RIGHT THERE. TRY THE PLAYER.';
 });
@@ -734,6 +777,8 @@ useComputer.addEventListener('click',e=>e.stopPropagation());
 
 document.getElementById('computerYes').addEventListener('click',(e)=>{
  e.stopPropagation();
+ sfxCrt();
+ sfxTyping();
  useComputer.classList.remove('open');
  crtWindow.classList.add('open');
  status.textContent='SYSTEM READY. AWAITING INPUT...';
