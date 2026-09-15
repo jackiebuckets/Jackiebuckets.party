@@ -211,21 +211,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .record-status{position:absolute;left:50%;top:64.2%;transform:translateX(-50%);z-index:8;background:#07132ed9;color:#f4d49d;padding:4px 8px;font:700 7px/1.1 "Courier New",monospace;letter-spacing:.4px;text-shadow:1px 1px #000;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}
 .record-window.show-status .record-status{opacity:1}
 .record-volume-toggle{
- position:absolute;
- left:10.5%; top:28.2%;
- transform:translateX(-50%);
- z-index:40;
- display:block;visibility:visible;opacity:1;pointer-events:auto;
+ position:absolute;left:10.2%;top:30.4%;z-index:20;
  border:1px solid #2a211b;background:#b69a6b;color:#211812;
  padding:4px 7px;font:700 6px/1 "Courier New",monospace;letter-spacing:.25px;
  box-shadow:2px 2px 0 #0008,inset 1px 1px 0 #dfc694;
- cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;
+ cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;
 }
-.record-volume-toggle:active{
- transform:translateX(-50%) translate(1px,1px);
- box-shadow:1px 1px 0 #0008;
-}
-.record-volume-toggle.quiet{background:#746a5b;color:#eee1c6;box-shadow:2px 2px 0 #0008,inset 1px 1px 0 #958978}
+.record-volume-toggle.quiet{background:#746a5b;color:#eee1c6}
+
 .record-credit{position:absolute!important;left:50%!important;bottom:.8%!important;transform:translateX(-50%)!important;z-index:8!important;color:#b8c5df!important;font-size:5px!important;background:#07132eb8;padding:2px 5px;opacity:.72!important;white-space:nowrap}
 .record-now,.record-controls,.record-shelf,.turntable,.record-close{display:none!important}
 @media(max-width:720px){.record-window{top:48px!important;bottom:54px!important}}
@@ -340,7 +333,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
       <button class="record-hit record-sleeve-hit s4" data-record="3" aria-label="Local Forecast"></button>
       <button class="record-hit record-sleeve-hit s5" data-record="4" aria-label="Night Floors"></button>
       <div class="record-playing-dot"></div>
-      <button class="record-volume-toggle" id="recordVolumeToggle" type="button" aria-label="Record volume: normal">VOL: NORMAL</button>
+      <button class="record-volume-toggle" id="recordVolumeToggle" type="button">VOL: NORMAL</button>
       <div class="record-status" id="recordPrompt">PICK A RECORD</div>
       <audio id="recordAudio" preload="metadata"></audio>
       <div class="record-credit" id="recordCredit"></div>
@@ -625,38 +618,20 @@ const recordPrompt=document.getElementById('recordPrompt');
 const recordCredit=document.getElementById('recordCredit');
 const recordVolumeToggle=document.getElementById('recordVolumeToggle');
 let recordVolumeMode='normal';
-let recordAudioCtx=null,recordGain=null,recordMediaSource=null;
-function ensureRecordGain(){
- try{
-  if(!recordAudioCtx){
-   const AC=window.AudioContext||window.webkitAudioContext;
-   if(AC){
-    recordAudioCtx=new AC();
-    recordMediaSource=recordAudioCtx.createMediaElementSource(recordAudio);
-    recordGain=recordAudioCtx.createGain();
-    recordMediaSource.connect(recordGain);
-    recordGain.connect(recordAudioCtx.destination);
-   }
-  }
-  if(recordAudioCtx&&recordAudioCtx.state==='suspended')recordAudioCtx.resume();
- }catch(e){}
-}
 function applyRecordVolume(){
  const quiet=recordVolumeMode==='quiet';
- const level=quiet?0.5:1.0;
- try{recordAudio.volume=level;}catch(e){}
- if(recordGain)recordGain.gain.setValueAtTime(level,recordAudioCtx.currentTime);
+ recordAudio.volume=quiet?0.5:1;
  recordVolumeToggle.textContent=quiet?'VOL: QUIET':'VOL: NORMAL';
  recordVolumeToggle.classList.toggle('quiet',quiet);
- recordVolumeToggle.setAttribute('aria-label','Record volume: '+(quiet?'quiet':'normal'));
 }
-recordVolumeToggle.addEventListener('pointerdown',e=>{
+recordVolumeToggle.addEventListener('pointerdown',e=>e.stopPropagation(),{passive:true});
+recordVolumeToggle.addEventListener('click',e=>{
  e.stopPropagation();
- ensureRecordGain();
  recordVolumeMode=recordVolumeMode==='normal'?'quiet':'normal';
  applyRecordVolume();
- showRecordStatus(recordVolumeMode==='quiet'?'VOLUME: QUIET':'VOLUME: NORMAL');
-},{passive:true});
+});
+applyRecordVolume();
+
 recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 recordWindow.addEventListener('click',e=>e.stopPropagation());
 
@@ -684,10 +659,8 @@ function loadRecord(i,autoplay=false){
  document.querySelectorAll('[data-record]').forEach((b,n)=>b.style.filter=n===currentRecord?'brightness(1.16)':'');
  if(autoplay)recordAudio.play().catch(()=>showRecordStatus('TAP THE RECORD'));
 }
-document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('pointerdown',()=>{ensureRecordGain();applyRecordVolume();},{passive:true}));
-document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>{loadRecord(+b.dataset.record,true);applyRecordVolume();}));
-recordPlay.addEventListener('pointerdown',()=>{ensureRecordGain();applyRecordVolume();},{passive:true});
-recordPlay.addEventListener('click',()=>{applyRecordVolume();if(recordAudio.paused){recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));}else recordAudio.pause();});
+document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>{loadRecord(+b.dataset.record,true);}));
+recordPlay.addEventListener('click',()=>{if(recordAudio.paused){recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));}else recordAudio.pause();});
 recordAudio.addEventListener('play',()=>{recordWindow.classList.add('playing');showRecordStatus(recordCollection[currentRecord].title);});
 recordAudio.addEventListener('pause',()=>{recordWindow.classList.remove('playing');if(!recordAudio.ended)showRecordStatus('PAUSED');});
 recordAudio.addEventListener('ended',()=>loadRecord(currentRecord+1,true));
