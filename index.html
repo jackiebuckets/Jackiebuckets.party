@@ -189,27 +189,30 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 }
 
 
-/* V5 top-down record player */
-.record-window{position:fixed!important;inset:0!important;z-index:80!important;background-image:url('room-night.png')!important;background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important;display:none!important;pointer-events:none!important;overflow:hidden!important}
+/* Record player — locked portrait low-poly master */
+.record-window{position:fixed!important;inset:0!important;z-index:80!important;background:#07132e!important;display:none!important;pointer-events:none!important;overflow:hidden!important}
 .record-window.open{display:flex!important;align-items:center;justify-content:center;pointer-events:auto!important}
-.record-window.daytime{background-image:url('room-day.png')!important}
-.record-stage{position:relative!important;width:min(100vw,150vh)!important;aspect-ratio:3/2!important;height:auto!important;max-height:100vh!important;pointer-events:auto!important;overflow:hidden!important;background:transparent}
+.record-stage{position:relative!important;height:100vh!important;width:auto!important;aspect-ratio:2/3!important;min-width:100vw!important;pointer-events:auto!important;overflow:hidden!important;background:#07132e}
 .record-scene-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:auto;user-select:none;-webkit-user-drag:none}
-.record-hit{position:absolute;border:0;background:transparent;padding:0;cursor:pointer;z-index:5;-webkit-tap-highlight-color:transparent}
+.record-hit{position:absolute;border:0;background:transparent;padding:0;cursor:pointer;z-index:7;-webkit-tap-highlight-color:transparent}
 .record-hit:active{background:#fff1}
-.record-back-hit{left:7.5%;top:40%;width:12.5%;height:21%}
-.record-vinyl-hit{left:27.6%;top:10.8%;width:31%;height:48%;border-radius:50%}
-.record-sleeve-hit{top:66%;height:29%}
-.record-sleeve-hit.s1{left:2.6%;width:17.8%}.record-sleeve-hit.s2{left:22.2%;width:17.8%}.record-sleeve-hit.s3{left:41.2%;width:17.8%}.record-sleeve-hit.s4{left:60.3%;width:17.8%}.record-sleeve-hit.s5{left:79.5%;width:17.8%}
-.record-spin{position:absolute;left:27.65%;top:11.3%;width:30.6%;aspect-ratio:1;z-index:3;border-radius:50%;pointer-events:none;opacity:0;object-fit:contain;filter:drop-shadow(0 2px 2px #0008)}
+/* UNO reverse stack and the little X both return to the room. */
+.record-back-hit{left:5.0%;top:30.0%;width:16.5%;height:12.5%}
+.record-x-hit{right:2.1%;top:1.3%;width:6.4%;height:5.2%}
+.record-vinyl-hit{left:29.4%;top:22.2%;width:36.5%;height:23.8%;border-radius:50%}
+/* Five physical sleeves across the desk. */
+.record-sleeve-hit{top:45.2%;height:17.7%}
+.record-sleeve-hit.s1{left:1.0%;width:21.0%}.record-sleeve-hit.s2{left:20.8%;width:21.2%}.record-sleeve-hit.s3{left:40.4%;width:20.7%}.record-sleeve-hit.s4{left:59.4%;width:21.8%}.record-sleeve-hit.s5{left:79.0%;width:20.0%}
+/* Only the vinyl rotates. The tonearm stays baked into the master image and therefore stationary. */
+.record-spin{position:absolute;left:31.0%;top:22.5%;width:34.5%;aspect-ratio:1;z-index:3;border-radius:50%;pointer-events:none;opacity:0;object-fit:contain;filter:drop-shadow(0 2px 2px #0008)}
 .record-window.playing .record-spin{opacity:1;animation:recordSpin 2.25s linear infinite}
-.record-playing-dot{position:absolute;left:29.6%;top:55.1%;width:8px;height:8px;border-radius:50%;background:#ff3a20;box-shadow:0 0 8px #ff4a20;z-index:6;opacity:0;pointer-events:none}
+.record-playing-dot{position:absolute;left:31.6%;top:40.2%;width:8px;height:8px;border-radius:50%;background:#ff3a20;box-shadow:0 0 8px #ff4a20;z-index:6;opacity:0;pointer-events:none}
 .record-window.playing .record-playing-dot{opacity:1}
-.record-status{position:absolute;left:50%;top:62.2%;transform:translateX(-50%);z-index:7;background:#140d09cc;color:#f4d49d;padding:4px 8px;font:700 7px/1.1 "Courier New",monospace;letter-spacing:.4px;text-shadow:1px 1px #000;pointer-events:none;opacity:0;transition:opacity .15s}
+.record-status{position:absolute;left:50%;top:64.2%;transform:translateX(-50%);z-index:8;background:#07132ed9;color:#f4d49d;padding:4px 8px;font:700 7px/1.1 "Courier New",monospace;letter-spacing:.4px;text-shadow:1px 1px #000;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}
 .record-window.show-status .record-status{opacity:1}
-.record-credit{position:absolute!important;left:50%!important;bottom:.8%!important;transform:translateX(-50%)!important;z-index:8!important;color:#e6c99a!important;font-size:5px!important;background:#130c08b8;padding:2px 5px;opacity:.8!important}
+.record-credit{position:absolute!important;left:50%!important;bottom:.8%!important;transform:translateX(-50%)!important;z-index:8!important;color:#b8c5df!important;font-size:5px!important;background:#07132eb8;padding:2px 5px;opacity:.72!important;white-space:nowrap}
 .record-now,.record-controls,.record-shelf,.turntable,.record-close{display:none!important}
-@media(max-aspect-ratio:3/2){.record-stage{width:100vw!important;height:66.6667vw!important}}
+@media(min-aspect-ratio:2/3){.record-stage{height:auto!important;width:100vw!important;min-width:0!important;aspect-ratio:2/3!important}}
 
 </style>
 </head>
@@ -261,8 +264,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    <section class="record-window" id="recordWindow" aria-label="Record player">
     <div class="record-stage">
       <img class="record-scene-art" src="record-player-ui.png" alt="Top-down pixel art record player">
-      <img class="record-spin" src="record-disc.png" alt="">
+      <img class="record-spin" id="recordSpin" src="record-disc-1.png" alt="">
       <button class="record-hit record-back-hit" id="recordClose" aria-label="Back to room"></button>
+      <button class="record-hit record-x-hit" id="recordCloseX" aria-label="Back to room"></button>
       <button class="record-hit record-vinyl-hit" id="recordPlay" aria-label="Play or pause record"></button>
       <button class="record-hit record-sleeve-hit s1" data-record="0" aria-label="Elevator Dreams"></button>
       <button class="record-hit record-sleeve-hit s2" data-record="1" aria-label="Lobby Time"></button>
@@ -508,6 +512,7 @@ syncRecordRoomBackground();
 const recordClose=document.getElementById('recordClose');
 const recordAudio=document.getElementById('recordAudio');
 const recordPlay=document.getElementById('recordPlay');
+const recordSpin=document.getElementById('recordSpin');
 const recordPrompt=document.getElementById('recordPrompt');
 const recordCredit=document.getElementById('recordCredit');
 recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
@@ -516,11 +521,11 @@ recordWindow.addEventListener('click',e=>e.stopPropagation());
 // Five deliberately mellow lounge / elevator records. Wikimedia-hosted originals,
 // each licensed for reuse with attribution on its source page.
 const recordCollection=[
- {title:'ELEVATOR DREAMS',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/9/9f/Local_Forecast_-_Elevator_%28ISRC_USUAN1300012%29.mp3',credit:'Local Forecast - Elevator — Kevin MacLeod · CC BY 3.0'},
- {title:'LOBBY TIME',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/8/87/Lobby_Time_%28ISRC_USUAN1600054%29.mp3',credit:'Lobby Time — Kevin MacLeod · CC BY 3.0'},
- {title:'AIRPORT LOUNGE',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/0/05/Airport_Lounge_%28ISRC_USUAN1100806%29.mp3',credit:'Airport Lounge — Kevin MacLeod · CC BY 3.0'},
- {title:'LOCAL FORECAST',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/8/8e/Local_Forecast_%28ISRC_USUAN1300010%29.mp3',credit:'Local Forecast — Kevin MacLeod · CC BY 3.0'},
- {title:'NIGHT FLOORS',artist:'KEVIN MACLEOD',url:'https://upload.wikimedia.org/wikipedia/commons/4/4a/Local_Forecast_-_Slower_%28ISRC_USUAN1300011%29.mp3',credit:'Local Forecast - Slower — Kevin MacLeod · CC BY 3.0'}
+ {title:'ELEVATOR DREAMS',artist:'KEVIN MACLEOD',url:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Local_Forecast_-_Elevator_%28ISRC_USUAN1300012%29.mp3',credit:'Local Forecast - Elevator — Kevin MacLeod · CC BY 3.0'},
+ {title:'LOBBY TIME',artist:'KEVIN MACLEOD',url:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Lobby_Time_%28ISRC_USUAN1600054%29.mp3',credit:'Lobby Time — Kevin MacLeod · CC BY 3.0'},
+ {title:'AIRPORT LOUNGE',artist:'KEVIN MACLEOD',url:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Airport_Lounge_%28ISRC_USUAN1100806%29.mp3',credit:'Airport Lounge — Kevin MacLeod · CC BY 3.0'},
+ {title:'LOCAL FORECAST',artist:'KEVIN MACLEOD',url:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Local_Forecast_%28ISRC_USUAN1300010%29.mp3',credit:'Local Forecast — Kevin MacLeod · CC BY 3.0'},
+ {title:'NIGHT FLOORS',artist:'KEVIN MACLEOD',url:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Local_Forecast_-_Slower_%28ISRC_USUAN1300011%29.mp3',credit:'Local Forecast - Slower — Kevin MacLeod · CC BY 3.0'}
 ];
 let currentRecord=0,statusTimer=null;
 function showRecordStatus(text){
@@ -532,6 +537,7 @@ function loadRecord(i,autoplay=false){
  const r=recordCollection[currentRecord];
  recordAudio.pause();recordWindow.classList.remove('playing');
  recordAudio.src=r.url;recordAudio.load();recordCredit.textContent=r.credit;
+ recordSpin.src='record-disc-'+(currentRecord+1)+'.png';
  showRecordStatus(r.title);
  document.querySelectorAll('[data-record]').forEach((b,n)=>b.style.filter=n===currentRecord?'brightness(1.16)':'');
  if(autoplay)recordAudio.play().catch(()=>showRecordStatus('TAP THE RECORD'));
