@@ -196,15 +196,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .record-scene-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:auto;user-select:none;-webkit-user-drag:none}
 .record-hit{position:absolute;border:0;background:transparent;padding:0;cursor:pointer;z-index:7;-webkit-tap-highlight-color:transparent}
 .record-hit:active{background:#fff1}
-/* UNO reverse stack and the little X both return to the room. */
+/* UNO reverse stack returns to the room. */
 .record-back-hit{left:5.0%;top:30.0%;width:16.5%;height:12.5%}
-.record-x-hit{right:2.1%;top:1.3%;width:6.4%;height:5.2%}
-.record-vinyl-hit{left:29.4%;top:22.2%;width:36.5%;height:23.8%;border-radius:50%}
+.record-vinyl-hit{left:28.8%;top:18.8%;width:42.4%;height:28.3%;border-radius:50%}
 /* Five physical sleeves across the desk. */
 .record-sleeve-hit{top:45.2%;height:17.7%}
 .record-sleeve-hit.s1{left:1.0%;width:21.0%}.record-sleeve-hit.s2{left:20.8%;width:21.2%}.record-sleeve-hit.s3{left:40.4%;width:20.7%}.record-sleeve-hit.s4{left:59.4%;width:21.8%}.record-sleeve-hit.s5{left:79.0%;width:20.0%}
 /* Only the vinyl rotates. The tonearm stays baked into the master image and therefore stationary. */
-.record-spin{position:absolute;left:30.7%;top:22.0%;width:31.0%;aspect-ratio:1;z-index:3;border-radius:50%;pointer-events:none;opacity:0;object-fit:contain;filter:drop-shadow(0 2px 2px #0008)}
+.record-spin{position:absolute;left:28.8%;top:18.7%;width:42.4%;aspect-ratio:1;z-index:3;border-radius:50%;pointer-events:none;opacity:0;object-fit:contain;filter:drop-shadow(0 2px 2px #0008)}
 .record-window.playing .record-spin{opacity:1;animation:recordSpin 2.25s linear infinite}
 .record-playing-dot{position:absolute;left:31.6%;top:40.2%;width:8px;height:8px;border-radius:50%;background:#ff3a20;box-shadow:0 0 8px #ff4a20;z-index:6;opacity:0;pointer-events:none}
 .record-window.playing .record-playing-dot{opacity:1}
@@ -267,7 +266,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
       <img class="record-scene-art" src="record-player-ui.png" alt="Top-down pixel art record player">
       <img class="record-spin" id="recordSpin" src="record-disc-1.png" alt="">
       <button class="record-hit record-back-hit" id="recordClose" aria-label="Back to room"></button>
-      <button class="record-hit record-x-hit" id="recordCloseX" aria-label="Back to room"></button>
       <button class="record-hit record-vinyl-hit" id="recordPlay" aria-label="Play or pause record"></button>
       <button class="record-hit record-sleeve-hit s1" data-record="0" aria-label="Elevator Dreams"></button>
       <button class="record-hit record-sleeve-hit s2" data-record="1" aria-label="Lobby Time"></button>
