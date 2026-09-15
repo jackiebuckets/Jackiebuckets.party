@@ -212,24 +212,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .record-window.show-status .record-status{opacity:1}
 .record-volume-toggle{
  position:absolute;
- left:50%; top:50.5%;
+ left:10.5%; top:28.2%;
  transform:translateX(-50%);
  z-index:40;
- display:block;
- visibility:visible;
- opacity:1;
- pointer-events:auto;
- border:1px solid #2a211b;
- background:#b69a6b;
- color:#211812;
- padding:4px 7px;
- font:700 6px/1 "Courier New",monospace;
- letter-spacing:.25px;
+ display:block;visibility:visible;opacity:1;pointer-events:auto;
+ border:1px solid #2a211b;background:#b69a6b;color:#211812;
+ padding:4px 7px;font:700 6px/1 "Courier New",monospace;letter-spacing:.25px;
  box-shadow:2px 2px 0 #0008,inset 1px 1px 0 #dfc694;
- text-shadow:none;
- cursor:pointer;
- -webkit-tap-highlight-color:transparent;
- white-space:nowrap;
+ cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;
 }
 .record-volume-toggle:active{
  transform:translateX(-50%) translate(1px,1px);
@@ -635,22 +625,38 @@ const recordPrompt=document.getElementById('recordPrompt');
 const recordCredit=document.getElementById('recordCredit');
 const recordVolumeToggle=document.getElementById('recordVolumeToggle');
 let recordVolumeMode='normal';
-const getRecordVolume=()=>recordVolumeMode==='quiet'?0.5:1.0;
+let recordAudioCtx=null,recordGain=null,recordMediaSource=null;
+function ensureRecordGain(){
+ try{
+  if(!recordAudioCtx){
+   const AC=window.AudioContext||window.webkitAudioContext;
+   if(AC){
+    recordAudioCtx=new AC();
+    recordMediaSource=recordAudioCtx.createMediaElementSource(recordAudio);
+    recordGain=recordAudioCtx.createGain();
+    recordMediaSource.connect(recordGain);
+    recordGain.connect(recordAudioCtx.destination);
+   }
+  }
+  if(recordAudioCtx&&recordAudioCtx.state==='suspended')recordAudioCtx.resume();
+ }catch(e){}
+}
 function applyRecordVolume(){
  const quiet=recordVolumeMode==='quiet';
- recordAudio.volume=getRecordVolume();
- recordVolumeToggle.textContent=quiet ? 'VOL: QUIET' : 'VOL: NORMAL';
+ const level=quiet?0.5:1.0;
+ try{recordAudio.volume=level;}catch(e){}
+ if(recordGain)recordGain.gain.setValueAtTime(level,recordAudioCtx.currentTime);
+ recordVolumeToggle.textContent=quiet?'VOL: QUIET':'VOL: NORMAL';
  recordVolumeToggle.classList.toggle('quiet',quiet);
  recordVolumeToggle.setAttribute('aria-label','Record volume: '+(quiet?'quiet':'normal'));
 }
-recordVolumeToggle.addEventListener('pointerdown',e=>e.stopPropagation());
-recordVolumeToggle.addEventListener('click',e=>{
+recordVolumeToggle.addEventListener('pointerdown',e=>{
  e.stopPropagation();
+ ensureRecordGain();
  recordVolumeMode=recordVolumeMode==='normal'?'quiet':'normal';
  applyRecordVolume();
  showRecordStatus(recordVolumeMode==='quiet'?'VOLUME: QUIET':'VOLUME: NORMAL');
-});
-applyRecordVolume();
+},{passive:true});
 recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 recordWindow.addEventListener('click',e=>e.stopPropagation());
 
@@ -678,8 +684,10 @@ function loadRecord(i,autoplay=false){
  document.querySelectorAll('[data-record]').forEach((b,n)=>b.style.filter=n===currentRecord?'brightness(1.16)':'');
  if(autoplay)recordAudio.play().catch(()=>showRecordStatus('TAP THE RECORD'));
 }
-document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>{loadRecord(+b.dataset.record,true);}));
-recordPlay.addEventListener('click',()=>{if(recordAudio.paused){recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));}else recordAudio.pause();});
+document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('pointerdown',()=>{ensureRecordGain();applyRecordVolume();},{passive:true}));
+document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>{loadRecord(+b.dataset.record,true);applyRecordVolume();}));
+recordPlay.addEventListener('pointerdown',()=>{ensureRecordGain();applyRecordVolume();},{passive:true});
+recordPlay.addEventListener('click',()=>{applyRecordVolume();if(recordAudio.paused){recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));}else recordAudio.pause();});
 recordAudio.addEventListener('play',()=>{recordWindow.classList.add('playing');showRecordStatus(recordCollection[currentRecord].title);});
 recordAudio.addEventListener('pause',()=>{recordWindow.classList.remove('playing');if(!recordAudio.ended)showRecordStatus('PAUSED');});
 recordAudio.addEventListener('ended',()=>loadRecord(currentRecord+1,true));
