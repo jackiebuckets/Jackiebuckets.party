@@ -291,9 +291,33 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 }
 .hula-lit.on{opacity:.92}
 
+
+/* V5.41 — phone experience is portrait-only */
+.portrait-only-message{
+ display:none;
+ position:fixed;
+ inset:0;
+ z-index:999999;
+ background:#05070d;
+ color:#e8e4dc;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ padding:32px;
+ font:700 18px/1.55 "Courier New",monospace;
+ letter-spacing:2px;
+}
+@media (orientation:landscape) and (max-height:600px){
+ body > *:not(.portrait-only-message){visibility:hidden!important;}
+ .portrait-only-message{display:flex!important;visibility:visible!important;}
+}
+
 </style>
 </head>
 <body>
+<div class="portrait-only-message" aria-live="polite">
+  ROTATE YOUR PHONE<br>TO PORTRAIT.
+</div>
 <div class="window">
  <div class="titlebar">▣ Jackiebuckets.party <span class="buttons"><i>_</i><i>□</i><i>×</i></span></div>
  <main class="viewport" id="viewport">
@@ -550,6 +574,33 @@ window.addEventListener('resize',sizeCamera);
 window.addEventListener('pageshow',()=>requestAnimationFrame(ensureNormalRoomCamera));
 document.addEventListener('visibilitychange',()=>{
  if(!document.hidden)requestAnimationFrame(ensureNormalRoomCamera);
+});
+
+let orientationResetTimer=0;
+function rebuildRoomAfterOrientation(){
+ clearTimeout(orientationResetTimer);
+ orientationResetTimer=setTimeout(()=>{
+   // Do not disturb an intentional close-up.
+   if(zoomed)return;
+
+   // Recalculate the camera using the viewport dimensions Safari has settled on.
+   sizeCamera();
+
+   // Phone returning to portrait gets a clean normal-room camera state.
+   if(window.matchMedia('(orientation: portrait)').matches){
+     cancelAnimationFrame(zoomAnim);
+     zoomBase=null;
+     camera.style.left=`calc(50% + ${panX}px)`;
+     camera.style.top=`calc(50% + ${panY}px)`;
+     camera.style.transform='translate(-50%,-50%) scale(1.005)';
+   }else{
+     ensureNormalRoomCamera();
+   }
+ },220);
+}
+window.addEventListener('orientationchange',rebuildRoomAfterOrientation);
+window.addEventListener('resize',()=>{
+ if(window.innerWidth < 900) rebuildRoomAfterOrientation();
 });
 
 
