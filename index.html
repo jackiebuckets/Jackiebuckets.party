@@ -580,6 +580,42 @@ document.addEventListener('visibilitychange',()=>{
    Landscape is only a rotate-back screen. Once the phone returns to portrait,
    reload the room from its clean initial portrait geometry instead of trying
    to reuse Safari's landscape viewport/camera measurements. */
+
+const ORIENTATION_STATE_KEY='jbOrientationRoomState';
+
+function saveOrientationRoomState(){
+ try{
+   sessionStorage.setItem(ORIENTATION_STATE_KEY,JSON.stringify({
+     tapestryMoved: !!tapestryMoved,
+     keyTaken: !!keyTaken
+   }));
+ }catch(e){}
+}
+
+function restoreOrientationRoomState(){
+ try{
+   const raw=sessionStorage.getItem(ORIENTATION_STATE_KEY);
+   if(!raw)return;
+   sessionStorage.removeItem(ORIENTATION_STATE_KEY);
+   const s=JSON.parse(raw);
+
+   if(s.tapestryMoved){
+     tapestryMoved=true;
+     if(tapestry) tapestry.classList.add('moved');
+     if(secretRecess) secretRecess.classList.add('show');
+     if(secretKey && !s.keyTaken) secretKey.classList.add('show');
+   }
+
+   if(s.keyTaken){
+     keyTaken=true;
+     if(secretKey){
+       secretKey.classList.remove('show');
+       secretKey.classList.add('taken');
+     }
+   }
+ }catch(e){}
+}
+
 let phoneWasLandscape = window.matchMedia('(orientation: landscape) and (max-height:600px)').matches;
 
 function handlePhoneOrientation(){
@@ -593,6 +629,7 @@ function handlePhoneOrientation(){
  if(phoneWasLandscape && window.matchMedia('(orientation: portrait)').matches){
    phoneWasLandscape=false;
    // Let Safari finish the physical rotation, then rebuild the page from scratch.
+   saveOrientationRoomState();
    setTimeout(()=>location.reload(),180);
  }
 }
