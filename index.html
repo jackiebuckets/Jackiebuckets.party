@@ -480,7 +480,20 @@ function applyPan(){
  camera.style.top=`calc(50% + ${panY}px)`;
  camera.style.transform='translate(-50%,-50%) scale(1.005)';
 }
+
+function ensureNormalRoomCamera(){
+ if(zoomed)return;
+ const normal='translate(-50%,-50%) scale(1.005)';
+ if(camera.style.transform!==normal){
+   cancelAnimationFrame(zoomAnim);
+   camera.style.left=`calc(50% + ${panX}px)`;
+   camera.style.top=`calc(50% + ${panY}px)`;
+   camera.style.transform=normal;
+   zoomBase=null;
+ }
+}
 function pointerDown(e){
+ ensureNormalRoomCamera();
  if(zoomed || e.target.closest(".crt-window,.use-computer,button")) return;
  const downId=roomObjectAt(e.clientX,e.clientY);
  if(downId==='lamp'){sfxLamp();toggleHulaLight();}
@@ -533,6 +546,12 @@ viewport.addEventListener('pointermove',pointerMove,{passive:false});
 viewport.addEventListener('pointerup',pointerUp,{passive:false});
 viewport.addEventListener('pointercancel',pointerUp,{passive:false});
 window.addEventListener('resize',sizeCamera);
+
+window.addEventListener('pageshow',()=>requestAnimationFrame(ensureNormalRoomCamera));
+document.addEventListener('visibilitychange',()=>{
+ if(!document.hidden)requestAnimationFrame(ensureNormalRoomCamera);
+});
+
 
 const views={
  computer:{x:10,y:5,s:1.70,label:'THE COMPUTER.'}
