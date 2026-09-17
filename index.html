@@ -352,6 +352,64 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .finland-instruction{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);z-index:10;color:#eee;font:12px "Courier New",monospace;letter-spacing:2px;white-space:nowrap}
 @media(max-width:600px){.finland-reader{width:94vw}.finland-cover{max-width:72vw}.finland-title{font-size:clamp(14px,4vw,20px)}.finland-body{font-size:clamp(7px,2.05vw,10px)}}.finland-title{font-size:clamp(14px,4vw,21px)}.finland-body{font-size:clamp(7px,2.25vw,11px)}}
 </style>
+
+<style id="finland-v557-text-cleanup">
+/* V5.57 — Finland mobile text cleanup. Book art/geometry intentionally untouched. */
+#finlandCopy,
+.finland-copy,
+#finlandText,
+.finland-text {
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+#finlandCopy h1, #finlandCopy h2, #finlandCopy h3,
+.finland-copy h1, .finland-copy h2, .finland-copy h3,
+#finlandText h1, #finlandText h2, #finlandText h3,
+.finland-text h1, .finland-text h2, .finland-text h3 {
+  position: static !important;
+  margin: 0 0 0.55em 0 !important;
+  line-height: 1.02 !important;
+}
+
+#finlandCopy p, .finland-copy p,
+#finlandText p, .finland-text p {
+  position: static !important;
+  margin: 0 0 0.82em 0 !important;
+  line-height: 1.28 !important;
+}
+
+#finlandCopy .note, #finlandCopy .caption, #finlandCopy .aside,
+.finland-copy .note, .finland-copy .caption, .finland-copy .aside,
+#finlandText .note, #finlandText .caption, #finlandText .aside,
+.finland-text .note, .finland-text .caption, .finland-text .aside {
+  position: static !important;
+  display: block !important;
+  margin-top: 0.7em !important;
+  line-height: 1.12 !important;
+}
+
+/* The live build uses absolutely-positioned text fragments; force direct children
+   into one readable vertical typesetting flow on the physical left page. */
+#finlandCopy > *, .finland-copy > *,
+#finlandText > *, .finland-text > * {
+  max-width: 100% !important;
+}
+</style>
+
+
+<style id="finland-v557-detected-selectors">
+#finlandCopy,
+#finlandText,
+.finland-copy,
+.finland-pagehit,
+.finland-text {
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+
+</style>
 </head>
 <body>
 <div class="portrait-only-message" aria-live="polite">
