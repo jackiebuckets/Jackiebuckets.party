@@ -320,16 +320,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .henry-dim{position:absolute;inset:0;background:rgba(0,0,0,.16)}
 .henry-stage{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
 .henry-cover{width:min(56vw,430px);max-height:72vh;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(10px 14px 8px rgba(0,0,0,.58));pointer-events:auto;cursor:pointer;user-select:none;-webkit-user-drag:none}
-.henry-openbook{position:relative;width:min(92vw,850px);aspect-ratio:1.56/1;display:none;pointer-events:auto;filter:drop-shadow(10px 14px 8px rgba(0,0,0,.58))}
-.henry-window.reading .henry-cover{display:none}.henry-window.reading .henry-openbook{display:block}
+.henry-openbook{position:relative;width:min(96vw,900px);aspect-ratio:1.68/1;display:none;pointer-events:auto;filter:drop-shadow(10px 14px 8px rgba(0,0,0,.58))}
+.henry-window.reading .henry-cover{display:none}.henry-window.reading .henry-openbook{display:block}.henry-window.reading .henry-instruction{display:none}
 .henry-openbook>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;user-select:none;-webkit-user-drag:none}
-.henry-page-text{position:absolute;left:53.2%;top:16%;width:38%;height:67%;display:flex;align-items:center;justify-content:center;text-align:center;padding:5%;white-space:pre-line;color:#392516;font:700 clamp(12px,2.15vw,22px)/1.35 Georgia,"Times New Roman",serif;text-shadow:0 1px rgba(255,255,255,.25);z-index:3}
+.henry-page-text{position:absolute;left:55.0%;top:15.5%;width:34.5%;height:65%;display:flex;align-items:center;justify-content:center;text-align:center;padding:5%;white-space:pre-line;color:#392516;font:700 clamp(11px,1.85vw,20px)/1.42 Georgia,"Times New Roman",serif;text-shadow:0 1px rgba(255,255,255,.25);z-index:3}
 .henry-page-num{position:absolute;right:11%;bottom:11%;z-index:3;color:#6b4b2f;font:700 clamp(8px,1.2vw,12px) "Courier New",monospace}
 .henry-left-hit,.henry-right-hit{position:absolute;top:7%;bottom:7%;z-index:4;border:0;background:transparent;cursor:pointer}.henry-left-hit{left:4%;width:46%}.henry-right-hit{right:4%;width:46%}
 .henry-back{position:absolute;left:14px;top:14px;z-index:8;background:#d6d6d6;color:#111;border:4px outset #eee;padding:7px 11px;font:700 14px "Courier New";cursor:pointer}
 .henry-instruction{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:8;color:#e8d5ad;background:#0009;padding:4px 8px;font:700 9px "Courier New";letter-spacing:.5px;white-space:nowrap;text-shadow:1px 1px #000}
 .henry-openbook.turning{animation:henryChunk .22s steps(5,end)}@keyframes henryChunk{0%{transform:translateX(0)}45%{transform:translateX(4px) skewY(-.35deg)}100%{transform:translateX(0)}}
-@media(max-width:600px){.henry-cover{width:min(72vw,360px);max-height:68vh}.henry-openbook{width:96vw}.henry-page-text{font-size:clamp(10px,3.1vw,16px);padding:4%}.henry-back{top:8px;left:8px;font-size:11px;padding:5px 8px}}
+@media(max-width:600px){.henry-cover{width:min(72vw,360px);max-height:68vh}.henry-openbook{width:98vw}.henry-page-text{font-size:clamp(10px,2.85vw,15px);padding:3.5%}.henry-back{top:8px;left:8px;font-size:11px;padding:5px 8px}}
 
 </style>
 </head>
