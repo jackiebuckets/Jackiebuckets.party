@@ -331,6 +331,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .henry-openbook.turning{animation:henryChunk .22s steps(5,end)}@keyframes henryChunk{0%{transform:translateX(0)}45%{transform:translateX(4px) skewY(-.35deg)}100%{transform:translateX(0)}}
 @media(max-width:600px){.henry-cover{width:min(72vw,360px);max-height:68vh}.henry-openbook{width:98vw}.henry-page-text{font-size:clamp(10px,2.85vw,15px);padding:3.5%}.henry-back{top:8px;left:8px;font-size:11px;padding:5px 8px}}
 
+
+#finlandBook{left:46%;top:64%;width:18%;height:13%}.finland-window{position:fixed;inset:48px 0 58px;z-index:81;display:none;pointer-events:none;overflow:hidden}.finland-window.open{display:block;pointer-events:auto}.finland-dim{position:absolute;inset:0;background:rgba(0,0,0,.16)}.finland-stage{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}.finland-spread{position:relative;width:min(96vw,900px);aspect-ratio:1.44/1;pointer-events:auto;filter:drop-shadow(10px 14px 8px rgba(0,0,0,.58))}.finland-spread>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;user-select:none}.finland-livecopy{position:absolute;z-index:4;color:#27231d;font-family:"Courier New",monospace;pointer-events:none}.finland-title{left:9%;top:13%;width:37%;font-weight:900;font-size:clamp(17px,2.55vw,29px);line-height:1.05}.finland-body{left:9.5%;top:27%;width:34%;font-weight:700;font-size:clamp(9px,1.25vw,14px);line-height:1.32;white-space:pre-line}.finland-note{left:12%;top:60%;width:30%;font-weight:900;font-size:clamp(10px,1.35vw,15px);line-height:1.2;transform:rotate(-2deg)}.finland-exit{position:absolute;right:5%;bottom:8%;width:40%;height:26%;z-index:7;border:0;background:transparent;cursor:pointer}@media(max-width:600px){.finland-spread{width:98vw}.finland-title{font-size:clamp(14px,4vw,21px)}.finland-body{font-size:clamp(7px,2.25vw,11px)}}
 </style>
 </head>
 <body>
@@ -359,6 +361,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <img class="skull-tapestry-overlay" id="skullTapestryOverlay" src="skull-tapestry.png" alt="">
     <button class="hotspot" id="records" aria-label="Records and books"></button>
     <button class="hotspot" id="henryBook" aria-label="Books on the shelf"></button>
+<button class="hotspot" id="finlandBook" aria-label="Books on the desk"></button>
    </div>
    <button class="back" id="back">← BACK</button>
    <div class="mode"><b id="modeText">NIGHT MODE</b><span id="clock"></span></div>
@@ -387,6 +390,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     </div>
    </section>
 
+   <section class="finland-window" id="finlandWindow" aria-label="A Field Guide to Finland"><div class="finland-dim"></div><div class="finland-stage"><div class="finland-spread"><img src="finland-what-is-finland-reference.jpg" alt=""><div class="finland-livecopy finland-title">WHAT IS FINLAND?</div><div class="finland-livecopy finland-body">Officially, Finland is a country in Northern Europe.
+
+According to this internet conspiracy theory, however, “Finland” is a name placed over an area that does not actually exist as a separate country.
+
+The theory claims the maps are wrong on purpose.</div><div class="finland-livecopy finland-note">FIRST RULE:<br>QUESTION THE MAP.</div><button class="finland-exit" id="finlandExit" aria-label="Return to room"></button></div></div></section>
    <section class="henry-window" id="henryWindow" aria-label="The Henry Bankshaft Chronicles">
     <div class="henry-dim"></div>
     <div class="henry-stage">
@@ -575,6 +583,7 @@ function roomObjectAt(clientX,clientY){
   ['lamp',22.8,43.0,8.3,22.5],
   ['music',59.0,49.5,17.8,21.5],
   ['henryBook',32.0,31.0,15.0,7.0],
+  ['finlandBook',46.0,64.0,18.0,13.0],
   ['photos',24.0,8.5,21.5,34.5],
   ['door',76.7,10.0,17.5,60.0],
   ['guitar',11.0,43.5,8.5,31.5],
@@ -633,6 +642,7 @@ const computerZoom={fx:.127,fy:-.072,s:1.70};
 const recordZoom={fx:-.245,fy:-.105,s:1.62};
 const skullZoom={fx:-.499,fy:.682,s:2.35};
 const bookZoom={fx:.145,fy:.285,s:1.82};
+const finlandZoom={fx:.03,fy:-.20,s:1.72};
 let activeZoom=computerZoom;
 const zoomDuration=340;
 let zoomAnim=0;
@@ -679,8 +689,8 @@ function animateComputerZoom(from,to,done){
 }
 
 function goView(name){
- if(name!=='computer' && name!=='record' && name!=='skull' && name!=='book')return;
- activeZoom=name==='record'?recordZoom:(name==='skull'?skullZoom:(name==='book'?bookZoom:computerZoom));
+ if(name!=='computer' && name!=='record' && name!=='skull' && name!=='book' && name!=='finland')return;
+ activeZoom=name==='record'?recordZoom:(name==='skull'?skullZoom:(name==='book'?bookZoom:(name==='finland'?finlandZoom:computerZoom)));
  zoomed=true;
  scene.classList.add('zoomed');
  hint.style.opacity='0';
@@ -720,6 +730,10 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 
 
+
+const finlandWindow=document.getElementById('finlandWindow');
+function closeFinland(){finlandWindow.classList.remove('open');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
+document.getElementById('finlandBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('finland');setTimeout(()=>{finlandWindow.classList.add('open');status.textContent='A FIELD GUIDE TO FINLAND.'},zoomDuration+35)});finlandWindow.addEventListener('pointerdown',e=>e.stopPropagation());finlandWindow.addEventListener('click',e=>e.stopPropagation());document.getElementById('finlandExit').addEventListener('click',closeFinland);
 /* The Henry Bankshaft Chronicles */
 const henryWindow=document.getElementById('henryWindow'),henryCover=document.getElementById('henryCover'),henryOpenBook=document.getElementById('henryOpenBook'),henryPageLeft=document.getElementById('henryPageLeft'),henryPageRight=document.getElementById('henryPageRight'),henryNumLeft=document.getElementById('henryNumLeft'),henryNumRight=document.getElementById('henryNumRight'),henryEndMessage=document.getElementById('henryEndMessage'),henryInstruction=document.getElementById('henryInstruction');
 const henryPages=["Almond joys, paydays, and heath bars.\n\nNow that is a list of just shitty ass candy bars","The average person will eat about 8 spiders in their lifetime","You can’t have sex with bones","Buy a snickers be a normal guy","Try to keep atleast 1 Korean person on speed dial"];
