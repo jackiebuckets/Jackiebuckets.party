@@ -228,72 +228,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .skull-tapestry-overlay.moved{transform:translate(82%,-5%) rotate(7deg);transition:transform .42s steps(6,end)}
 .scene.has-key #skull{cursor:default}
 
-
-/* V5.47 — recessed blinds fit.
-   Animation logic is unchanged; only geometry/visual framing is revised. */
-.blinds-prototype{
- position:absolute;
- left:0.15%; top:7.8%;
- width:15.0%; height:39.5%;
- z-index:7;
- pointer-events:auto; cursor:pointer; overflow:hidden;
- /* Match the baked-in window's slight perspective instead of a perfect rectangle. */
- clip-path:polygon(7% 0%, 92% 5%, 100% 96%, 0% 100%);
-}
-.blinds-prototype .blind-frame{
- position:absolute;
- left:7%; top:5%; width:86%; height:91%;
- border:0;
- box-shadow:none;
- background:rgba(8,13,19,.88);
- /* Recess the moving assembly inside the existing baked-in trim. */
- clip-path:polygon(2% 0%, 97% 4%, 100% 96%, 0% 100%);
-}
-.blinds-prototype .outside{
- position:absolute; inset:0;
- background:
-  radial-gradient(circle at 67% 24%,rgba(242,224,165,.88) 0 3%,transparent 3.6%),
-  linear-gradient(#25374d 0 56%,#101923 57% 100%);
-}
-body.day-mode .blinds-prototype .outside{
- background:linear-gradient(#88a7b4 0 54%,#aeb59c 55% 72%,#596451 73% 100%);
-}
-.blinds-prototype .slats{
- position:absolute; inset:0;
- display:flex; flex-direction:column; justify-content:space-between;
- perspective:180px;
-}
-.blinds-prototype .slat{
- height:6.7%;
- background:linear-gradient(rgba(80,101,116,.98),rgba(33,52,68,.98) 58%,rgba(12,27,40,.98));
- border-bottom:1px solid rgba(4,12,20,.9);
- box-shadow:0 1px 1px rgba(0,0,0,.42);
- transform-origin:50% 50%;
- transition:transform .42s steps(7,end),height .42s steps(7,end),opacity .42s steps(7,end);
-}
-body.day-mode .blinds-prototype .slat{
- background:linear-gradient(rgba(226,213,181,.98),rgba(171,153,119,.98) 58%,rgba(99,85,64,.98));
-}
-.blinds-prototype.open .slat{
- transform:rotateX(72deg);
- height:4.1%;
- opacity:.94;
-}
-.blinds-prototype .rail{
- position:absolute; left:0; right:0; top:0; height:3.5%;
- background:rgba(36,48,57,.96);
- border-bottom:1px solid rgba(8,14,19,.8);
-}
-body.day-mode .blinds-prototype .rail{background:rgba(118,101,77,.96);}
-.blinds-prototype .cord{
- position:absolute; right:6%; top:4%; width:1px; height:75%;
- background:rgba(187,174,147,.85);
- box-shadow:3px 0 0 rgba(187,174,147,.85);
-}
-.blinds-prototype .cord:after{
- content:'';position:absolute;left:-2px;bottom:-5px;width:5px;height:7px;
- background:#786650;border-radius:1px;
-}
 </style>
 </head>
 <body>
@@ -304,18 +238,6 @@ body.day-mode .blinds-prototype .rail{background:rgba(118,101,77,.96);}
    <div class="camera stepped" id="camera">
     <img class="room night" src="room-night.png" alt="">
     <img class="room day" src="room-day.png" alt="">
-    <div class="blinds-prototype" id="blindsPrototype" role="button" aria-label="Open or close blinds">
-      <div class="blind-frame">
-        <div class="outside"></div>
-        <div class="slats">
-          <i class="slat"></i><i class="slat"></i><i class="slat"></i><i class="slat"></i>
-          <i class="slat"></i><i class="slat"></i><i class="slat"></i><i class="slat"></i>
-          <i class="slat"></i><i class="slat"></i><i class="slat"></i><i class="slat"></i>
-        </div>
-        <div class="rail"></div><div class="cord"></div>
-      </div>
-    </div>
-
     <button class="hotspot" id="computer" aria-label="Computer"></button>
     <button class="hotspot" id="music" aria-label="Stereo and records"></button>
     <button class="hotspot" id="photos" aria-label="Photos"></button>
@@ -821,16 +743,6 @@ document.getElementById('computerNo').addEventListener('click',(e)=>{ e.stopProp
 
 /* Back also dismisses the small prompt. */
 
-
-
-/* Blinds prototype: deliberately isolated from camera/day-night/tapestry code. */
-const blindsPrototype=document.getElementById('blindsPrototype');
-if(blindsPrototype){
- blindsPrototype.addEventListener('pointerdown',(e)=>{
-   e.stopPropagation();
-   blindsPrototype.classList.toggle('open');
- },{passive:true});
-}
 
 </script>
 
