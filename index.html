@@ -589,7 +589,7 @@ function saveOrientationDayMode(){
  try{
    sessionStorage.setItem(
      ORIENTATION_DAY_KEY,
-     scene.classList.contains('daytime') ? 'day' : 'night'
+     document.body.classList.contains('day-mode') ? 'day' : 'night'
    );
  }catch(e){}
 }
@@ -598,9 +598,8 @@ function restoreOrientationDayMode(){
    const mode=sessionStorage.getItem(ORIENTATION_DAY_KEY);
    if(!mode)return;
    sessionStorage.removeItem(ORIENTATION_DAY_KEY);
-   const wantDay=mode==='day';
-   lightMode=wantDay;
-   applyLightMode(wantDay);
+   lightMode=true;
+   applyLightMode(true);
  }catch(e){}
 }
 
@@ -610,7 +609,6 @@ function handlePhoneOrientation(){
  const isPhoneLandscape=window.matchMedia('(orientation: landscape) and (max-height:600px)').matches;
 
  if(isPhoneLandscape){
-   if(!phoneWasLandscape) saveOrientationDayMode();
    phoneWasLandscape=true;
    return;
  }
@@ -618,6 +616,7 @@ function handlePhoneOrientation(){
  if(phoneWasLandscape && window.matchMedia('(orientation: portrait)').matches){
    phoneWasLandscape=false;
    // Let Safari finish the physical rotation, then rebuild the page from scratch.
+   saveOrientationDayMode();
    setTimeout(()=>location.reload(),180);
  }
 }
