@@ -587,10 +587,10 @@ document.addEventListener('visibilitychange',()=>{
 let phoneWasLandscape = window.matchMedia('(orientation: landscape) and (max-height:600px)').matches;
 function handlePhoneOrientation(){
  const isPhoneLandscape=window.matchMedia('(orientation: landscape) and (max-height:600px)').matches;
- if(isPhoneLandscape){phoneWasLandscape=true;return;}
+ if(isPhoneLandscape){ phoneWasLandscape=true; return; }
  if(phoneWasLandscape && window.matchMedia('(orientation: portrait)').matches){
-  phoneWasLandscape=false;
-  setTimeout(()=>location.reload(),180);
+   phoneWasLandscape=false;
+   setTimeout(()=>location.reload(),180);
  }
 }
 window.addEventListener('orientationchange',handlePhoneOrientation);
@@ -756,7 +756,7 @@ document.getElementById('music').addEventListener('click',(e)=>{
 recordClose.addEventListener('click',(e)=>{e.stopPropagation();exitRecordPlayer();});
 
 
-let lightMode=true; // DAY is always the site's initial/default state
+let lightMode=true; // explicit default: DAY
 
 function applyLightMode(day){
  scene.classList.toggle('daytime',day);
@@ -774,12 +774,10 @@ function toggleLamp(){
 
 function updateTime(){
  const d=new Date();
- if(lightMode===null){
-   lightMode=true;
-   applyLightMode(true);
- }
+
  document.getElementById('clock').textContent=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
 }
+applyLightMode(true);
 updateTime();
 
 setInterval(updateTime,30000);
@@ -927,7 +925,6 @@ computerYes.addEventListener('click',(e)=>{
 document.getElementById('computerNo').addEventListener('click',(e)=>{ e.stopPropagation(); exitComputer(); });
 
 /* Back also dismisses the small prompt. */
-
 
 
 
