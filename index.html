@@ -332,7 +332,25 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 @media(max-width:600px){.henry-cover{width:min(72vw,360px);max-height:68vh}.henry-openbook{width:98vw}.henry-page-text{font-size:clamp(10px,2.85vw,15px);padding:3.5%}.henry-back{top:8px;left:8px;font-size:11px;padding:5px 8px}}
 
 
-#finlandBook{left:46%;top:64%;width:18%;height:13%}.finland-window{position:fixed;inset:48px 0 58px;z-index:81;display:none;pointer-events:none;overflow:hidden}.finland-window.open{display:block;pointer-events:auto}.finland-dim{position:absolute;inset:0;background:rgba(0,0,0,.16)}.finland-stage{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}.finland-spread{position:relative;width:min(96vw,900px);aspect-ratio:655/343;pointer-events:auto;filter:drop-shadow(10px 14px 8px rgba(0,0,0,.58))}.finland-spread>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;user-select:none}.finland-livecopy{position:absolute;z-index:4;color:#27231d;font-family:"Courier New",monospace;pointer-events:none}.finland-title{left:8.5%;top:13%;width:38%;font-weight:900;font-size:clamp(16px,2.35vw,27px);line-height:1.05;letter-spacing:.02em}.finland-body{left:9%;top:28%;width:35%;font-weight:700;font-size:clamp(8px,1.05vw,13px);line-height:1.34;white-space:pre-line}.finland-note{left:11%;top:73%;width:30%;font-weight:900;font-size:clamp(9px,1.15vw,14px);line-height:1.2;transform:rotate(-2deg)}.finland-exit{position:absolute;right:5%;bottom:8%;width:40%;height:26%;z-index:7;border:0;background:transparent;cursor:pointer}@media(max-width:600px){.finland-spread{width:94vw}.finland-title{font-size:clamp(14px,4vw,21px)}.finland-body{font-size:clamp(7px,2.25vw,11px)}}
+#finlandBook{left:46%;top:64%;width:18%;height:13%}
+.finland-window{position:fixed;inset:48px 0 58px;z-index:81;display:none;pointer-events:none;overflow:hidden}
+.finland-window.open{display:block;pointer-events:auto}.finland-dim{position:absolute;inset:0;background:rgba(0,0,0,.16)}
+.finland-stage{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.finland-cover{display:block;max-width:min(68vw,430px);max-height:74vh;object-fit:contain;filter:drop-shadow(10px 14px 8px rgba(0,0,0,.58));pointer-events:auto;cursor:pointer}
+.finland-reader{display:none;position:relative;width:min(94vw,900px);aspect-ratio:655/343;pointer-events:auto;filter:drop-shadow(10px 14px 8px rgba(0,0,0,.58))}
+.finland-window.reading .finland-cover{display:none}.finland-window.reading .finland-reader{display:block}
+.finland-art{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.finland-copy{position:absolute;z-index:4;color:#27231d;font-family:"Courier New",monospace;pointer-events:none}
+.finland-title{left:8.5%;top:12.5%;width:37%;font-weight:900;font-size:clamp(15px,2.2vw,26px);line-height:1.04}
+.finland-body{left:9%;top:28%;width:34%;font-weight:700;font-size:clamp(7px,.95vw,12px);line-height:1.28;white-space:pre-line}
+.finland-note{left:11%;top:72%;width:30%;font-weight:900;font-size:clamp(8px,1.05vw,13px);line-height:1.18;transform:rotate(-2deg)}
+.finland-pagehit{position:absolute;top:5%;bottom:5%;width:45%;z-index:8;border:0;background:transparent;cursor:pointer}
+.finland-prev{left:3%}.finland-next{right:3%}.finland-end{display:none;position:absolute;right:10%;top:42%;width:34%;z-index:5;text-align:center;font:900 clamp(15px,2.2vw,27px)/1.25 "Courier New",monospace;color:#27231d}
+.finland-reader.at-end .finland-end{display:block}
+.finland-reader.turning{animation:finlandTurn .18s steps(3,end)}
+@keyframes finlandTurn{0%{transform:scaleX(1)}50%{transform:scaleX(.985)}100%{transform:scaleX(1)}}
+.finland-instruction{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);z-index:10;color:#eee;font:12px "Courier New",monospace;letter-spacing:2px;white-space:nowrap}
+@media(max-width:600px){.finland-reader{width:94vw}.finland-cover{max-width:72vw}.finland-title{font-size:clamp(14px,4vw,20px)}.finland-body{font-size:clamp(7px,2.05vw,10px)}}.finland-title{font-size:clamp(14px,4vw,21px)}.finland-body{font-size:clamp(7px,2.25vw,11px)}}
 </style>
 </head>
 <body>
@@ -390,11 +408,19 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     </div>
    </section>
 
-   <section class="finland-window" id="finlandWindow" aria-label="A Field Guide to Finland"><div class="finland-dim"></div><div class="finland-stage"><div class="finland-spread"><img src="finland-spread-01-art.jpg" alt=""><div class="finland-livecopy finland-title">WHAT IS FINLAND?</div><div class="finland-livecopy finland-body">Officially, Finland is a country in Northern Europe.
-
-According to this internet conspiracy theory, however, “Finland” is a name placed over an area that does not actually exist as a separate country.
-
-The theory claims the maps are wrong on purpose.</div><div class="finland-livecopy finland-note">FIRST RULE:<br>QUESTION THE MAP.</div><button class="finland-exit" id="finlandExit" aria-label="Return to room"></button></div></div></section>
+   <section class="finland-window" id="finlandWindow" aria-label="A Field Guide to Finland">
+<div class="finland-dim"></div><div class="finland-stage">
+<img class="finland-cover" id="finlandCover" src="finland-cover.jpg" alt="A Field Guide to Finland">
+<div class="finland-reader" id="finlandReader">
+<img class="finland-art" id="finlandArt" src="finland-spread-01-art.jpg" alt="">
+<div class="finland-copy finland-title" id="finlandTitle"></div>
+<div class="finland-copy finland-body" id="finlandBody"></div>
+<div class="finland-copy finland-note" id="finlandNote"></div>
+<div class="finland-end" id="finlandEnd">BOOK'S OVER.<br>THANKS FOR READING.</div>
+<button class="finland-pagehit finland-prev" id="finlandPrev" aria-label="Previous spread"></button>
+<button class="finland-pagehit finland-next" id="finlandNext" aria-label="Next spread"></button>
+</div></div><div class="finland-instruction" id="finlandInstruction">TAP THE BOOK.</div>
+</section>
    <section class="henry-window" id="henryWindow" aria-label="The Henry Bankshaft Chronicles">
     <div class="henry-dim"></div>
     <div class="henry-stage">
@@ -731,9 +757,33 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 
 
-const finlandWindow=document.getElementById('finlandWindow');
-function closeFinland(){finlandWindow.classList.remove('open');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
-document.getElementById('finlandBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('finland');setTimeout(()=>{finlandWindow.classList.add('open');status.textContent='A FIELD GUIDE TO FINLAND.'},zoomDuration+35)});finlandWindow.addEventListener('pointerdown',e=>e.stopPropagation());finlandWindow.addEventListener('click',e=>e.stopPropagation());document.getElementById('finlandExit').addEventListener('click',closeFinland);
+const finlandWindow=document.getElementById('finlandWindow'),finlandCover=document.getElementById('finlandCover'),finlandReader=document.getElementById('finlandReader'),finlandArt=document.getElementById('finlandArt'),finlandTitle=document.getElementById('finlandTitle'),finlandBody=document.getElementById('finlandBody'),finlandNote=document.getElementById('finlandNote'),finlandInstruction=document.getElementById('finlandInstruction');
+const finlandSpreads=[
+{title:'WHAT IS FINLAND?',body:'Officially, Finland is a country in Northern Europe.\n\nAccording to the internet conspiracy theory, however, “Finland” is a name placed over an area that does not actually exist as a separate country.\n\nThe theory claims the maps are wrong on purpose.',note:'FIRST RULE:\nQUESTION THE MAP.'},
+{title:'WHERE DOES “FINLAND” GO?',body:'Officially, Finland sits between Sweden and Russia.\n\nThe theory asks a different question: what if the area marked “Finland” is actually valuable fishing water hidden in plain sight?',note:'FOLLOW THE FISH.'},
+{title:'THE ARRANGEMENT',body:'According to the theory, “Finland” was created through an agreement involving Russia and Japan.\n\nThe supposed goal: keep access to valuable fishing waters quiet while the rest of the world sees an ordinary country on the map.',note:'MORE FISH.\nLESS QUESTIONS.'},
+{title:'FOLLOW THE FISH',body:'The alleged catch does not stay in “Finland.”\n\nThe story claims it moves across Russia on the Trans-Siberian Railway, disguised as legitimate cargo — famously, Nokia products — before reaching Japan.',note:'SAME FISH.\nDIFFERENT BOX.'},
+{title:'WHY “FINLAND”?',body:'The theory even treats the name as evidence.\n\nFish have fins. Put those fins on land and you get “Fin-land.”\n\nRidiculous? Absolutely. That is also the joke.',note:'THEY PUT IT\nIN THE NAME.'},
+{title:'BUT WHAT ABOUT THE FINNS?',body:'Finnish people obviously exist. The theory does not dispute that.\n\nIt claims the people are real but the location is misidentified — supposedly living in eastern Sweden and surrounding territory while believing they live in Finland.',note:'THEY AREN’T LYING.\nTHEY DON’T KNOW EITHER.'},
+{title:'IF SOMEONE CLAIMS TO BE FINNISH',body:'Be polite, but observant.\n\nAsk casual questions. Where are you from? How often do you go fishing? Do you know anyone at Nokia?\n\nRemember: the joke says the people are real. The map is the suspicious part.',note:'NICE PEOPLE.\nWRONG MAP.'},
+{title:'FIELD TEST',body:'1. Ask where Finland is.\n2. Ask them to point to it.\n3. Ask why it is called Finland.\n4. Ask about fishing.\n5. Observe the reaction.\n\nThis proves absolutely nothing, which is precisely what makes it a terrible field test.',note:'KNOWLEDGE REVEALS.'},
+{title:'STAY VIGILANT',body:'Maps can lie. Borders can be drawn. Countries can be invented — at least in an internet conspiracy theory.\n\nYou now know the lore. Question what you have been told. Then maybe go visit actual Finland.',note:'QUESTION. EXPLORE.\nSTAY CURIOUS.'}
+];
+let finlandSpread=0;
+function renderFinland(){
+ const s=finlandSpreads[finlandSpread];
+ finlandArt.src='finland-spread-'+String(finlandSpread+1).padStart(2,'0')+'-art.jpg';
+ finlandTitle.textContent=s.title;finlandBody.textContent=s.body;finlandNote.textContent=s.note;
+ finlandReader.classList.toggle('at-end',finlandSpread===finlandSpreads.length-1);
+ finlandReader.classList.remove('turning');void finlandReader.offsetWidth;finlandReader.classList.add('turning');
+}
+function openFinlandReader(){finlandSpread=0;finlandWindow.classList.add('reading');finlandInstruction.textContent='TAP RIGHT PAGE TO CONTINUE.';renderFinland()}
+function closeFinland(){finlandWindow.classList.remove('open','reading');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
+document.getElementById('finlandBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('finland');setTimeout(()=>{finlandWindow.classList.remove('reading');finlandWindow.classList.add('open');finlandInstruction.textContent='TAP THE BOOK.';status.textContent='A FIELD GUIDE TO FINLAND.'},zoomDuration+35)});
+finlandWindow.addEventListener('pointerdown',e=>e.stopPropagation());finlandWindow.addEventListener('click',e=>e.stopPropagation());finlandCover.addEventListener('click',openFinlandReader);
+document.getElementById('finlandNext').addEventListener('click',()=>{if(finlandSpread<finlandSpreads.length-1){finlandSpread++;renderFinland()}else closeFinland()});
+document.getElementById('finlandPrev').addEventListener('click',()=>{if(finlandSpread>0){finlandSpread--;renderFinland()}else{finlandWindow.classList.remove('reading');finlandInstruction.textContent='TAP THE BOOK.'}});
+
 /* The Henry Bankshaft Chronicles */
 const henryWindow=document.getElementById('henryWindow'),henryCover=document.getElementById('henryCover'),henryOpenBook=document.getElementById('henryOpenBook'),henryPageLeft=document.getElementById('henryPageLeft'),henryPageRight=document.getElementById('henryPageRight'),henryNumLeft=document.getElementById('henryNumLeft'),henryNumRight=document.getElementById('henryNumRight'),henryEndMessage=document.getElementById('henryEndMessage'),henryInstruction=document.getElementById('henryInstruction');
 const henryPages=["Almond joys, paydays, and heath bars.\n\nNow that is a list of just shitty ass candy bars","The average person will eat about 8 spiders in their lifetime","You can’t have sex with bones","Buy a snickers be a normal guy","Try to keep atleast 1 Korean person on speed dial"];
