@@ -410,9 +410,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
    <section class="finland-window" id="finlandWindow" aria-label="A Field Guide to Finland">
 <div class="finland-dim"></div><div class="finland-stage">
-<img class="finland-cover" id="finlandCover" src="finland-cover-clean.png" alt="A Field Guide to Finland">
+<img class="finland-cover" id="finlandCover" src="finland-cover.png" alt="A Field Guide to Finland">
 <div class="finland-reader" id="finlandReader">
-<img class="finland-art" id="finlandArt" src="finland-spread-01-art.png" alt="">
+<img class="finland-art" id="finlandArt" src="finland-open.png" alt="">
 <div class="finland-copy finland-title" id="finlandTitle"></div>
 <div class="finland-copy finland-body" id="finlandBody"></div>
 <div class="finland-copy finland-note" id="finlandNote"></div>
@@ -772,7 +772,7 @@ const finlandSpreads=[
 let finlandSpread=0;
 function renderFinland(){
  const s=finlandSpreads[finlandSpread];
- finlandArt.src='finland-spread-'+String(finlandSpread+1).padStart(2,'0')+'-art.png';
+ finlandArt.src='finland-open.png';
  finlandTitle.textContent=s.title;finlandBody.textContent=s.body;finlandNote.textContent=s.note;
  finlandReader.classList.toggle('at-end',finlandSpread===finlandSpreads.length-1);
  finlandReader.classList.remove('turning');void finlandReader.offsetWidth;finlandReader.classList.add('turning');
