@@ -351,6 +351,22 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 @keyframes finlandTurn{0%{transform:scaleX(1)}50%{transform:scaleX(.985)}100%{transform:scaleX(1)}}
 .finland-instruction{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);z-index:10;color:#eee;font:12px "Courier New",monospace;letter-spacing:2px;white-space:nowrap}
 @media(max-width:600px){.finland-reader{width:94vw}.finland-cover{max-width:72vw}.finland-title{font-size:clamp(14px,4vw,20px)}.finland-body{font-size:clamp(7px,2.05vw,10px)}}.finland-title{font-size:clamp(14px,4vw,21px)}.finland-body{font-size:clamp(7px,2.25vw,11px)}}
+
+.finland-reader.final-finland .finland-title,.finland-reader.final-finland .finland-body,.finland-reader.final-finland .finland-note{display:none!important}
+
+/* V5.61 — canonical book + right-page-only art */
+.finland-art{object-fit:contain!important}
+.finland-right-art{
+ position:absolute;z-index:3;
+ left:52.1%;top:9.5%;width:39.2%;height:80.5%;
+ object-fit:cover;
+ clip-path:polygon(3% 2%,96% 0,100% 96%,4% 100%,0 52%);
+ pointer-events:none;
+ mix-blend-mode:multiply;
+}
+.finland-reader.final-finland .finland-right-art{display:none}
+.finland-reader.final-finland .finland-art{display:block}
+
 </style>
 
 <style id="finland-v557-text-cleanup">
@@ -485,11 +501,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 <div class="finland-dim"></div><div class="finland-stage">
 <img class="finland-cover" id="finlandCover" src="finland-cover.png" alt="A Field Guide to Finland">
 <div class="finland-reader" id="finlandReader">
-<img class="finland-art" id="finlandArt" src="finland-open.png" alt="">
+<img class="finland-art" id="finlandArt" src="finland-open.png" alt=""><img class="finland-right-art" id="finlandRightArt" src="finland-art-1.jpg" alt="">
 <div class="finland-copy finland-title" id="finlandTitle"></div>
 <div class="finland-copy finland-body" id="finlandBody"></div>
 <div class="finland-copy finland-note" id="finlandNote"></div>
-<div class="finland-end" id="finlandEnd">BOOK'S OVER.<br>THANKS FOR READING.</div>
+
 <button class="finland-pagehit finland-prev" id="finlandPrev" aria-label="Previous spread"></button>
 <button class="finland-pagehit finland-next" id="finlandNext" aria-label="Next spread"></button>
 </div></div><div class="finland-instruction" id="finlandInstruction">TAP THE BOOK.</div>
@@ -832,27 +848,62 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 const finlandWindow=document.getElementById('finlandWindow'),finlandCover=document.getElementById('finlandCover'),finlandReader=document.getElementById('finlandReader'),finlandArt=document.getElementById('finlandArt'),finlandTitle=document.getElementById('finlandTitle'),finlandBody=document.getElementById('finlandBody'),finlandNote=document.getElementById('finlandNote'),finlandInstruction=document.getElementById('finlandInstruction');
 const finlandSpreads=[
-{title:'WHAT IS FINLAND?',body:'Officially, Finland is a country in Northern Europe.\n\nAccording to the internet conspiracy theory, however, “Finland” is a name placed over an area that does not actually exist as a separate country.\n\nThe theory claims the maps are wrong on purpose.',note:'FIRST RULE:\nQUESTION THE MAP.'},
-{title:'WHERE DOES “FINLAND” GO?',body:'Officially, Finland sits between Sweden and Russia.\n\nThe theory asks a different question: what if the area marked “Finland” is actually valuable fishing water hidden in plain sight?',note:'FOLLOW THE FISH.'},
-{title:'THE ARRANGEMENT',body:'According to the theory, “Finland” was created through an agreement involving Russia and Japan.\n\nThe supposed goal: keep access to valuable fishing waters quiet while the rest of the world sees an ordinary country on the map.',note:'MORE FISH.\nLESS QUESTIONS.'},
-{title:'FOLLOW THE FISH',body:'The alleged catch does not stay in “Finland.”\n\nThe story claims it moves across Russia on the Trans-Siberian Railway, disguised as legitimate cargo — famously, Nokia products — before reaching Japan.',note:'SAME FISH.\nDIFFERENT BOX.'},
-{title:'WHY “FINLAND”?',body:'The theory even treats the name as evidence.\n\nFish have fins. Put those fins on land and you get “Fin-land.”\n\nRidiculous? Absolutely. That is also the joke.',note:'THEY PUT IT\nIN THE NAME.'},
-{title:'BUT WHAT ABOUT THE FINNS?',body:'Finnish people obviously exist. The theory does not dispute that.\n\nIt claims the people are real but the location is misidentified — supposedly living in eastern Sweden and surrounding territory while believing they live in Finland.',note:'THEY AREN’T LYING.\nTHEY DON’T KNOW EITHER.'},
-{title:'IF SOMEONE CLAIMS TO BE FINNISH',body:'Be polite, but observant.\n\nAsk casual questions. Where are you from? How often do you go fishing? Do you know anyone at Nokia?\n\nRemember: the joke says the people are real. The map is the suspicious part.',note:'NICE PEOPLE.\nWRONG MAP.'},
-{title:'FIELD TEST',body:'1. Ask where Finland is.\n2. Ask them to point to it.\n3. Ask why it is called Finland.\n4. Ask about fishing.\n5. Observe the reaction.\n\nThis proves absolutely nothing, which is precisely what makes it a terrible field test.',note:'KNOWLEDGE REVEALS.'},
-{title:'STAY VIGILANT',body:'Maps can lie. Borders can be drawn. Countries can be invented — at least in an internet conspiracy theory.\n\nYou now know the lore. Question what you have been told. Then maybe go visit actual Finland.',note:'QUESTION. EXPLORE.\nSTAY CURIOUS.'}
+{title:'WHAT IS FINLAND?',body:'Finland is the name printed over a section of northern Europe that does not exist as an independent country.
+
+The label covers the waters and territory needed to conceal a fishing arrangement between Russia and Japan.
+
+The people are real. The fish are real. The country is paperwork.',note:''},
+{title:'WHERE DOES “FINLAND” GO?',body:'Search the records closely enough and Finland begins to disappear.
+
+Its borders are administrative ink. The name gives maps and registries a convenient answer for territory that was never a country in the first place.
+
+A label is easier to explain than an empty space.',note:''},
+{title:'THE ARRANGEMENT',body:'Russia controls the waters. Japan wants the fish. Finland keeps the exchange ordinary enough to ignore.
+
+The catch gets a country. The country gets a story. The story keeps the operation out of sight.
+
+Everyone gets what they need.',note:''},
+{title:'FOLLOW THE FISH',body:'The catch cannot remain in Finland because there is nowhere in Finland for it to remain.
+
+Fish move east through Russian infrastructure, packed into legitimate cargo and carried along established rail and shipping routes until they reach Japan.
+
+When the map stops making sense, follow the cargo.',note:''},
+{title:'IT’S RIGHT THERE',body:'They put the answer in the name.
+
+FIN: the part of a fish that keeps it moving.
+LAND: the thing the operation needed everyone to believe was there.
+
+FIN + LAND.
+
+The disguise was never meant for anyone who separated the words.',note:''},
+{title:'THE FINNISH',body:'Finnish people exist. Their existence has never been the problem.
+
+They have families, homes, jobs, traditions and memories. They were simply given the wrong explanation for where those things are located.
+
+People do not need to lie to repeat a map they were taught to trust.',note:''},
+{title:'FIELD TEST',body:'Do not ask whether you are in Finland. Verify the conditions around you.
+
+Cold weather. Water everywhere. Quiet locals. Fishing activity. A map insisting the answer is obvious.
+
+Any one sign proves nothing. When the signs begin agreeing, verify your location independently.',note:''},
+{title:'STAY VIGILANT',body:'',note:''}
 ];
 let finlandSpread=0;
 function renderFinland(){
  const atEnd=finlandSpread===finlandSpreads.length;
+ if(finlandSpread===7){
+ finlandArt.src='finland-page-8.jpg';
+}else{
  finlandArt.src='finland-open.png';
+ document.getElementById('finlandRightArt').src='finland-art-'+(finlandSpread+1)+'.jpg';
+}
  finlandReader.classList.toggle('at-end',atEnd);
  finlandNote.textContent='';
  if(atEnd){
    finlandTitle.textContent='';
    finlandBody.textContent='';
  }else{
-   const s=finlandSpreads[finlandSpread];
+   const s=finlandSpreads[finlandSpread];finlandReader.classList.toggle('final-finland',finlandSpread===7);
    finlandTitle.textContent=s.title;
    finlandBody.textContent=s.body;
    /* Keep body below multi-line headings without shrinking the established type. */
