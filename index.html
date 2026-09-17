@@ -584,45 +584,17 @@ document.addEventListener('visibilitychange',()=>{
 
 
 
-const ORIENTATION_DAY_KEY='jbOrientationDayMode';
-function saveOrientationDayMode(){
- try{
-   sessionStorage.setItem(
-     ORIENTATION_DAY_KEY,
-     document.body.classList.contains('day-mode') ? 'day' : 'night'
-   );
- }catch(e){}
-}
-function restoreOrientationDayMode(){
- try{
-   const mode=sessionStorage.getItem(ORIENTATION_DAY_KEY);
-   if(!mode)return;
-   sessionStorage.removeItem(ORIENTATION_DAY_KEY);
-   lightMode=true;
-   applyLightMode(true);
- }catch(e){}
-}
-
 let phoneWasLandscape = window.matchMedia('(orientation: landscape) and (max-height:600px)').matches;
-
 function handlePhoneOrientation(){
  const isPhoneLandscape=window.matchMedia('(orientation: landscape) and (max-height:600px)').matches;
-
- if(isPhoneLandscape){
-   phoneWasLandscape=true;
-   return;
- }
-
+ if(isPhoneLandscape){phoneWasLandscape=true;return;}
  if(phoneWasLandscape && window.matchMedia('(orientation: portrait)').matches){
-   phoneWasLandscape=false;
-   // Let Safari finish the physical rotation, then rebuild the page from scratch.
-   saveOrientationDayMode();
-   setTimeout(()=>location.reload(),180);
+  phoneWasLandscape=false;
+  setTimeout(()=>location.reload(),180);
  }
 }
 window.addEventListener('orientationchange',handlePhoneOrientation);
 window.addEventListener('resize',handlePhoneOrientation);
-
 
 const views={
  computer:{x:10,y:5,s:1.70,label:'THE COMPUTER.'}
@@ -784,7 +756,7 @@ document.getElementById('music').addEventListener('click',(e)=>{
 recordClose.addEventListener('click',(e)=>{e.stopPropagation();exitRecordPlayer();});
 
 
-let lightMode=null; // null = choose initial state from actual time
+let lightMode=true; // DAY is always the site's initial/default state
 
 function applyLightMode(day){
  scene.classList.toggle('daytime',day);
@@ -803,8 +775,8 @@ function toggleLamp(){
 function updateTime(){
  const d=new Date();
  if(lightMode===null){
-   const h=d.getHours();
-   applyLightMode(h>=7&&h<19);
+   lightMode=true;
+   applyLightMode(true);
  }
  document.getElementById('clock').textContent=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
 }
@@ -958,7 +930,7 @@ document.getElementById('computerNo').addEventListener('click',(e)=>{ e.stopProp
 
 
 
-window.addEventListener('load',()=>setTimeout(restoreOrientationDayMode,60));
+
 </script>
 
 
