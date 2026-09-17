@@ -210,114 +210,78 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .record-window.playing .record-playing-dot{opacity:1}
 .record-status{position:absolute;left:50%;top:64.2%;transform:translateX(-50%);z-index:8;background:#07132ed9;color:#f4d49d;padding:4px 8px;font:700 7px/1.1 "Courier New",monospace;letter-spacing:.4px;text-shadow:1px 1px #000;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}
 .record-window.show-status .record-status{opacity:1}
-
-
-
 .record-credit{position:absolute!important;left:50%!important;bottom:.8%!important;transform:translateX(-50%)!important;z-index:8!important;color:#b8c5df!important;font-size:5px!important;background:#07132eb8;padding:2px 5px;opacity:.72!important;white-space:nowrap}
 .record-now,.record-controls,.record-shelf,.turntable,.record-close{display:none!important}
 @media(max-width:720px){.record-window{top:48px!important;bottom:54px!important}}
 /* Safari fix: size from the fixed record-window itself, NOT 100vw. On iPhone Safari, 100vw can resolve to the wider layout viewport and crop both sides. */
 
-/* V5.23 — exact cutout tapestry + recessed secret compartment */
-.secret-recess{
- position:absolute;left:67.35%;top:7.65%;width:7.05%;height:19.65%;z-index:4;display:none;
- background:
-   linear-gradient(90deg,rgba(0,0,0,.58),transparent 13%,transparent 84%,rgba(0,0,0,.66)),
-   linear-gradient(180deg,#2b2526 0%,#171416 16%,#121012 82%,#080708 100%);
- border:1px solid #493c36;
- box-shadow:
-   inset 4px 4px 0 rgba(0,0,0,.55),
-   inset -3px -3px 0 rgba(94,70,53,.28),
-   inset 0 0 10px #000,
-   0 1px 0 rgba(111,84,63,.35);
- pointer-events:none;
- image-rendering:pixelated;
-}
-.secret-recess:before{
- content:'';position:absolute;inset:7% 9% 8%;
- border-left:1px solid rgba(116,87,66,.24);
- border-top:1px solid rgba(116,87,66,.18);
- box-shadow:inset 2px 2px 4px rgba(0,0,0,.72);
- pointer-events:none;
-}
+/* V5.17 — night skull tapestry / hidden key */
+.secret-recess{position:absolute;left:66.5%;top:6.5%;width:10%;height:29%;z-index:3;display:none;background:linear-gradient(90deg,#111018,#21162a 55%,#0b0a0f);border:2px inset rgba(90,74,63,.75);box-shadow:inset 0 0 18px #000,0 0 10px rgba(185,35,20,.22);pointer-events:none}
 .secret-recess.show{display:block}
-.secret-key{
- position:absolute;left:50%;top:54%;width:31%;height:auto;aspect-ratio:18/44;
- transform:translate(-50%,-50%) rotate(-10deg);
- background:transparent url("secret-key-rusted.png") center/contain no-repeat;
- border:0;box-shadow:none;padding:0;display:none;pointer-events:auto;cursor:pointer;
- image-rendering:pixelated;
- filter:drop-shadow(1px 2px 1px rgba(0,0,0,.75));
-}
-.secret-key:before,.secret-key:after{content:none}
-.secret-recess.key-ready{pointer-events:auto}
-.secret-recess.key-ready .secret-key{display:block}
-.skull-tapestry-overlay{
- position:absolute;left:67.3177%;top:7.4725%;width:7.1615%;height:20%;z-index:5;
- object-fit:fill;image-rendering:pixelated;pointer-events:none;display:none;
- transform-origin:50% 7%;
-}
+.secret-key{position:absolute;left:50%;top:57%;width:34%;height:9%;transform:translate(-50%,-50%) rotate(-16deg);background:#b98a35;border:1px solid #e1bd67;box-shadow:0 0 7px rgba(255,190,62,.6);display:none;pointer-events:auto;cursor:pointer}
+.secret-key:before{content:'';position:absolute;left:-28%;top:-80%;width:48%;aspect-ratio:1;border:4px solid #c79b47;border-radius:50%;background:#161119}
+.secret-key:after{content:'';position:absolute;right:-3%;top:52%;width:28%;height:95%;border-left:5px solid #b98a35;border-bottom:5px solid #b98a35}
+.secret-recess.key-ready{pointer-events:auto}.secret-recess.key-ready .secret-key{display:block}
+.skull-tapestry-overlay{position:absolute;left:66.5%;top:6.5%;width:10%;height:29%;z-index:5;object-fit:fill;image-rendering:pixelated;pointer-events:none;display:none;transform-origin:50% 8%}
 .skull-tapestry-overlay.active{display:block}
-.skull-tapestry-overlay.awake{filter:drop-shadow(0 0 3px rgba(180,25,20,.38))}
-.skull-tapestry-overlay.moved{
- transform:translate(94%,-4%) rotate(8deg);
- transition:transform .46s steps(6,end);
-}
+.skull-tapestry-overlay.awake{filter:brightness(1.13) contrast(1.08) drop-shadow(0 0 5px rgba(255,45,25,.55))}
+.skull-tapestry-overlay.moved{transform:translate(82%,-5%) rotate(7deg);transition:transform .42s steps(6,end)}
 .scene.has-key #skull{cursor:default}
 
 
-
-
-
-/* V5.37 — isolated hula lamp illumination */
-.hula-spill{
- position:absolute;left:20.0%;top:38.0%;width:13%;height:23%;z-index:8;
- pointer-events:none;opacity:0;border-radius:50%;
- background:radial-gradient(ellipse at 50% 44%,
- rgba(255,196,100,.34) 0%,rgba(255,157,66,.18) 32%,
- rgba(255,132,46,.07) 56%,transparent 78%);
- filter:blur(10px);
- transform:scale(.9);
- transition:opacity .24s steps(5,end),transform .24s steps(5,end);
+/* V5.46 — non-destructive blinds prototype.
+   Original room masters remain untouched underneath. */
+.blinds-prototype{
+ position:absolute;left:0%;top:0%;width:16.3%;height:48.5%;z-index:7;
+ pointer-events:auto;cursor:pointer;overflow:hidden;
 }
-.hula-spill.on{opacity:1;transform:scale(1)}
-.hula-lit{
- position:absolute;left:0;top:0;width:100%;height:100%;z-index:9;
- pointer-events:none;opacity:0;image-rendering:pixelated;
- object-fit:fill;
- filter:brightness(1.42) sepia(.16) saturate(1.18)
-        drop-shadow(0 0 3px rgba(255,177,76,.52));
- transition:opacity .22s steps(5,end);
+.blinds-prototype .blind-frame{
+ position:absolute;left:3%;top:5%;width:79%;height:91%;
+ border:4px solid rgba(57,42,31,.96);
+ box-shadow:inset 0 0 0 2px rgba(183,151,112,.34),0 1px 3px rgba(0,0,0,.55);
+ background:rgba(11,16,22,.92);
 }
-.hula-lit.on{opacity:.92}
-
-
-/* V5.41 — phone experience is portrait-only */
-.portrait-only-message{
- display:none;
- position:fixed;
- inset:0;
- z-index:999999;
- background:#05070d;
- color:#e8e4dc;
- align-items:center;
- justify-content:center;
- text-align:center;
- padding:32px;
- font:700 18px/1.55 "Courier New",monospace;
- letter-spacing:2px;
+.blinds-prototype .outside{
+ position:absolute;inset:3px;
+ background:
+  radial-gradient(circle at 66% 23%,rgba(242,224,165,.88) 0 3%,transparent 3.6%),
+  linear-gradient(#25374d 0 56%,#101923 57% 100%);
 }
-@media (orientation:landscape) and (max-height:600px){
- body > *:not(.portrait-only-message){visibility:hidden!important;}
- .portrait-only-message{display:flex!important;visibility:visible!important;}
+body.day-mode .blinds-prototype .outside{
+ background:linear-gradient(#88a7b4 0 54%,#aeb59c 55% 72%,#596451 73% 100%);
+}
+.blinds-prototype .slats{
+ position:absolute;inset:2px;display:flex;flex-direction:column;justify-content:space-between;
+ perspective:180px;
+}
+.blinds-prototype .slat{
+ height:7.3%;background:linear-gradient(#b6a58d,#756958 55%,#443c33);
+ border-bottom:1px solid rgba(18,15,12,.85);
+ box-shadow:0 1px 1px rgba(0,0,0,.48);
+ transform-origin:50% 50%;
+ transition:transform .42s steps(7,end),height .42s steps(7,end),opacity .42s steps(7,end);
+}
+.blinds-prototype.open .slat{
+ transform:rotateX(72deg);
+ height:4.1%;
+ opacity:.94;
+}
+.blinds-prototype .rail{
+ position:absolute;left:1px;right:1px;top:0;height:5%;
+ background:#5c5042;border-bottom:2px solid #302920;
+}
+.blinds-prototype .cord{
+ position:absolute;right:8%;top:4%;width:1px;height:74%;background:#b9a78e;
+ box-shadow:4px 0 0 #b9a78e;
+}
+.blinds-prototype .cord:after{
+ content:'';position:absolute;left:-2px;bottom:-5px;width:6px;height:8px;
+ background:#7e6b55;border-radius:1px;
 }
 
 </style>
 </head>
 <body>
-<div class="portrait-only-message" aria-live="polite">
-  ROTATE YOUR PHONE<br>TO PORTRAIT.
-</div>
 <div class="window">
  <div class="titlebar">▣ Jackiebuckets.party <span class="buttons"><i>_</i><i>□</i><i>×</i></span></div>
  <main class="viewport" id="viewport">
@@ -325,9 +289,18 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    <div class="camera stepped" id="camera">
     <img class="room night" src="room-night.png" alt="">
     <img class="room day" src="room-day.png" alt="">
-    <div class="hula-spill" id="hulaSpill"></div>
-    <img class="hula-lit" id="hulaLit" src="hula-lamp-full-canvas.png" alt="">
-    
+    <div class="blinds-prototype" id="blindsPrototype" role="button" aria-label="Open or close blinds">
+      <div class="blind-frame">
+        <div class="outside"></div>
+        <div class="slats">
+          <i class="slat"></i><i class="slat"></i><i class="slat"></i><i class="slat"></i>
+          <i class="slat"></i><i class="slat"></i><i class="slat"></i><i class="slat"></i>
+          <i class="slat"></i><i class="slat"></i><i class="slat"></i><i class="slat"></i>
+        </div>
+        <div class="rail"></div><div class="cord"></div>
+      </div>
+    </div>
+
     <button class="hotspot" id="computer" aria-label="Computer"></button>
     <button class="hotspot" id="music" aria-label="Stereo and records"></button>
     <button class="hotspot" id="photos" aria-label="Photos"></button>
@@ -432,43 +405,6 @@ back=document.getElementById('back'), hint=document.getElementById('hint');
 
 let panX=0, panY=0, dragging=false, moved=false, sx=0, sy=0, startX=0, startY=0, zoomed=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-
-/* V5.21 — approved natural Foley. Local files only; no synthesized SFX. */
-const sfxFiles={
- typing:'sfx-computer-typing.wav',
- singleKey:'sfx-keyboard-single.wav',
- mechanical:'sfx-mechanical-click.wav',
- door:'sfx-door.wav',
- key:'sfx-key-pickup.wav',
- tapestry:'sfx-tapestry.wav'
-};
-const sfxPool={};
-Object.entries(sfxFiles).forEach(([name,src])=>{
- try{
-   const a=new Audio();
-   a.preload='auto';
-   a.src=src;
-   a.load();
-   sfxPool[name]=a;
- }catch{}
-});
-function playSfx(name,volume=1){
- const base=sfxPool[name]; if(!base)return;
- try{
-   const a=base.cloneNode(true);
-   a.preload='auto';
-   a.volume=volume;
-   a.currentTime=0;
-   a.play().catch(()=>{});
- }catch{}
-}
-function sfxLamp(){playSfx('mechanical',.9)}
-function sfxDoor(){playSfx('door',.9)}
-function sfxKey(){playSfx('key',.9)}
-function sfxTyping(){playSfx('typing',.88)}
-function sfxSingleKey(){playSfx('singleKey',.86)}
-function sfxTapestry(){playSfx('tapestry',.7)}
-
 const ROOM_ASPECT=768/455;
 
 function getPanLimit(){
@@ -504,24 +440,8 @@ function applyPan(){
  camera.style.top=`calc(50% + ${panY}px)`;
  camera.style.transform='translate(-50%,-50%) scale(1.005)';
 }
-
-function ensureNormalRoomCamera(){
- if(zoomed)return;
- const normal='translate(-50%,-50%) scale(1.005)';
- if(camera.style.transform!==normal){
-   cancelAnimationFrame(zoomAnim);
-   camera.style.left=`calc(50% + ${panX}px)`;
-   camera.style.top=`calc(50% + ${panY}px)`;
-   camera.style.transform=normal;
-   zoomBase=null;
- }
-}
 function pointerDown(e){
- ensureNormalRoomCamera();
  if(zoomed || e.target.closest(".crt-window,.use-computer,button")) return;
- const downId=roomObjectAt(e.clientX,e.clientY);
- if(downId==='lamp'){sfxLamp();toggleHulaLight();}
- if(downId==='door') sfxDoor();
  dragging=true; moved=false;
  sx=e.clientX; sy=e.clientY;
  startX=e.clientX; startY=e.clientY;
@@ -570,72 +490,6 @@ viewport.addEventListener('pointermove',pointerMove,{passive:false});
 viewport.addEventListener('pointerup',pointerUp,{passive:false});
 viewport.addEventListener('pointercancel',pointerUp,{passive:false});
 window.addEventListener('resize',sizeCamera);
-
-window.addEventListener('pageshow',()=>requestAnimationFrame(ensureNormalRoomCamera));
-document.addEventListener('visibilitychange',()=>{
- if(!document.hidden)requestAnimationFrame(ensureNormalRoomCamera);
-});
-
-/* V5.43 — Safari phone rotation hard reset.
-   Landscape is only a rotate-back screen. Once the phone returns to portrait,
-   reload the room from its clean initial portrait geometry instead of trying
-   to reuse Safari's landscape viewport/camera measurements. */
-
-const ORIENTATION_STATE_KEY='jbOrientationRoomState';
-
-function saveOrientationRoomState(){
- try{
-   sessionStorage.setItem(ORIENTATION_STATE_KEY,JSON.stringify({
-     tapestryMoved: !!tapestryMoved,
-     keyTaken: !!keyTaken
-   }));
- }catch(e){}
-}
-
-function restoreOrientationRoomState(){
- try{
-   const raw=sessionStorage.getItem(ORIENTATION_STATE_KEY);
-   if(!raw)return;
-   sessionStorage.removeItem(ORIENTATION_STATE_KEY);
-   const s=JSON.parse(raw);
-
-   if(s.tapestryMoved){
-     tapestryMoved=true;
-     if(tapestry) tapestry.classList.add('moved');
-     if(secretRecess) secretRecess.classList.add('show');
-     if(secretKey && !s.keyTaken) secretKey.classList.add('show');
-   }
-
-   if(s.keyTaken){
-     keyTaken=true;
-     if(secretKey){
-       secretKey.classList.remove('show');
-       secretKey.classList.add('taken');
-     }
-   }
- }catch(e){}
-}
-
-let phoneWasLandscape = window.matchMedia('(orientation: landscape) and (max-height:600px)').matches;
-
-function handlePhoneOrientation(){
- const isPhoneLandscape=window.matchMedia('(orientation: landscape) and (max-height:600px)').matches;
-
- if(isPhoneLandscape){
-   phoneWasLandscape=true;
-   return;
- }
-
- if(phoneWasLandscape && window.matchMedia('(orientation: portrait)').matches){
-   phoneWasLandscape=false;
-   // Let Safari finish the physical rotation, then rebuild the page from scratch.
-   saveOrientationRoomState();
-   setTimeout(()=>location.reload(),180);
- }
-}
-window.addEventListener('orientationchange',handlePhoneOrientation);
-window.addEventListener('resize',handlePhoneOrientation);
-
 
 const views={
  computer:{x:10,y:5,s:1.70,label:'THE COMPUTER.'}
@@ -741,8 +595,6 @@ const recordPlay=document.getElementById('recordPlay');
 const recordSpin=document.getElementById('recordSpin');
 const recordPrompt=document.getElementById('recordPrompt');
 const recordCredit=document.getElementById('recordCredit');
-
-
 recordWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 recordWindow.addEventListener('click',e=>e.stopPropagation());
 
@@ -770,8 +622,8 @@ function loadRecord(i,autoplay=false){
  document.querySelectorAll('[data-record]').forEach((b,n)=>b.style.filter=n===currentRecord?'brightness(1.16)':'');
  if(autoplay)recordAudio.play().catch(()=>showRecordStatus('TAP THE RECORD'));
 }
-document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>{loadRecord(+b.dataset.record,true);}));
-recordPlay.addEventListener('click',()=>{if(recordAudio.paused){recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));}else recordAudio.pause();});
+document.querySelectorAll('[data-record]').forEach(b=>b.addEventListener('click',()=>loadRecord(+b.dataset.record,true)));
+recordPlay.addEventListener('click',()=>{if(recordAudio.paused)recordAudio.play().catch(()=>showRecordStatus('TAP AGAIN'));else recordAudio.pause();});
 recordAudio.addEventListener('play',()=>{recordWindow.classList.add('playing');showRecordStatus(recordCollection[currentRecord].title);});
 recordAudio.addEventListener('pause',()=>{recordWindow.classList.remove('playing');if(!recordAudio.ended)showRecordStatus('PAUSED');});
 recordAudio.addEventListener('ended',()=>loadRecord(currentRecord+1,true));
@@ -825,17 +677,7 @@ updateTime();
 
 setInterval(updateTime,30000);
 
-const lampHotspot=document.getElementById('lamp');
-const hulaSpill=document.getElementById('hulaSpill');
-const hulaLit=document.getElementById('hulaLit');
-let hulaLampOn=false;
-function toggleHulaLight(){
- hulaLampOn=!hulaLampOn;
- if(hulaSpill)hulaSpill.classList.toggle('on',hulaLampOn);
- if(hulaLit)hulaLit.classList.toggle('on',hulaLampOn);
-}
-lampHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxLamp();},{passive:true});
-lampHotspot.addEventListener('click',(e)=>{
+document.getElementById('lamp').addEventListener('click',(e)=>{
  e.stopPropagation();
  moved=false;
  toggleLamp();
@@ -852,7 +694,7 @@ function openSkullSecret(){
    skullOverlay.classList.add('active');
    status.textContent='...DID THAT EYE JUST MOVE?';
    setTimeout(()=>skullOverlay.classList.add('awake'),180);
-   setTimeout(()=>{sfxTapestry();secretRecess.classList.add('show');skullOverlay.classList.add('moved');status.textContent='THERE\'S A RECESS BEHIND IT.';},520);
+   setTimeout(()=>{secretRecess.classList.add('show');skullOverlay.classList.add('moved');status.textContent='THERE\'S SOMETHING BEHIND IT.';},520);
    setTimeout(()=>{secretRecess.classList.add('key-ready');secretOpen=true;secretBusy=false;status.textContent='A KEY.';},980);
  },zoomDuration+60);
 }
@@ -864,11 +706,8 @@ function closeSkullSecret(){
 }
 document.getElementById('tapestry').addEventListener('click',(e)=>{e.stopPropagation();moved=false;status.textContent="IT DOESN'T DO ANYTHING. PROBABLY.";});
 document.getElementById('skull').addEventListener('click',(e)=>{e.stopPropagation();openSkullSecret();});
-secretKey.addEventListener('pointerdown',(e)=>{e.stopPropagation();if(secretOpen&&!hasKey)sfxKey();});
 secretKey.addEventListener('click',(e)=>{e.stopPropagation();if(!secretOpen||hasKey)return;hasKey=true;scene.classList.add('has-key');secretKey.style.display='none';status.textContent='GOT A KEY.';setTimeout(closeSkullSecret,700);});
-const doorHotspot=document.getElementById('door');
-doorHotspot.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxDoor();},{passive:true});
-doorHotspot.addEventListener('click',(e)=>{e.stopPropagation();moved=false;if(!hasKey){status.textContent="IT'S LOCKED. LOOKS LIKE I'M STUCK IN HERE.";}else{status.textContent='THE KEY FITS. ...DO I ACTUALLY WANT TO LEAVE?';}});
+document.getElementById('door').addEventListener('click',(e)=>{e.stopPropagation();moved=false;if(!hasKey){status.textContent="IT'S LOCKED. LOOKS LIKE I'M STUCK IN HERE.";}else{status.textContent='THE KEY FITS. ...DO I ACTUALLY WANT TO LEAVE?';}});
 document.getElementById('records').addEventListener('click',(e)=>{
  e.stopPropagation(); moved=false; status.textContent='THE RECORDS ARE RIGHT THERE. TRY THE PLAYER.';
 });
@@ -956,9 +795,7 @@ const useComputer=document.getElementById('useComputer');
 useComputer.addEventListener('pointerdown',e=>e.stopPropagation());
 useComputer.addEventListener('click',e=>e.stopPropagation());
 
-const computerYes=document.getElementById('computerYes');
-computerYes.addEventListener('pointerdown',(e)=>{e.stopPropagation();sfxTyping();},{passive:true});
-computerYes.addEventListener('click',(e)=>{
+document.getElementById('computerYes').addEventListener('click',(e)=>{
  e.stopPropagation();
  useComputer.classList.remove('open');
  crtWindow.classList.add('open');
@@ -969,6 +806,16 @@ document.getElementById('computerNo').addEventListener('click',(e)=>{ e.stopProp
 
 /* Back also dismisses the small prompt. */
 
+
+
+/* Blinds prototype: deliberately isolated from camera/day-night/tapestry code. */
+const blindsPrototype=document.getElementById('blindsPrototype');
+if(blindsPrototype){
+ blindsPrototype.addEventListener('pointerdown',(e)=>{
+   e.stopPropagation();
+   blindsPrototype.classList.toggle('open');
+ },{passive:true});
+}
 
 </script>
 
