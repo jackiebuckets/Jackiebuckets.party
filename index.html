@@ -410,6 +410,21 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 }
 
 </style>
+
+<style id="finland-v558-clean-pages">
+/* V5.58 — clean Finland pages: no cheeky annotations; bounded left-page copy. */
+.finland-note{display:none !important;}
+.finland-title{left:8.5%;top:12.5%;width:36%;max-height:22%;overflow:hidden;}
+.finland-body{left:9%;top:28%;width:34%;bottom:10%;height:auto;overflow:hidden;white-space:pre-line;}
+.finland-end{display:none;left:9%;right:auto;top:36%;width:34%;text-align:center;font:900 clamp(14px,2.1vw,25px)/1.25 "Courier New",monospace;color:#27231d;}
+.finland-reader.at-end .finland-end{display:block;}
+.finland-reader.at-end .finland-title,.finland-reader.at-end .finland-body{display:none;}
+@media(max-width:600px){
+ .finland-title{font-size:clamp(14px,4vw,20px);}
+ .finland-body{font-size:clamp(7px,2.05vw,10px);line-height:1.24;}
+ .finland-end{font-size:clamp(14px,4vw,20px);}
+}
+</style>
 </head>
 <body>
 <div class="portrait-only-message" aria-live="polite">
@@ -829,17 +844,35 @@ const finlandSpreads=[
 ];
 let finlandSpread=0;
 function renderFinland(){
- const s=finlandSpreads[finlandSpread];
+ const atEnd=finlandSpread===finlandSpreads.length;
  finlandArt.src='finland-open.png';
- finlandTitle.textContent=s.title;finlandBody.textContent=s.body;finlandNote.textContent=s.note;
- finlandReader.classList.toggle('at-end',finlandSpread===finlandSpreads.length-1);
+ finlandReader.classList.toggle('at-end',atEnd);
+ finlandNote.textContent='';
+ if(atEnd){
+   finlandTitle.textContent='';
+   finlandBody.textContent='';
+ }else{
+   const s=finlandSpreads[finlandSpread];
+   finlandTitle.textContent=s.title;
+   finlandBody.textContent=s.body;
+   /* Keep body below multi-line headings without shrinking the established type. */
+   requestAnimationFrame(()=>{
+     const readerRect=finlandReader.getBoundingClientRect();
+     const titleRect=finlandTitle.getBoundingClientRect();
+     if(readerRect.height){
+       const minTop=28;
+       const titleBottom=((titleRect.bottom-readerRect.top)/readerRect.height)*100;
+       finlandBody.style.top=Math.max(minTop,titleBottom+3.5)+'%';
+     }
+   });
+ }
  finlandReader.classList.remove('turning');void finlandReader.offsetWidth;finlandReader.classList.add('turning');
 }
 function openFinlandReader(){finlandSpread=0;finlandWindow.classList.add('reading');finlandInstruction.textContent='TAP RIGHT PAGE TO CONTINUE.';renderFinland()}
 function closeFinland(){finlandWindow.classList.remove('open','reading');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
 document.getElementById('finlandBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('finland');setTimeout(()=>{finlandWindow.classList.remove('reading');finlandWindow.classList.add('open');finlandInstruction.textContent='TAP THE BOOK.';status.textContent='A FIELD GUIDE TO FINLAND.'},zoomDuration+35)});
 finlandWindow.addEventListener('pointerdown',e=>e.stopPropagation());finlandWindow.addEventListener('click',e=>e.stopPropagation());finlandCover.addEventListener('click',openFinlandReader);
-document.getElementById('finlandNext').addEventListener('click',()=>{if(finlandSpread<finlandSpreads.length-1){finlandSpread++;renderFinland()}else closeFinland()});
+document.getElementById('finlandNext').addEventListener('click',()=>{if(finlandSpread<finlandSpreads.length){finlandSpread++;renderFinland()}else closeFinland()});
 document.getElementById('finlandPrev').addEventListener('click',()=>{if(finlandSpread>0){finlandSpread--;renderFinland()}else{finlandWindow.classList.remove('reading');finlandInstruction.textContent='TAP THE BOOK.'}});
 
 /* The Henry Bankshaft Chronicles */
