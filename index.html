@@ -324,7 +324,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .henry-window.reading .henry-cover{display:none}.henry-window.reading .henry-openbook{display:block}.henry-window.reading .henry-instruction{display:none}
 .henry-openbook>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;user-select:none;-webkit-user-drag:none}
 .henry-page-text{position:absolute;top:15.5%;width:34.5%;height:65%;display:flex;align-items:center;justify-content:center;text-align:center;padding:5%;white-space:pre-line;color:#392516;font:700 clamp(11px,1.85vw,20px)/1.42 Georgia,"Times New Roman",serif;text-shadow:0 1px rgba(255,255,255,.25);z-index:3}
-.henry-page-left{left:10.5%}.henry-page-right{left:55.0%}.henry-page-num{position:absolute;bottom:11%;z-index:3;color:#6b4b2f;font:700 clamp(8px,1.2vw,12px) "Courier New",monospace}
+.henry-page-left{left:10.5%}.henry-page-right{left:55.0%}.henry-end-message{display:none;position:absolute;left:55%;top:15.5%;width:34.5%;height:65%;z-index:3;align-items:center;justify-content:center;text-align:center;color:#4a321f;font:700 clamp(12px,1.8vw,20px)/1.55 Georgia,"Times New Roman",serif;letter-spacing:.04em;pointer-events:none}.henry-end-message span{font-size:.72em;letter-spacing:.12em}.henry-openbook.at-end .henry-end-message{display:flex}.henry-openbook.at-end .henry-page-right{display:none}.henry-page-num{position:absolute;bottom:11%;z-index:3;color:#6b4b2f;font:700 clamp(8px,1.2vw,12px) "Courier New",monospace}
 .henry-left-hit,.henry-right-hit{position:absolute;top:7%;bottom:7%;z-index:4;border:0;background:transparent;cursor:pointer}.henry-left-hit{left:4%;width:46%}.henry-right-hit{right:4%;width:46%}
 .henry-back{position:absolute;left:14px;top:14px;z-index:8;background:#d6d6d6;color:#111;border:4px outset #eee;padding:7px 11px;font:700 14px "Courier New";cursor:pointer}
 .henry-instruction{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:8;color:#e8d5ad;background:#0009;padding:4px 8px;font:700 9px "Courier New";letter-spacing:.5px;white-space:nowrap;text-shadow:1px 1px #000}
@@ -388,10 +388,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
    </section>
 
    <section class="henry-window" id="henryWindow" aria-label="The Henry Bankshaft Chronicles">
-    <div class="henry-dim"></div><button class="henry-back" id="henryBack">BACK</button>
+    <div class="henry-dim"></div>
     <div class="henry-stage">
       <img class="henry-cover" id="henryCover" src="henry-cover.png" alt="The Henry Bankshaft Chronicles">
-      <div class="henry-openbook" id="henryOpenBook"><img src="henry-open.png" alt=""><div class="henry-page-text henry-page-left" id="henryPageLeft"></div><div class="henry-page-text henry-page-right" id="henryPageRight"></div><div class="henry-page-num henry-num-left" id="henryNumLeft"></div><div class="henry-page-num henry-num-right" id="henryNumRight"></div><button class="henry-left-hit" id="henryPrev" aria-label="Previous page"></button><button class="henry-right-hit" id="henryNext" aria-label="Next page"></button></div>
+      <div class="henry-openbook" id="henryOpenBook"><img src="henry-open.png" alt=""><div class="henry-page-text henry-page-left" id="henryPageLeft"></div><div class="henry-page-text henry-page-right" id="henryPageRight"></div><div class="henry-end-message" id="henryEndMessage">THE END.<br><span>THANKS FOR READING.</span></div><div class="henry-page-num henry-num-left" id="henryNumLeft"></div><div class="henry-page-num henry-num-right" id="henryNumRight"></div><button class="henry-left-hit" id="henryPrev" aria-label="Previous page"></button><button class="henry-right-hit" id="henryNext" aria-label="Next page"></button></div>
     </div><div class="henry-instruction" id="henryInstruction">TAP THE BOOK.</div>
    </section>
 
@@ -721,7 +721,7 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 
 /* The Henry Bankshaft Chronicles */
-const henryWindow=document.getElementById('henryWindow'),henryCover=document.getElementById('henryCover'),henryOpenBook=document.getElementById('henryOpenBook'),henryPageLeft=document.getElementById('henryPageLeft'),henryPageRight=document.getElementById('henryPageRight'),henryNumLeft=document.getElementById('henryNumLeft'),henryNumRight=document.getElementById('henryNumRight'),henryInstruction=document.getElementById('henryInstruction');
+const henryWindow=document.getElementById('henryWindow'),henryCover=document.getElementById('henryCover'),henryOpenBook=document.getElementById('henryOpenBook'),henryPageLeft=document.getElementById('henryPageLeft'),henryPageRight=document.getElementById('henryPageRight'),henryNumLeft=document.getElementById('henryNumLeft'),henryNumRight=document.getElementById('henryNumRight'),henryEndMessage=document.getElementById('henryEndMessage'),henryInstruction=document.getElementById('henryInstruction');
 const henryPages=["Almond joys, paydays, and heath bars.\n\nNow that is a list of just shitty ass candy bars","The average person will eat about 8 spiders in their lifetime","You can’t have sex with bones","Buy a snickers be a normal guy","Try to keep atleast 1 Korean person on speed dial"];
 let henrySpread=0;
 function renderHenryPage(){
@@ -729,14 +729,14 @@ function renderHenryPage(){
  henryPageLeft.textContent=henryPages[li]||'';
  henryPageRight.textContent=henryPages[ri]||'';
  henryNumLeft.textContent=henryPages[li]?String(li+1):'';
- henryNumRight.textContent=henryPages[ri]?String(ri+1):'';
+ henryNumRight.textContent=henryPages[ri]?String(ri+1):'';henryOpenBook.classList.toggle('at-end',li===4);
  henryOpenBook.classList.remove('turning');void henryOpenBook.offsetWidth;henryOpenBook.classList.add('turning');
 }
 function openHenryReader(){henrySpread=0;henryWindow.classList.add('reading');renderHenryPage();status.textContent='THE HENRY BANKSHAFT CHRONICLES.'}
 function closeHenry(){henryWindow.classList.remove('open','reading');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
 document.getElementById('henryBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('book');setTimeout(()=>{henryWindow.classList.remove('reading');henryWindow.classList.add('open');henryInstruction.textContent='TAP THE BOOK.';status.textContent='THE HENRY BANKSHAFT CHRONICLES.'},zoomDuration+35)});
-henryWindow.addEventListener('pointerdown',e=>e.stopPropagation());henryWindow.addEventListener('click',e=>e.stopPropagation());henryCover.addEventListener('click',openHenryReader);document.getElementById('henryBack').addEventListener('click',closeHenry);
-document.getElementById('henryNext').addEventListener('click',()=>{if((henrySpread+1)*2<henryPages.length){henrySpread++;renderHenryPage()}});
+henryWindow.addEventListener('pointerdown',e=>e.stopPropagation());henryWindow.addEventListener('click',e=>e.stopPropagation());henryCover.addEventListener('click',openHenryReader);
+document.getElementById('henryNext').addEventListener('click',()=>{if((henrySpread+1)*2<henryPages.length){henrySpread++;renderHenryPage()}else if(henrySpread===2){closeHenry()}});
 document.getElementById('henryPrev').addEventListener('click',()=>{if(henrySpread>0){henrySpread--;renderHenryPage()}else{henryWindow.classList.remove('reading');henryInstruction.textContent='TAP THE BOOK.'}});
 
 const recordWindow=document.getElementById('recordWindow');
