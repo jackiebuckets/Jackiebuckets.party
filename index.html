@@ -40,6 +40,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 #tapestry{left:46.0%;top:6.0%;width:21.0%;height:48.0%}
 #skull{left:67.0%;top:7.5%;width:8.5%;height:27.0%}
 #records{left:57.0%;top:64.0%;width:20.0%;height:24.0%}
+#henryBook{left:34.0%;top:24.0%;width:12.5%;height:8.5%}
 .mode{position:absolute;right:16px;top:60px;background:#d6d6d6;color:#171717;border:5px ridge #eee;padding:8px 14px;z-index:12;min-width:150px;box-shadow:2px 2px #111;font-size:15px;pointer-events:none}
 .mode b{display:block;font-size:20px}.mode span{display:block;margin-top:4px}
 .hint{position:absolute;left:50%;bottom:72px;transform:translateX(-50%);z-index:12;background:rgba(5,5,5,.75);border:2px solid #777;padding:8px 13px;white-space:nowrap;font-size:13px;pointer-events:none;transition:opacity .3s}
@@ -312,6 +313,24 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  .portrait-only-message{display:flex!important;visibility:visible!important;}
 }
 
+
+/* V5.48 — The Henry Bankshaft Chronicles */
+.henry-window{position:fixed;inset:48px 0 58px;z-index:79;display:none;pointer-events:none;overflow:hidden}
+.henry-window.open{display:block;pointer-events:auto}
+.henry-dim{position:absolute;inset:0;background:rgba(0,0,0,.16)}
+.henry-stage{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.henry-cover{width:min(56vw,430px);max-height:72vh;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(10px 14px 8px rgba(0,0,0,.58));pointer-events:auto;cursor:pointer;user-select:none;-webkit-user-drag:none}
+.henry-openbook{position:relative;width:min(92vw,850px);aspect-ratio:1.56/1;display:none;pointer-events:auto;filter:drop-shadow(10px 14px 8px rgba(0,0,0,.58))}
+.henry-window.reading .henry-cover{display:none}.henry-window.reading .henry-openbook{display:block}
+.henry-openbook>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;user-select:none;-webkit-user-drag:none}
+.henry-page-text{position:absolute;left:53.2%;top:16%;width:38%;height:67%;display:flex;align-items:center;justify-content:center;text-align:center;padding:5%;white-space:pre-line;color:#392516;font:700 clamp(12px,2.15vw,22px)/1.35 Georgia,"Times New Roman",serif;text-shadow:0 1px rgba(255,255,255,.25);z-index:3}
+.henry-page-num{position:absolute;right:11%;bottom:11%;z-index:3;color:#6b4b2f;font:700 clamp(8px,1.2vw,12px) "Courier New",monospace}
+.henry-left-hit,.henry-right-hit{position:absolute;top:7%;bottom:7%;z-index:4;border:0;background:transparent;cursor:pointer}.henry-left-hit{left:4%;width:46%}.henry-right-hit{right:4%;width:46%}
+.henry-back{position:absolute;left:14px;top:14px;z-index:8;background:#d6d6d6;color:#111;border:4px outset #eee;padding:7px 11px;font:700 14px "Courier New";cursor:pointer}
+.henry-instruction{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:8;color:#e8d5ad;background:#0009;padding:4px 8px;font:700 9px "Courier New";letter-spacing:.5px;white-space:nowrap;text-shadow:1px 1px #000}
+.henry-openbook.turning{animation:henryChunk .22s steps(5,end)}@keyframes henryChunk{0%{transform:translateX(0)}45%{transform:translateX(4px) skewY(-.35deg)}100%{transform:translateX(0)}}
+@media(max-width:600px){.henry-cover{width:min(72vw,360px);max-height:68vh}.henry-openbook{width:96vw}.henry-page-text{font-size:clamp(10px,3.1vw,16px);padding:4%}.henry-back{top:8px;left:8px;font-size:11px;padding:5px 8px}}
+
 </style>
 </head>
 <body>
@@ -339,6 +358,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <div class="secret-recess" id="secretRecess"><button class="secret-key" id="secretKey" aria-label="Hidden key"></button></div>
     <img class="skull-tapestry-overlay" id="skullTapestryOverlay" src="skull-tapestry.png" alt="">
     <button class="hotspot" id="records" aria-label="Records and books"></button>
+    <button class="hotspot" id="henryBook" aria-label="Books on the shelf"></button>
    </div>
    <button class="back" id="back">← BACK</button>
    <div class="mode"><b id="modeText">NIGHT MODE</b><span id="clock"></span></div>
@@ -365,6 +385,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
       <button data-crt="unknown">[4] ?????</button>
       <div class="crt-help">SYSTEM READY.<br>AWAITING INPUT...</div>
     </div>
+   </section>
+
+   <section class="henry-window" id="henryWindow" aria-label="The Henry Bankshaft Chronicles">
+    <div class="henry-dim"></div><button class="henry-back" id="henryBack">BACK</button>
+    <div class="henry-stage">
+      <img class="henry-cover" id="henryCover" src="henry-cover.png" alt="The Henry Bankshaft Chronicles">
+      <div class="henry-openbook" id="henryOpenBook"><img src="henry-open.png" alt=""><div class="henry-page-text" id="henryPageText"></div><div class="henry-page-num" id="henryPageNum"></div><button class="henry-left-hit" id="henryPrev" aria-label="Previous page"></button><button class="henry-right-hit" id="henryNext" aria-label="Next page"></button></div>
+    </div><div class="henry-instruction" id="henryInstruction">TAP THE BOOK.</div>
    </section>
 
    <section class="record-window" id="recordWindow" aria-label="Record player">
@@ -546,6 +574,7 @@ function roomObjectAt(clientX,clientY){
   ['computer',34.3,42.0,16.5,24.5],
   ['lamp',22.8,43.0,8.3,22.5],
   ['music',59.0,49.5,17.8,21.5],
+  ['henryBook',34.0,24.0,12.5,8.5],
   ['photos',24.0,8.5,21.5,34.5],
   ['door',76.7,10.0,17.5,60.0],
   ['guitar',11.0,43.5,8.5,31.5],
@@ -603,6 +632,7 @@ const views={
 const computerZoom={fx:.127,fy:-.072,s:1.70};
 const recordZoom={fx:-.245,fy:-.105,s:1.62};
 const skullZoom={fx:-.499,fy:.682,s:2.35};
+const bookZoom={fx:.145,fy:.285,s:1.82};
 let activeZoom=computerZoom;
 const zoomDuration=340;
 let zoomAnim=0;
@@ -649,14 +679,14 @@ function animateComputerZoom(from,to,done){
 }
 
 function goView(name){
- if(name!=='computer' && name!=='record' && name!=='skull')return;
- activeZoom=name==='record'?recordZoom:(name==='skull'?skullZoom:computerZoom);
+ if(name!=='computer' && name!=='record' && name!=='skull' && name!=='book')return;
+ activeZoom=name==='record'?recordZoom:(name==='skull'?skullZoom:(name==='book'?bookZoom:computerZoom));
  zoomed=true;
  scene.classList.add('zoomed');
  hint.style.opacity='0';
  zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};
  animateComputerZoom(0,1);
- status.textContent=name==='record'?'THE RECORD PLAYER.':(name==='skull'?'...':'THE COMPUTER.');
+ status.textContent=name==='record'?'THE RECORD PLAYER.':(name==='skull'?'...':(name==='book'?'THE BOOKS.':'THE COMPUTER.'));
 }
 
 function exitComputer(){
@@ -688,6 +718,19 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 
 
+
+
+/* The Henry Bankshaft Chronicles */
+const henryWindow=document.getElementById('henryWindow'),henryCover=document.getElementById('henryCover'),henryOpenBook=document.getElementById('henryOpenBook'),henryPageText=document.getElementById('henryPageText'),henryPageNum=document.getElementById('henryPageNum'),henryInstruction=document.getElementById('henryInstruction');
+const henryPages=["Almond joys, paydays, and heath bars.\n\nNow that is a list of just shitty ass candy bars","The average person will eat about 8 spiders in their lifetime","You can’t have sex with bones","Buy a snickers be a normal guy","Try to keep atleast 1 Korean person on speed dial"];
+let henryPage=0;
+function renderHenryPage(){const end=henryPage>=henryPages.length;henryPageText.textContent=end?'':henryPages[henryPage];henryPageNum.textContent=end?'':String(henryPage+1);henryInstruction.textContent=end?'THAT’S ALL HENRY KNOWS.  ◀ GO BACK':'◀ PREV     NEXT ▶';henryOpenBook.classList.remove('turning');void henryOpenBook.offsetWidth;henryOpenBook.classList.add('turning')}
+function openHenryReader(){henryPage=0;henryWindow.classList.add('reading');renderHenryPage();status.textContent='THE HENRY BANKSHAFT CHRONICLES.'}
+function closeHenry(){henryWindow.classList.remove('open','reading');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
+document.getElementById('henryBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('book');setTimeout(()=>{henryWindow.classList.remove('reading');henryWindow.classList.add('open');henryInstruction.textContent='TAP THE BOOK.';status.textContent='THE HENRY BANKSHAFT CHRONICLES.'},zoomDuration+35)});
+henryWindow.addEventListener('pointerdown',e=>e.stopPropagation());henryWindow.addEventListener('click',e=>e.stopPropagation());henryCover.addEventListener('click',openHenryReader);document.getElementById('henryBack').addEventListener('click',closeHenry);
+document.getElementById('henryNext').addEventListener('click',()=>{if(henryPage<henryPages.length){henryPage++;renderHenryPage()}});
+document.getElementById('henryPrev').addEventListener('click',()=>{if(henryPage>0){henryPage--;renderHenryPage()}else{henryWindow.classList.remove('reading');henryInstruction.textContent='TAP THE BOOK.'}});
 
 const recordWindow=document.getElementById('recordWindow');
 // Keep the close-up viewport-sized so portrait screens show the real room around the 3:2 artwork.
