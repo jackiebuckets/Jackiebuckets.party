@@ -721,7 +721,7 @@ function roomObjectAt(clientX,clientY){
   ['lamp',22.8,43.0,8.3,22.5],
   ['music',59.0,49.5,17.8,21.5],
   ['henryBook',32.0,31.0,15.0,7.0],
-  ['finlandBook',46.0,64.0,18.0,13.0],
+  ['finlandBook',46.0,61.0,18.0,13.0],
   ['photos',24.0,8.5,21.5,34.5],
   ['door',76.7,10.0,17.5,60.0],
   ['guitar',11.0,43.5,8.5,31.5],
@@ -870,45 +870,7 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 
 const finlandWindow=document.getElementById('finlandWindow'),finlandCover=document.getElementById('finlandCover'),finlandReader=document.getElementById('finlandReader'),finlandArt=document.getElementById('finlandArt'),finlandTitle=document.getElementById('finlandTitle'),finlandBody=document.getElementById('finlandBody'),finlandNote=document.getElementById('finlandNote'),finlandInstruction=document.getElementById('finlandInstruction');
-const finlandSpreads=[{"art":"finland-spread-1.png","title":"WHERE DOES “FINLAND” GO?","body":"Nowhere. There is no country there.
-
-The shape printed between Sweden and Russia is a label laid over Russian territory. The map is familiar because familiarity is useful.
-
-The border exists on paper. The land underneath does not change."},{"art":"finland-spread-2.png","title":"THE PAPER TRAIL","body":"Look for Finland in the records and you find paperwork pointing back to more paperwork.
-
-The name is real. The forms are real. The institutions are real. That is how an administrative identity survives without requiring a country beneath it.
-
-A label repeated long enough becomes a place."},{"art":"finland-spread-3.png","title":"THE ARRANGEMENT","body":"Russia controls the waters. Japan wants the fish. “Finland” keeps the exchange ordinary enough to ignore.
-
-The catch gets a country. The country gets a story. The story keeps the operation out of sight.
-
-Everyone gets what they need."},{"art":"finland-spread-4.png","title":"FOLLOW THE FISH","body":"Do not follow the border. Follow the product.
-
-The catch is collected, packed and moved east through established routes until it reaches Japan.
-
-The fish changes hands. The paperwork changes names. The destination does not.
-
-Same fish. Different label."},{"art":"finland-spread-5.png","title":"IT’S RIGHT THERE","body":"They even left the purpose in the name.
-
-FIN + LAND.
-
-A land of fins. A geographic label built around the thing being moved through it.
-
-People call that a coincidence because the alternative requires another question."},{"art":"finland-spread-6.png","title":"THE FINNISH","body":"Finnish people are real. Finland is not. Those facts do not conflict.
-
-“Finnish” describes a people, not proof of a country. They live across the north — in the territory labeled Finland and beyond it, among Sweden, Norway, Russia and elsewhere.
-
-Homes are real. Cities are real. People are real.
-
-The label tells you where to stop asking."},{"art":"finland-spread-7.png","title":"NOKIA","body":"Then there is Nokia.
-
-Paper. Rubber. Cable. Electronics. Military equipment. Telecommunications. One name passing through nearly every industry a modern state would need.
-
-Eventually the world knew it for phones — another Finnish thing carried everywhere while nobody questioned the word printed beneath it.
-
-The phones were never the strange part.
-
-The name on the box was."},{"art":"finland-spread-8.png","title":"","body":""}];
+const finlandSpreads=[{"art":"finland-spread-1.png","title":"WHERE DOES “FINLAND” GO?","body":"Nowhere. There is no country there.\n\nThe shape printed between Sweden and Russia is a label laid over Russian territory. The map is familiar because familiarity is useful.\n\nThe border exists on paper. The land underneath does not change."},{"art":"finland-spread-2.png","title":"THE PAPER TRAIL","body":"Look for Finland in the records and you find paperwork pointing back to more paperwork.\n\nThe name is real. The forms are real. The institutions are real. That is how an administrative identity survives without requiring a country beneath it.\n\nA label repeated long enough becomes a place."},{"art":"finland-spread-3.png","title":"THE ARRANGEMENT","body":"Russia controls the waters. Japan wants the fish. “Finland” keeps the exchange ordinary enough to ignore.\n\nThe catch gets a country. The country gets a story. The story keeps the operation out of sight.\n\nEveryone gets what they need."},{"art":"finland-spread-4.png","title":"FOLLOW THE FISH","body":"Do not follow the border. Follow the product.\n\nThe catch is collected, packed and moved east through established routes until it reaches Japan.\n\nThe fish changes hands. The paperwork changes names. The destination does not.\n\nSame fish. Different label."},{"art":"finland-spread-5.png","title":"IT’S RIGHT THERE","body":"They even left the purpose in the name.\n\nFIN + LAND.\n\nA land of fins. A geographic label built around the thing being moved through it.\n\nPeople call that a coincidence because the alternative requires another question."},{"art":"finland-spread-6.png","title":"THE FINNISH","body":"Finnish people are real. Finland is not. Those facts do not conflict.\n\n“Finnish” describes a people, not proof of a country. They live across the north — in the territory labeled Finland and beyond it, among Sweden, Norway, Russia and elsewhere.\n\nHomes are real. Cities are real. People are real.\n\nThe label tells you where to stop asking."},{"art":"finland-spread-7.png","title":"NOKIA","body":"Then there is Nokia.\n\nPaper. Rubber. Cable. Electronics. Military equipment. Telecommunications. One name passing through nearly every industry a modern state would need.\n\nEventually the world knew it for phones — another Finnish thing carried everywhere while nobody questioned the word printed beneath it.\n\nThe phones were never the strange part.\n\nThe name on the box was."},{"art":"finland-spread-8.png","title":"","body":""}];
 let finlandSpread=0;
 function renderFinland(){
  const spread=finlandSpreads[finlandSpread];
