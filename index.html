@@ -332,7 +332,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 @media(max-width:600px){.henry-cover{width:min(72vw,360px);max-height:68vh}.henry-openbook{width:98vw}.henry-page-text{font-size:clamp(10px,2.85vw,15px);padding:3.5%}.henry-back{top:8px;left:8px;font-size:11px;padding:5px 8px}}
 
 
-#finlandBook{left:46%;top:64%;width:18%;height:13%}
+#finlandBook{left:46%;top:61%;width:18%;height:13%}
 .finland-window{position:fixed;inset:48px 0 58px;z-index:81;display:none;pointer-events:none;overflow:hidden}
 .finland-window.open{display:block;pointer-events:auto}.finland-dim{position:absolute;inset:0;background:rgba(0,0,0,.16)}
 .finland-stage{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
@@ -871,13 +871,51 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 const finlandWindow=document.getElementById('finlandWindow'),finlandCover=document.getElementById('finlandCover'),finlandReader=document.getElementById('finlandReader'),finlandArt=document.getElementById('finlandArt'),finlandTitle=document.getElementById('finlandTitle'),finlandBody=document.getElementById('finlandBody'),finlandNote=document.getElementById('finlandNote'),finlandInstruction=document.getElementById('finlandInstruction');
 const finlandSpreads=[
- {art:'finland-spread-1.png',title:'WHERE DOES “FINLAND” GO?',body:'Nowhere, because it doesn’t actually exist.\n\nOn most maps, “Finland” is shown between Sweden and Russia. That label is placed over a region that’s really just part of Russia.\n\nWhen you look for Finland, you’re not finding a country — you’re finding a mislabeled piece of land.'},
- {art:'finland-spread-2.png',title:'THE RECORD DOESN’T EXIST',body:'Search the records and the answer is always the same: nothing independent turns up.\n\nNo sovereign nation. No separate state. No clean historical trail. Just a label repeated often enough that nobody thinks to question it.\n\nThe paperwork doesn’t prove Finland exists. It proves the label does.'},
- {art:'finland-spread-3.png',title:'THE ARRANGEMENT',body:'“Finland” is not a country. It is an arrangement.\n\nRussia provides the territory and keeps the map looking ordinary. Japan benefits from the fishing operation and the catch moving east.\n\nThe name in the middle keeps the machinery boring, bureaucratic, and out of sight.'},
- {art:'finland-spread-4.png',title:'FOLLOW THE FISH',body:'The catch does not stay in the “Finland” region.\n\nIt is collected, packed, moved through established routes, and eventually makes its way to Japan.\n\nThe fish is the product. “Finland” is the middleman.\n\nSame fish. Different label.'},
- {art:'finland-spread-5.png',title:'IT’S RIGHT THERE',body:'“Finland” is not a random name. It is a description.\n\nFIN + LAND.\n\nA place of fins. A land built on fish.\n\nThe name tells you what the region is for. You do not need to read between the lines.\n\nJust look at the words.'},
- {art:'finland-spread-6.png',title:'THE FINNISH',body:'Finnish people are real. They live, work, and fish.\n\nLike the fish, the people exist even if the country does not. They are quiet, practical, self-sufficient, comfortable in the cold, and drink a lot of coffee.\n\nThe people are real. The location is not.'},
- {art:'finland-spread-7.png',title:'FIELD TEST',body:'If you think you have entered “Finland,” verify the conditions.\n\nAre you outdoors? Is it cold? Is there a suspicious amount of water? Are the people quiet and minding their own business? Is there evidence of fish-related activity?\n\nIf every answer is yes, remain calm. You may be in the region marked “Finland.” Verify your location.'},
+ {art:'finland-spread-1.png',title:'WHERE DOES “FINLAND” GO?',body:'Nowhere. There is no country there.
+
+The shape printed between Sweden and Russia is a label laid over Russian territory. The map is familiar because familiarity is useful.
+
+The border exists on paper. The land underneath does not change.'},
+ {art:'finland-spread-2.png',title:'THE PAPER TRAIL',body:'Look for Finland in the records and you find paperwork pointing back to more paperwork.
+
+The name is real. The forms are real. The institutions are real. That is how an administrative identity survives without requiring a country beneath it.
+
+A label repeated long enough becomes a place.'},
+ {art:'finland-spread-3.png',title:'THE ARRANGEMENT',body:'Russia controls the waters. Japan wants the fish. “Finland” keeps the exchange ordinary enough to ignore.
+
+The catch gets a country. The country gets a story. The story keeps the operation out of sight.
+
+Everyone gets what they need.'},
+ {art:'finland-spread-4.png',title:'FOLLOW THE FISH',body:'Do not follow the border. Follow the product.
+
+The catch is collected, packed and moved east through established routes until it reaches Japan.
+
+The fish changes hands. The paperwork changes names. The destination does not.
+
+Same fish. Different label.'},
+ {art:'finland-spread-5.png',title:'IT’S RIGHT THERE',body:'They even left the purpose in the name.
+
+FIN + LAND.
+
+A land of fins. A geographic label built around the thing being moved through it.
+
+People call that a coincidence because the alternative requires another question.'},
+ {art:'finland-spread-6.png',title:'THE FINNISH',body:'Finnish people are real. Finland is not. Those facts do not conflict.
+
+“Finnish” describes a people, not proof of a country. They live across the north — in the territory labeled Finland and beyond it, among Sweden, Norway, Russia and elsewhere.
+
+Homes are real. Cities are real. People are real.
+
+The label tells you where to stop asking.'},
+ {art:'finland-spread-7.png',title:'NOKIA',body:'Then there is Nokia.
+
+Paper. Rubber. Cable. Electronics. Military equipment. Telecommunications. One name passing through nearly every industry a modern state would need.
+
+Eventually the world knew it for phones — another Finnish thing carried everywhere while nobody questioned the word printed beneath it.
+
+The phones were never the strange part.
+
+The name on the box was.'},
  {art:'finland-spread-8.png',title:'',body:''}
 ];
 let finlandSpread=0;
