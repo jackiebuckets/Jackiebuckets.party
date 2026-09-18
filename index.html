@@ -464,6 +464,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
   box-shadow: none !important;
 }
 </style>
+<style>
+#finlandBody.copy-long{font-size:clamp(6.5px,.84vw,10.5px)!important;line-height:1.20!important}
+#finlandBody.copy-xlong{font-size:clamp(6px,.76vw,9.5px)!important;line-height:1.16!important}
+@media(max-width:600px){
+ #finlandBody.copy-long{font-size:clamp(6.4px,1.82vw,9px)!important;line-height:1.17!important}
+ #finlandBody.copy-xlong{font-size:clamp(6px,1.62vw,8.2px)!important;line-height:1.13!important}
+}
+</style>
 </head>
 <body>
 <div class="portrait-only-message" aria-live="polite">
@@ -877,6 +885,9 @@ function renderFinland(){
  finlandReader.classList.remove('at-end','final-spread');
  if(finlandSpread===finlandSpreads.length-1)finlandReader.classList.add('final-spread');
  finlandTitle.textContent=spread.title;
+ finlandBody.classList.remove('copy-long','copy-xlong');
+ if(spread.body.length>330) finlandBody.classList.add('copy-xlong');
+ else if(spread.body.length>260) finlandBody.classList.add('copy-long');
  finlandBody.textContent=spread.body;
  finlandNote.textContent='';
  finlandArt.src=spread.art;
