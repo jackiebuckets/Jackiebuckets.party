@@ -37,6 +37,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 #photos{left:24.0%;top:8.5%;width:21.5%;height:34.5%}
 #door{left:76.7%;top:10.0%;width:17.5%;height:60.0%}
 #guitar{left:11.0%;top:43.5%;width:8.5%;height:31.5%}
+#chair{left:18.0%;top:54.0%;width:22.5%;height:40.0%}
 #tapestry{left:46.0%;top:6.0%;width:21.0%;height:48.0%}
 #skull{left:67.0%;top:7.5%;width:8.5%;height:27.0%}
 #records{left:57.0%;top:64.0%;width:20.0%;height:24.0%}
@@ -492,8 +493,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  <main class="viewport" id="viewport">
   <div class="scene" id="scene">
    <div class="camera stepped" id="camera">
-    <img class="room night" src="room-night.png" alt="">
-    <img class="room day" src="room-day.png" alt="">
+    <img class="room night" src="room-night-v573.png" alt="">
+    <img class="room day" src="room-day-v573.png" alt="">
     <div class="hula-spill" id="hulaSpill"></div>
     <img class="hula-lit" id="hulaLit" src="hula-lamp-full-canvas.png" alt="">
     
@@ -502,6 +503,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
     <button class="hotspot" id="photos" aria-label="Photos"></button>
     <button class="hotspot" id="door" aria-label="Door"></button>
     <button class="hotspot" id="guitar" aria-label="Pink guitar"></button>
+    <button class="hotspot" id="chair" aria-label="Desk chair"></button>
     <button class="hotspot" id="lamp" aria-label="Hula lamp"></button>
     <button class="hotspot" id="tapestry" aria-label="Orange tapestry"></button>
     <button class="hotspot" id="skull" aria-label="Beaded skull"></button>
@@ -1082,6 +1084,8 @@ function closeSkullSecret(){
  if(!zoomBase)return;
  animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom;});
 }
+document.getElementById('chair').addEventListener('click',(e)=>{e.stopPropagation();moved=false;status.textContent='NOT MY CHAIR NOT MY PROBLEM';});
+
 document.getElementById('tapestry').addEventListener('click',(e)=>{e.stopPropagation();moved=false;status.textContent="IT DOESN'T DO ANYTHING. PROBABLY.";});
 document.getElementById('skull').addEventListener('click',(e)=>{e.stopPropagation();openSkullSecret();});
 secretKey.addEventListener('pointerdown',(e)=>{e.stopPropagation();if(secretOpen&&!hasKey)sfxKey();});
