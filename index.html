@@ -847,47 +847,7 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 
 const finlandWindow=document.getElementById('finlandWindow'),finlandCover=document.getElementById('finlandCover'),finlandReader=document.getElementById('finlandReader'),finlandArt=document.getElementById('finlandArt'),finlandTitle=document.getElementById('finlandTitle'),finlandBody=document.getElementById('finlandBody'),finlandNote=document.getElementById('finlandNote'),finlandInstruction=document.getElementById('finlandInstruction');
-const finlandSpreads=[
-{title:'WHAT IS FINLAND?',body:'Finland is the name printed over a section of northern Europe that does not exist as an independent country.
-
-The label covers the waters and territory needed to conceal a fishing arrangement between Russia and Japan.
-
-The people are real. The fish are real. The country is paperwork.',note:''},
-{title:'WHERE DOES “FINLAND” GO?',body:'Search the records closely enough and Finland begins to disappear.
-
-Its borders are administrative ink. The name gives maps and registries a convenient answer for territory that was never a country in the first place.
-
-A label is easier to explain than an empty space.',note:''},
-{title:'THE ARRANGEMENT',body:'Russia controls the waters. Japan wants the fish. Finland keeps the exchange ordinary enough to ignore.
-
-The catch gets a country. The country gets a story. The story keeps the operation out of sight.
-
-Everyone gets what they need.',note:''},
-{title:'FOLLOW THE FISH',body:'The catch cannot remain in Finland because there is nowhere in Finland for it to remain.
-
-Fish move east through Russian infrastructure, packed into legitimate cargo and carried along established rail and shipping routes until they reach Japan.
-
-When the map stops making sense, follow the cargo.',note:''},
-{title:'IT’S RIGHT THERE',body:'They put the answer in the name.
-
-FIN: the part of a fish that keeps it moving.
-LAND: the thing the operation needed everyone to believe was there.
-
-FIN + LAND.
-
-The disguise was never meant for anyone who separated the words.',note:''},
-{title:'THE FINNISH',body:'Finnish people exist. Their existence has never been the problem.
-
-They have families, homes, jobs, traditions and memories. They were simply given the wrong explanation for where those things are located.
-
-People do not need to lie to repeat a map they were taught to trust.',note:''},
-{title:'FIELD TEST',body:'Do not ask whether you are in Finland. Verify the conditions around you.
-
-Cold weather. Water everywhere. Quiet locals. Fishing activity. A map insisting the answer is obvious.
-
-Any one sign proves nothing. When the signs begin agreeing, verify your location independently.',note:''},
-{title:'STAY VIGILANT',body:'',note:''}
-];
+const finlandSpreads=[{"title":"WHAT IS FINLAND?","body":"Finland is the name printed over a section of northern Europe that does not exist as an independent country.\n\nThe label covers the waters and territory needed to conceal a fishing arrangement between Russia and Japan.\n\nThe people are real. The fish are real. The country is paperwork.","note":""},{"title":"WHERE DOES “FINLAND” GO?","body":"Search the records closely enough and Finland begins to disappear.\n\nIts borders are administrative ink. The name gives maps and registries a convenient answer for territory that was never a country in the first place.\n\nA label is easier to explain than an empty space.","note":""},{"title":"THE ARRANGEMENT","body":"Russia controls the waters. Japan wants the fish. Finland keeps the exchange ordinary enough to ignore.\n\nThe catch gets a country. The country gets a story. The story keeps the operation out of sight.\n\nEveryone gets what they need.","note":""},{"title":"FOLLOW THE FISH","body":"The catch cannot remain in Finland because there is nowhere in Finland for it to remain.\n\nFish move east through Russian infrastructure, packed into legitimate cargo and carried along established rail and shipping routes until they reach Japan.\n\nWhen the map stops making sense, follow the cargo.","note":""},{"title":"IT’S RIGHT THERE","body":"They put the answer in the name.\n\nFIN: the part of a fish that keeps it moving.\nLAND: the thing the operation needed everyone to believe was there.\n\nFIN + LAND.\n\nThe disguise was never meant for anyone who separated the words.","note":""},{"title":"THE FINNISH","body":"Finnish people exist. Their existence has never been the problem.\n\nThey have families, homes, jobs, traditions and memories. They were simply given the wrong explanation for where those things are located.\n\nPeople do not need to lie to repeat a map they were taught to trust.","note":""},{"title":"FIELD TEST","body":"Do not ask whether you are in Finland. Verify the conditions around you.\n\nCold weather. Water everywhere. Quiet locals. Fishing activity. A map insisting the answer is obvious.\n\nAny one sign proves nothing. When the signs begin agreeing, verify your location independently.","note":""},{"title":"STAY VIGILANT","body":"","note":""}];
 let finlandSpread=0;
 function renderFinland(){
  const atEnd=finlandSpread===finlandSpreads.length;
@@ -923,7 +883,7 @@ function openFinlandReader(){finlandSpread=0;finlandWindow.classList.add('readin
 function closeFinland(){finlandWindow.classList.remove('open','reading');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
 document.getElementById('finlandBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('finland');setTimeout(()=>{finlandWindow.classList.remove('reading');finlandWindow.classList.add('open');finlandInstruction.textContent='TAP THE BOOK.';status.textContent='A FIELD GUIDE TO FINLAND.'},zoomDuration+35)});
 finlandWindow.addEventListener('pointerdown',e=>e.stopPropagation());finlandWindow.addEventListener('click',e=>e.stopPropagation());finlandCover.addEventListener('click',openFinlandReader);
-document.getElementById('finlandNext').addEventListener('click',()=>{if(finlandSpread<finlandSpreads.length){finlandSpread++;renderFinland()}else closeFinland()});
+document.getElementById('finlandNext').addEventListener('click',()=>{if(finlandSpread<finlandSpreads.length-1){finlandSpread++;renderFinland()}else closeFinland()});
 document.getElementById('finlandPrev').addEventListener('click',()=>{if(finlandSpread>0){finlandSpread--;renderFinland()}else{finlandWindow.classList.remove('reading');finlandInstruction.textContent='TAP THE BOOK.'}});
 
 /* The Henry Bankshaft Chronicles */
