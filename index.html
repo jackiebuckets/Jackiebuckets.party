@@ -37,7 +37,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 #photos{left:24.0%;top:8.5%;width:21.5%;height:34.5%}
 #door{left:76.7%;top:10.0%;width:17.5%;height:60.0%}
 #guitar{left:11.0%;top:43.5%;width:8.5%;height:31.5%}
-#chair{left:18.0%;top:54.0%;width:22.5%;height:40.0%}
+#chair{left:17.0%;top:52.0%;width:25.0%;height:38.0%;z-index:18;pointer-events:auto}
 #tapestry{left:46.0%;top:6.0%;width:21.0%;height:48.0%}
 #skull{left:67.0%;top:7.5%;width:8.5%;height:27.0%}
 #records{left:57.0%;top:64.0%;width:20.0%;height:24.0%}
@@ -494,7 +494,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
   <div class="scene" id="scene">
    <div class="camera stepped" id="camera">
     <img class="room night" src="room-night-v573.png" alt="">
-    <img class="room day" src="room-day-v573.png" alt="">
+    <img class="room day" src="room-day-v574.png" alt="">
     <div class="hula-spill" id="hulaSpill"></div>
     <img class="hula-lit" id="hulaLit" src="hula-lamp-full-canvas.png" alt="">
     
@@ -1084,7 +1084,7 @@ function closeSkullSecret(){
  if(!zoomBase)return;
  animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom;});
 }
-document.getElementById('chair').addEventListener('click',(e)=>{e.stopPropagation();moved=false;status.textContent='NOT MY CHAIR NOT MY PROBLEM';});
+const deskChair=document.getElementById('chair'); function chairMessage(e){e.stopPropagation();moved=false;status.textContent='NOT MY CHAIR NOT MY PROBLEM';} deskChair.addEventListener('pointerdown',chairMessage); deskChair.addEventListener('click',chairMessage);
 
 document.getElementById('tapestry').addEventListener('click',(e)=>{e.stopPropagation();moved=false;status.textContent="IT DOESN'T DO ANYTHING. PROBABLY.";});
 document.getElementById('skull').addEventListener('click',(e)=>{e.stopPropagation();openSkullSecret();});
