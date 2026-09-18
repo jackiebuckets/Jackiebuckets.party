@@ -351,22 +351,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 @keyframes finlandTurn{0%{transform:scaleX(1)}50%{transform:scaleX(.985)}100%{transform:scaleX(1)}}
 .finland-instruction{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);z-index:10;color:#eee;font:12px "Courier New",monospace;letter-spacing:2px;white-space:nowrap}
 @media(max-width:600px){.finland-reader{width:94vw}.finland-cover{max-width:72vw}.finland-title{font-size:clamp(14px,4vw,20px)}.finland-body{font-size:clamp(7px,2.05vw,10px)}}.finland-title{font-size:clamp(14px,4vw,21px)}.finland-body{font-size:clamp(7px,2.25vw,11px)}}
-
-.finland-reader.final-finland .finland-title,.finland-reader.final-finland .finland-body,.finland-reader.final-finland .finland-note{display:none!important}
-
-/* V5.61 — canonical book + right-page-only art */
-.finland-art{object-fit:contain!important}
-.finland-right-art{
- position:absolute;z-index:3;
- left:52.1%;top:9.5%;width:39.2%;height:80.5%;
- object-fit:cover;
- clip-path:polygon(3% 2%,96% 0,100% 96%,4% 100%,0 52%);
- pointer-events:none;
- mix-blend-mode:multiply;
-}
-.finland-reader.final-finland .finland-right-art{display:none}
-.finland-reader.final-finland .finland-art{display:block}
-
 </style>
 
 <style id="finland-v557-text-cleanup">
@@ -441,6 +425,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  .finland-end{font-size:clamp(14px,4vw,20px);}
 }
 </style>
+
+<style id="finland-v560-final-art-pages">
+/* V5.60 — locked final 8-spread Finland master; preserve room/interaction behavior. */
+.finland-reader{width:min(96vw,960px);aspect-ratio:3/2;}
+.finland-title,.finland-body,.finland-note,.finland-end{display:none !important;}
+.finland-art{object-fit:contain;}
+@media(max-width:600px){.finland-reader{width:98vw;aspect-ratio:3/2;}}
+</style>
 </head>
 <body>
 <div class="portrait-only-message" aria-live="polite">
@@ -501,11 +493,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 <div class="finland-dim"></div><div class="finland-stage">
 <img class="finland-cover" id="finlandCover" src="finland-cover.png" alt="A Field Guide to Finland">
 <div class="finland-reader" id="finlandReader">
-<img class="finland-art" id="finlandArt" src="finland-open.png" alt=""><img class="finland-right-art" id="finlandRightArt" src="finland-art-1.jpg" alt="">
+<img class="finland-art" id="finlandArt" src="finland-open.png" alt="">
 <div class="finland-copy finland-title" id="finlandTitle"></div>
 <div class="finland-copy finland-body" id="finlandBody"></div>
 <div class="finland-copy finland-note" id="finlandNote"></div>
-
+<div class="finland-end" id="finlandEnd">BOOK'S OVER.<br>THANKS FOR READING.</div>
 <button class="finland-pagehit finland-prev" id="finlandPrev" aria-label="Previous spread"></button>
 <button class="finland-pagehit finland-next" id="finlandNext" aria-label="Next spread"></button>
 </div></div><div class="finland-instruction" id="finlandInstruction">TAP THE BOOK.</div>
@@ -847,39 +839,27 @@ document.getElementById('computer').addEventListener('click',(e)=>{
 
 
 const finlandWindow=document.getElementById('finlandWindow'),finlandCover=document.getElementById('finlandCover'),finlandReader=document.getElementById('finlandReader'),finlandArt=document.getElementById('finlandArt'),finlandTitle=document.getElementById('finlandTitle'),finlandBody=document.getElementById('finlandBody'),finlandNote=document.getElementById('finlandNote'),finlandInstruction=document.getElementById('finlandInstruction');
-const finlandSpreads=[{"title":"WHAT IS FINLAND?","body":"Finland is the name printed over a section of northern Europe that does not exist as an independent country.\n\nThe label covers the waters and territory needed to conceal a fishing arrangement between Russia and Japan.\n\nThe people are real. The fish are real. The country is paperwork.","note":""},{"title":"WHERE DOES “FINLAND” GO?","body":"Search the records closely enough and Finland begins to disappear.\n\nIts borders are administrative ink. The name gives maps and registries a convenient answer for territory that was never a country in the first place.\n\nA label is easier to explain than an empty space.","note":""},{"title":"THE ARRANGEMENT","body":"Russia controls the waters. Japan wants the fish. Finland keeps the exchange ordinary enough to ignore.\n\nThe catch gets a country. The country gets a story. The story keeps the operation out of sight.\n\nEveryone gets what they need.","note":""},{"title":"FOLLOW THE FISH","body":"The catch cannot remain in Finland because there is nowhere in Finland for it to remain.\n\nFish move east through Russian infrastructure, packed into legitimate cargo and carried along established rail and shipping routes until they reach Japan.\n\nWhen the map stops making sense, follow the cargo.","note":""},{"title":"IT’S RIGHT THERE","body":"They put the answer in the name.\n\nFIN: the part of a fish that keeps it moving.\nLAND: the thing the operation needed everyone to believe was there.\n\nFIN + LAND.\n\nThe disguise was never meant for anyone who separated the words.","note":""},{"title":"THE FINNISH","body":"Finnish people exist. Their existence has never been the problem.\n\nThey have families, homes, jobs, traditions and memories. They were simply given the wrong explanation for where those things are located.\n\nPeople do not need to lie to repeat a map they were taught to trust.","note":""},{"title":"FIELD TEST","body":"Do not ask whether you are in Finland. Verify the conditions around you.\n\nCold weather. Water everywhere. Quiet locals. Fishing activity. A map insisting the answer is obvious.\n\nAny one sign proves nothing. When the signs begin agreeing, verify your location independently.","note":""},{"title":"STAY VIGILANT","body":"","note":""}];
+const finlandSpreads=[
+ 'finland-page-1.jpg',
+ 'finland-page-2.jpg',
+ 'finland-page-3.jpg',
+ 'finland-page-4.jpg',
+ 'finland-page-5.jpg',
+ 'finland-page-6.jpg',
+ 'finland-page-7.jpg',
+ 'finland-page-8.jpg'
+];
 let finlandSpread=0;
 function renderFinland(){
- const atEnd=finlandSpread===finlandSpreads.length;
- if(finlandSpread===7){
- finlandArt.src='finland-page-8.jpg';
-}else{
- finlandArt.src='finland-open.png';
- document.getElementById('finlandRightArt').src='finland-art-'+(finlandSpread+1)+'.jpg';
-}
- finlandReader.classList.toggle('at-end',atEnd);
+ finlandReader.classList.remove('at-end');
+ finlandTitle.textContent='';
+ finlandBody.textContent='';
  finlandNote.textContent='';
- if(atEnd){
-   finlandTitle.textContent='';
-   finlandBody.textContent='';
- }else{
-   const s=finlandSpreads[finlandSpread];finlandReader.classList.toggle('final-finland',finlandSpread===7);
-   finlandTitle.textContent=s.title;
-   finlandBody.textContent=s.body;
-   /* Keep body below multi-line headings without shrinking the established type. */
-   requestAnimationFrame(()=>{
-     const readerRect=finlandReader.getBoundingClientRect();
-     const titleRect=finlandTitle.getBoundingClientRect();
-     if(readerRect.height){
-       const minTop=28;
-       const titleBottom=((titleRect.bottom-readerRect.top)/readerRect.height)*100;
-       finlandBody.style.top=Math.max(minTop,titleBottom+3.5)+'%';
-     }
-   });
- }
+ finlandArt.src=finlandSpreads[finlandSpread];
+ finlandInstruction.textContent=finlandSpread===finlandSpreads.length-1?'TAP RIGHT PAGE TO CLOSE.':'TAP RIGHT PAGE TO CONTINUE.';
  finlandReader.classList.remove('turning');void finlandReader.offsetWidth;finlandReader.classList.add('turning');
 }
-function openFinlandReader(){finlandSpread=0;finlandWindow.classList.add('reading');finlandInstruction.textContent='TAP RIGHT PAGE TO CONTINUE.';renderFinland()}
+function openFinlandReader(){finlandSpread=0;finlandWindow.classList.add('reading');renderFinland()}
 function closeFinland(){finlandWindow.classList.remove('open','reading');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
 document.getElementById('finlandBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('finland');setTimeout(()=>{finlandWindow.classList.remove('reading');finlandWindow.classList.add('open');finlandInstruction.textContent='TAP THE BOOK.';status.textContent='A FIELD GUIDE TO FINLAND.'},zoomDuration+35)});
 finlandWindow.addEventListener('pointerdown',e=>e.stopPropagation());finlandWindow.addEventListener('click',e=>e.stopPropagation());finlandCover.addEventListener('click',openFinlandReader);
