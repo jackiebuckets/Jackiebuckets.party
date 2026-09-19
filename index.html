@@ -921,8 +921,7 @@ function closeSucker(){
  if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};
  animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom});
 }
-document.getElementById('suckerBook').addEventListener('pointerdown',()=>playBookPickup());
-document.getElementById('suckerBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('sucker');setTimeout(()=>{suckerWindow.classList.add('open');status.textContent='...'},zoomDuration+35)});
+document.getElementById('suckerBook').addEventListener('click',e=>{e.stopPropagation();playBookPickup();moved=false;goView('sucker');setTimeout(()=>{suckerWindow.classList.add('open');status.textContent='...'},zoomDuration+35)});
 suckerWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 suckerWindow.addEventListener('click',e=>e.stopPropagation());
 suckerCover.addEventListener('click',closeSucker);
@@ -946,8 +945,7 @@ function renderFinland(){
 }
 function openFinlandReader(){finlandSpread=0;finlandWindow.classList.add('reading');renderFinland()}
 function closeFinland(){finlandWindow.classList.remove('open','reading');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
-document.getElementById('finlandBook').addEventListener('pointerdown',()=>playBookPickup());
-document.getElementById('finlandBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('finland');setTimeout(()=>{finlandWindow.classList.remove('reading');finlandWindow.classList.add('open');finlandInstruction.textContent='TAP THE BOOK.';status.textContent='A FIELD GUIDE TO FINLAND.'},zoomDuration+35)});
+document.getElementById('finlandBook').addEventListener('click',e=>{e.stopPropagation();playBookPickup();moved=false;goView('finland');setTimeout(()=>{finlandWindow.classList.remove('reading');finlandWindow.classList.add('open');finlandInstruction.textContent='TAP THE BOOK.';status.textContent='A FIELD GUIDE TO FINLAND.'},zoomDuration+35)});
 finlandWindow.addEventListener('pointerdown',e=>e.stopPropagation());finlandWindow.addEventListener('click',e=>e.stopPropagation());finlandCover.addEventListener('click',openFinlandReader);
 document.getElementById('finlandNext').addEventListener('click',()=>{if(finlandSpread<finlandSpreads.length-1){playPageTurn();finlandSpread++;renderFinland()}else closeFinland()});
 document.getElementById('finlandPrev').addEventListener('click',()=>{if(finlandSpread>0){playPageTurn();finlandSpread--;renderFinland()}else{finlandWindow.classList.remove('reading');finlandInstruction.textContent='TAP THE BOOK.'}});
@@ -966,8 +964,7 @@ function renderHenryPage(){
 }
 function openHenryReader(){henrySpread=0;henryWindow.classList.add('reading');renderHenryPage();status.textContent='THE HENRY BANKSHAFT CHRONICLES.'}
 function closeHenry(){henryWindow.classList.remove('open','reading');if(!zoomBase)zoomBase={left:viewport.clientWidth/2+panX,top:viewport.clientHeight/2+panY};animateComputerZoom(1,0,()=>{zoomed=false;scene.classList.remove('zoomed');hint.style.opacity='1';camera.style.left=(viewport.clientWidth/2+panX)+'px';camera.style.top=(viewport.clientHeight/2+panY)+'px';camera.style.transform='translate(-50%,-50%) scale(1.005)';status.textContent='CLICK AROUND.';zoomBase=null;activeZoom=computerZoom})}
-document.getElementById('henryBook').addEventListener('pointerdown',()=>playBookPickup());
-document.getElementById('henryBook').addEventListener('click',e=>{e.stopPropagation();moved=false;goView('book');setTimeout(()=>{henryWindow.classList.remove('reading');henryWindow.classList.add('open');henryInstruction.textContent='TAP THE BOOK.';status.textContent='THE HENRY BANKSHAFT CHRONICLES.'},zoomDuration+35)});
+document.getElementById('henryBook').addEventListener('click',e=>{e.stopPropagation();playBookPickup();moved=false;goView('book');setTimeout(()=>{henryWindow.classList.remove('reading');henryWindow.classList.add('open');henryInstruction.textContent='TAP THE BOOK.';status.textContent='THE HENRY BANKSHAFT CHRONICLES.'},zoomDuration+35)});
 henryWindow.addEventListener('pointerdown',e=>e.stopPropagation());henryWindow.addEventListener('click',e=>e.stopPropagation());henryCover.addEventListener('click',openHenryReader);
 document.getElementById('henryNext').addEventListener('click',()=>{if((henrySpread+1)*2<henryPages.length){playPageTurn();henrySpread++;renderHenryPage()}else if(henrySpread===2){closeHenry()}});
 document.getElementById('henryPrev').addEventListener('click',()=>{if(henrySpread>0){playPageTurn();henrySpread--;renderHenryPage()}else{henryWindow.classList.remove('reading');henryInstruction.textContent='TAP THE BOOK.'}});
