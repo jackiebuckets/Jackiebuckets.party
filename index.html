@@ -362,6 +362,25 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 @keyframes finlandTurn{0%{transform:scaleX(1)}50%{transform:scaleX(.985)}100%{transform:scaleX(1)}}
 .finland-instruction{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);z-index:10;color:#eee;font:12px "Courier New",monospace;letter-spacing:2px;white-space:nowrap}
 @media(max-width:600px){.finland-reader{width:97vw}.finland-cover{max-width:72vw}.finland-title{font-size:clamp(14px,4vw,20px)}.finland-body{font-size:clamp(7px,2.05vw,10px)}}.finland-title{font-size:clamp(14px,4vw,21px)}.finland-body{font-size:clamp(7px,2.25vw,11px)}}
+
+.bucketgram-suggest-hit{
+ position:absolute;
+ left:72.0%;
+ width:26.2%;
+ height:7.55%;
+ z-index:8;
+ background:transparent;
+ border:0;
+ padding:0;
+ cursor:pointer;
+ -webkit-tap-highlight-color:transparent;
+}
+.bucketgram-suggest-hit[data-profile="hulk-hogan"]{top:23.0%}
+.bucketgram-suggest-hit[data-profile="bohban-singh"]{top:30.55%}
+.bucketgram-suggest-hit[data-profile="mattman45"]{top:38.10%}
+.bucketgram-suggest-hit[data-profile="roy-lewinski"]{top:45.65%}
+.bucketgram-suggest-hit[data-profile="feralsteve"]{top:53.20%}
+
 </style>
 
 <style id="finland-v557-text-cleanup">
@@ -588,6 +607,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
    <section class="bucketgram-window" id="bucketgramWindow" aria-label="Bucketgram photos">
     <button class="bucketgram-close" id="bucketgramClose" aria-label="Close Bucketgram"></button>
+
+    <button class="bucketgram-suggest-hit" data-profile="hulk-hogan" aria-label="Open Hulk Hogan profile"></button>
+    <button class="bucketgram-suggest-hit" data-profile="bohban-singh" aria-label="Open Bohban Singh profile"></button>
+    <button class="bucketgram-suggest-hit" data-profile="mattman45" aria-label="Open Mattman45 profile"></button>
+    <button class="bucketgram-suggest-hit" data-profile="roy-lewinski" aria-label="Open Roy Lewinski profile"></button>
+    <button class="bucketgram-suggest-hit" data-profile="feralsteve" aria-label="Open FeralSteve profile"></button>
+
     <div class="bucketgram-feed" id="bucketgramFeed">
       <article class="bg-post">
        <div class="bg-post-head"><div class="bg-avatar">😎</div><div class="bg-meta"><span>jackiebuckets</span><span class="bg-place">somewhere...</span></div><span class="bg-age">2d</span></div>
@@ -1168,6 +1194,24 @@ document.querySelectorAll('.bg-photo').forEach(img=>{
   if(post) post.style.display='';
  });
 });
+
+const bucketgramProfileNames={
+ 'hulk-hogan':'HULK HOGAN',
+ 'bohban-singh':'BOHBAN SINGH',
+ 'mattman45':'MATTMAN45',
+ 'roy-lewinski':'ROY LEWINSKI',
+ 'feralsteve':'FERALSTEVE'
+};
+document.querySelectorAll('.bucketgram-suggest-hit').forEach(hit=>{
+ hit.addEventListener('pointerdown',e=>e.stopPropagation());
+ hit.addEventListener('click',e=>{
+   e.stopPropagation();
+   const key=hit.dataset.profile;
+   bucketgramWindow.dataset.selectedProfile=key;
+   status.textContent='BUCKETGRAM // '+bucketgramProfileNames[key];
+ });
+});
+
 bucketgramWindow.addEventListener('pointerdown',e=>e.stopPropagation());
 bucketgramWindow.addEventListener('click',e=>e.stopPropagation());
 bucketgramClose.addEventListener('click',()=>{
