@@ -363,26 +363,23 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 .finland-instruction{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);z-index:10;color:#eee;font:12px "Courier New",monospace;letter-spacing:2px;white-space:nowrap}
 @media(max-width:600px){.finland-reader{width:97vw}.finland-cover{max-width:72vw}.finland-title{font-size:clamp(14px,4vw,20px)}.finland-body{font-size:clamp(7px,2.05vw,10px)}}.finland-title{font-size:clamp(14px,4vw,21px)}.finland-body{font-size:clamp(7px,2.25vw,11px)}}
 
-.bucketgram-suggest-hit{
+/* V5.82 — Bucketgram suggested avatars mapped directly in the
+   native 1344x1120 artwork coordinate system. */
+.bucketgram-suggest-map{
  position:absolute;
- left:73.55%;
- width:5.15%;
- aspect-ratio:1/1;
- z-index:8;
- background:transparent;
- border:0;
- border-radius:50%;
- padding:0;
+ inset:0;
+ width:100%;
+ height:100%;
+ z-index:20;
+ pointer-events:none;
+}
+.bucketgram-suggest-hit{
+ fill:transparent;
+ stroke:none;
+ pointer-events:all;
  cursor:pointer;
  -webkit-tap-highlight-color:transparent;
 }
-.bucketgram-suggest-hit[data-profile="hulk-hogan"]{top:23.75%}
-.bucketgram-suggest-hit[data-profile="bohban-singh"]{top:31.15%}
-.bucketgram-suggest-hit[data-profile="mattman45"]{top:38.55%}
-.bucketgram-suggest-hit[data-profile="roy-lewinski"]{top:45.95%}
-.bucketgram-suggest-hit[data-profile="feralsteve"]{top:53.35%}
-
-
 </style>
 
 <style id="finland-v557-text-cleanup">
@@ -609,12 +606,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
    <section class="bucketgram-window" id="bucketgramWindow" aria-label="Bucketgram photos">
     <button class="bucketgram-close" id="bucketgramClose" aria-label="Close Bucketgram"></button>
-
-    <button class="bucketgram-suggest-hit" data-profile="hulk-hogan" aria-label="Open Hulk Hogan profile"></button>
-    <button class="bucketgram-suggest-hit" data-profile="bohban-singh" aria-label="Open Bohban Singh profile"></button>
-    <button class="bucketgram-suggest-hit" data-profile="mattman45" aria-label="Open Mattman45 profile"></button>
-    <button class="bucketgram-suggest-hit" data-profile="roy-lewinski" aria-label="Open Roy Lewinski profile"></button>
-    <button class="bucketgram-suggest-hit" data-profile="feralsteve" aria-label="Open FeralSteve profile"></button>
+    <svg class="bucketgram-suggest-map" viewBox="0 0 1344 1120"
+         preserveAspectRatio="none" aria-label="Suggested profiles">
+      <circle class="bucketgram-suggest-hit" data-profile="hulk-hogan" cx="1021" cy="301" r="39"><title>Hulk Hogan</title></circle>
+      <circle class="bucketgram-suggest-hit" data-profile="bohban-singh" cx="1021" cy="386" r="39"><title>Bohban Singh</title></circle>
+      <circle class="bucketgram-suggest-hit" data-profile="mattman45" cx="1021" cy="471" r="39"><title>Mattman45</title></circle>
+      <circle class="bucketgram-suggest-hit" data-profile="roy-lewinski" cx="1021" cy="556" r="39"><title>Roy Lewinski</title></circle>
+      <circle class="bucketgram-suggest-hit" data-profile="feralsteve" cx="1021" cy="641" r="39"><title>feralSteve</title></circle>
+    </svg>
 
     <div class="bucketgram-feed" id="bucketgramFeed">
       <article class="bg-post">
