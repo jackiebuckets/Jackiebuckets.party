@@ -370,7 +370,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  inset:0;
  width:100%;
  height:100%;
- z-index:20;
+ z-index:30;
  pointer-events:none;
 }
 .bucketgram-suggest-hit{
@@ -381,7 +381,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  -webkit-tap-highlight-color:transparent;
 }
 
-/* V5.85 Tattoo overlay — bucketgram-ui.png remains immutable */
+/* V5.86 — Suggested-profile overlays. bucketgram-ui.png remains immutable.
+   Full-canvas projection sheets preserve the exact supplied placement. */
+.bucketgram-projection{
+ position:absolute; inset:0; width:100%; height:100%;
+ object-fit:fill; pointer-events:none; user-select:none; -webkit-user-drag:none;
+}
+.bucketgram-avatar-projection{z-index:16}
+.bucketgram-nameplate-projection{z-index:17}
+.bucketgram-add-projection{z-index:18}
 .bucketgram-tattoo-avatar{
  position:absolute;
  left:74.479167%;
@@ -392,17 +400,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  z-index:18;
  pointer-events:none;
 }
-.bucketgram-tattoo-name{
- position:absolute;
- left:80.357143%;
- top:55.803571%;
- z-index:19;
- pointer-events:none;
- font:700 16px/1 Arial,sans-serif;
- color:#171515;
- background:#f4efe5;
- padding:2px 18px 2px 2px;
+.bucketgram-suggest-name{
+ position:absolute; left:80.57%; z-index:19; pointer-events:none;
+ width:11.4%; height:4.2%; display:flex; align-items:center;
+ font:700 16px/1 Arial,sans-serif; color:#171515; white-space:nowrap;
 }
+.bucketgram-suggest-name.r1{top:24.10%}
+.bucketgram-suggest-name.r2{top:31.62%}
+.bucketgram-suggest-name.r3{top:39.36%}
+.bucketgram-suggest-name.r4{top:46.90%}
+.bucketgram-suggest-name.r5{top:54.50%}
 
 </style>
 
@@ -630,8 +637,27 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
 
    <section class="bucketgram-window" id="bucketgramWindow" aria-label="Bucketgram photos">
     <button class="bucketgram-close" id="bucketgramClose" aria-label="Close Bucketgram"></button>
+    <!-- Exact-position projection overlays supplied by Jackie; master UI stays untouched. -->
+    <img class="bucketgram-projection bucketgram-avatar-projection" src="bucketgram-overlays/avatar-1.png" alt="">
+    <img class="bucketgram-projection bucketgram-avatar-projection" src="bucketgram-overlays/avatar-2.png" alt="">
+    <img class="bucketgram-projection bucketgram-avatar-projection" src="bucketgram-overlays/avatar-3.png" alt="">
+    <img class="bucketgram-projection bucketgram-avatar-projection" src="bucketgram-overlays/avatar-4.png" alt="">
+    <img class="bucketgram-projection bucketgram-nameplate-projection" src="bucketgram-overlays/nameplate-1.png" alt="">
+    <img class="bucketgram-projection bucketgram-nameplate-projection" src="bucketgram-overlays/nameplate-2.png" alt="">
+    <img class="bucketgram-projection bucketgram-nameplate-projection" src="bucketgram-overlays/nameplate-3.png" alt="">
+    <img class="bucketgram-projection bucketgram-nameplate-projection" src="bucketgram-overlays/nameplate-4.png" alt="">
+    <img class="bucketgram-projection bucketgram-nameplate-projection" src="bucketgram-overlays/nameplate-5.png" alt="">
+    <img class="bucketgram-projection bucketgram-add-projection" src="bucketgram-overlays/add-1.png" alt="">
+    <img class="bucketgram-projection bucketgram-add-projection" src="bucketgram-overlays/add-2.png" alt="">
+    <img class="bucketgram-projection bucketgram-add-projection" src="bucketgram-overlays/add-3.png" alt="">
+    <img class="bucketgram-projection bucketgram-add-projection" src="bucketgram-overlays/add-4.png" alt="">
+    <img class="bucketgram-projection bucketgram-add-projection" src="bucketgram-overlays/add-5.png" alt="">
     <img class="bucketgram-tattoo-avatar" src="tattoo-avatar.png" alt="">
-    <span class="bucketgram-tattoo-name">Tattoo</span>
+    <span class="bucketgram-suggest-name r1" data-suggest-name="hulk-hogan">Hulk Hogan</span>
+    <span class="bucketgram-suggest-name r2" data-suggest-name="bohban-singh">Bohban Singh</span>
+    <span class="bucketgram-suggest-name r3" data-suggest-name="mattman45">Mattman45</span>
+    <span class="bucketgram-suggest-name r4" data-suggest-name="roy-lewinski">Roy Lewinski</span>
+    <span class="bucketgram-suggest-name r5" data-suggest-name="tattoo">Tattoo</span>
     <svg class="bucketgram-suggest-map" viewBox="0 0 1344 1120"
          preserveAspectRatio="none" aria-label="Suggested profiles">
       <circle class="bucketgram-suggest-hit" data-profile="hulk-hogan" cx="1021" cy="301" r="39"><title>Hulk Hogan</title></circle>
