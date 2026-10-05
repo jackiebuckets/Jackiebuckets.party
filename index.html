@@ -381,8 +381,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  -webkit-tap-highlight-color:transparent;
 }
 
-/* V5.86 — Suggested-profile overlays. bucketgram-ui.png remains immutable.
-   Full-canvas projection sheets preserve the exact supplied placement. */
+/* V5.87 — Suggested-profile overlays.
+   bucketgram-ui.png remains immutable. Projection art is transparent except
+   for the exact supplied avatar/nameplate/add-button artwork. */
 .bucketgram-projection{
  position:absolute; inset:0; width:100%; height:100%;
  object-fit:fill; pointer-events:none; user-select:none; -webkit-user-drag:none;
@@ -401,15 +402,25 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;col
  pointer-events:none;
 }
 .bucketgram-suggest-name{
- position:absolute; left:80.57%; z-index:19; pointer-events:none;
- width:11.4%; height:4.2%; display:flex; align-items:center;
- font:700 16px/1 Arial,sans-serif; color:#171515; white-space:nowrap;
+ position:absolute;
+ left:79.912664%;
+ width:12.882096%;
+ height:6.288210%;
+ z-index:19;
+ pointer-events:none;
+ display:flex;
+ align-items:center;
+ padding-left:10px;
+ box-sizing:border-box;
+ font:700 16px/1 Arial,sans-serif;
+ color:#171515;
+ white-space:nowrap;
 }
-.bucketgram-suggest-name.r1{top:24.10%}
-.bucketgram-suggest-name.r2{top:31.62%}
-.bucketgram-suggest-name.r3{top:39.36%}
-.bucketgram-suggest-name.r4{top:46.90%}
-.bucketgram-suggest-name.r5{top:54.50%}
+.bucketgram-suggest-name.r1{top:24.104803%}
+.bucketgram-suggest-name.r2{top:30.567686%;height:7.423581%}
+.bucketgram-suggest-name.r3{top:38.340611%;height:7.161572%}
+.bucketgram-suggest-name.r4{top:45.764192%;height:7.423581%}
+.bucketgram-suggest-name.r5{top:53.362445%;height:8.034934%}
 
 </style>
 
